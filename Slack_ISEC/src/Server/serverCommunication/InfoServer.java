@@ -1,5 +1,5 @@
 
-package Server;
+package Server.serverCommunication;
 
 import java.util.HashMap;
 
