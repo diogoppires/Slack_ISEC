@@ -62,4 +62,9 @@ public class UDP_Communication {
         DatagramPacket dP = new DatagramPacket(bufStr, bufStr.length, clientIp, clientPort);
         dS.send(dP);
     }
+
+    public int getServerPort() {
+        return serverPort;
+    }
+    
 }
