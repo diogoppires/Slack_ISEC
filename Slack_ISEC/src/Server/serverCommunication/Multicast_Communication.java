@@ -41,8 +41,9 @@ public class Multicast_Communication {
     }
     
     /**
-     * Method that will be 
-     * @param info 
+     * Method that will spread all the information that was recently updated to all
+     * the servers on the network.
+     * @param info the information that was updated.
      */
     public void spreadInfo(InfoServer info){
         try {
