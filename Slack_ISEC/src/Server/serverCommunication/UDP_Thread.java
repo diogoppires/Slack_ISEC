@@ -20,22 +20,28 @@ public class UDP_Thread extends Thread {
     }
 
     @Override
-    public void run() {
+    public void run(){
         try {
-            udpC.initializeUDP();
             while(exit){
                 String msg = udpC.receiveUDP();
-                
-                //if(infoS.getUsersRegistrations().get(udpC.getServerPort()).getnClients())
+                if(msg.equals(TCP_CONNECTION)){
+                    udpC.sendUDP("SUCCESS");
+                }
             }
         } catch (SocketException ex) {
-            System.out.println("Error, port alredy exist...");
-            Logger.getLogger(UDP_Thread.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("[UDP_THREAD]: Socket closed.");
         } catch (IOException ex) {
             Logger.getLogger(UDP_Thread.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    
-    
+
+    /**
+     * This interrupt is important because it will interrupt the thread and finish it
+     * even if the thread is waiting for some message.
+     */
+    @Override
+    public void interrupt() {
+        super.interrupt(); //To change body of generated methods, choose Tools | Templates.
+        udpC.closeUDP();
+    }
 }
