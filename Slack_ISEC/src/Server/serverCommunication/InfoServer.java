@@ -11,7 +11,7 @@ public class InfoServer implements Serializable{
         this.usersRegistrations = new HashMap<>();
     }
 
-    public HashMap<Integer, ServerInfoToClients> getUsesrRegistrations() {
+    public HashMap<Integer, ServerInfoToClients> getUsersRegistrations() {
         return usersRegistrations;
     }
 }
