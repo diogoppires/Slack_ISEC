@@ -1,17 +1,17 @@
 
 package Server.serverCommunication;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class InfoServer {
-    private HashMap<Integer,Integer> usesrRegistrations;
+public class InfoServer implements Serializable{
+    private HashMap<Integer,ServerInfoToClients> usersRegistrations;
 
     public InfoServer() {
-        this.usesrRegistrations = new HashMap<>();
+        this.usersRegistrations = new HashMap<>();
     }
 
-    public HashMap<Integer, Integer> getUsesrRegistrations() {
-        return usesrRegistrations;
-    } 
- 
+    public HashMap<Integer, ServerInfoToClients> getUsesrRegistrations() {
+        return usersRegistrations;
+    }
 }
