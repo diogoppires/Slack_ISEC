@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Server.serverCommunication;
+package Client.clientCommunication;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -17,19 +17,16 @@ import java.net.SocketException;
  */
 public class UDP_Communication {
     private final static int SIZE = 256;
-    private final int serverPort;
     private DatagramSocket dS;
 
-    public UDP_Communication(int serverPort) {
-        this.serverPort = serverPort;
-    }
+    public UDP_Communication(){}
     
     /**
      * Method to initialize the UDP socket
      * @throws SocketException will be thrown if the port is already being used
      */
     public void initializeUDP() throws SocketException{
-        dS = new DatagramSocket(serverPort);
+        dS = new DatagramSocket();
     }
     
     /**
@@ -53,18 +50,13 @@ public class UDP_Communication {
     /**
      * Method used to send a message through a UDP connection
      * @param msg the message that will be sent.
-     * @param clientIp the IP that will receive the message.
-     * @param clientPort the port that will receive the message.
+     * @param serverIp the IP that will receive the message.
+     * @param serverPort the port that will receive the message.
      * @throws IOException 
      */
-    public void sendUDP(String msg, InetAddress clientIp, int clientPort) throws IOException{
+    public void sendUDP(String msg, InetAddress serverIp, int serverPort) throws IOException{
         byte[] bufStr = msg.getBytes();
-        DatagramPacket dP = new DatagramPacket(bufStr, bufStr.length, clientIp, clientPort);
+        DatagramPacket dP = new DatagramPacket(bufStr, bufStr.length, serverIp, serverPort);
         dS.send(dP);
     }
-
-    public int getServerPort() {
-        return serverPort;
-    }
-    
 }

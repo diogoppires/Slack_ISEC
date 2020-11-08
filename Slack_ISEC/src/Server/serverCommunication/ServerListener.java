@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Server.serverCommunication;
 
 import java.io.ByteArrayInputStream;
@@ -13,17 +8,13 @@ import java.net.MulticastSocket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author DiogoPires
- */
-public class ReceiveServerStatus extends Thread {
+public class ServerListener extends Thread {
     
     private MulticastSocket mSocket;
     private String username;
     private InfoServer infoServer;
     
-    public ReceiveServerStatus(MulticastSocket mSocket,InfoServer infoServer,String username) {
+    public ServerListener(MulticastSocket mSocket,InfoServer infoServer,String username) {
         this.mSocket = mSocket;
         this.infoServer = infoServer;
         this.username = username;
@@ -42,10 +33,10 @@ public class ReceiveServerStatus extends Thread {
                     buffer.getIpServer() + " Port: " + buffer.getPortServer() +
                     " Clients: " + buffer.getnClients() + "\n");
             
-            infoServer.getUsesrRegistrations().put(buffer.getPortServer(), buffer);
+            infoServer.getUsersRegistrations().put(buffer.getPortServer(), buffer);
         
         } catch (IOException | ClassNotFoundException ex) {
-            Logger.getLogger(ReceiveServerStatus.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ServerListener.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }

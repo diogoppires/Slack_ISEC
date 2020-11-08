@@ -1,14 +1,17 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Client;
 
-/**
- *
- * @author Rui
- */
+import Client.clientCommunication.ClientCommunication;
+
+
 public class mainClient {
-    
+    public static void main(String[] args) {
+        System.out.println("------------------------------------------------");
+        ClientCommunication cC = new ClientCommunication(9999, "localhost");
+        if(cC.askForConnection()){
+            System.out.println("[CLIENT]: The connection was made with success.");
+        }
+        else{
+            System.out.println("[CLIENT]: The connection failed.");
+        }
+    }
 }
