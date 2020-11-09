@@ -14,4 +14,19 @@ public class InfoServer implements Serializable{
     public HashMap<Integer, ServerInfoToClients> getUsersRegistrations() {
         return usersRegistrations;
     }
+    
+    public ServerInfoToClients getServerInfo(int index){
+        return usersRegistrations.get(index);
+    }
+    
+    public boolean setClient(int index,int nClients){
+        ServerInfoToClients aux = usersRegistrations.get(index);
+        
+        if(aux != null){
+            aux.setnClients(nClients);
+            return true;
+        }
+        return false;
+    }
+    
 }

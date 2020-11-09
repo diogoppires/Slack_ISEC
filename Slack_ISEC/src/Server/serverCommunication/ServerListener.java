@@ -33,7 +33,9 @@ public class ServerListener extends Thread {
                     buffer.getIpServer() + " Port: " + buffer.getPortServer() +
                     " Clients: " + buffer.getnClients() + "\n");
             
+            
             infoServer.getUsersRegistrations().put(buffer.getPortServer(), buffer);
+
         
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(ServerListener.class.getName()).log(Level.SEVERE, null, ex);

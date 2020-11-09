@@ -25,7 +25,9 @@ public class UDP_Thread extends Thread {
             while(exit){
                 String msg = udpC.receiveUDP();
                 if(msg.equals(TCP_CONNECTION)){
+                    infoS.setClient(udpC.getServerPort(), (infoS.getServerInfo(udpC.getServerPort()).getnClients()) + 1);
                     udpC.sendUDP("SUCCESS");
+                    mcC.spreadInfo(infoS,udpC.getServerPort());
                 }
             }
         } catch (SocketException ex) {
