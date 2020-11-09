@@ -39,6 +39,10 @@ public class Multicast_Communication {
         mSocket.leaveGroup(mGroup);
         mSocket.close();
     }
+
+    public MulticastSocket getmSocket() {
+        return mSocket;
+    }
     
     /**
      * Method that will spread all the information that was recently updated to all
