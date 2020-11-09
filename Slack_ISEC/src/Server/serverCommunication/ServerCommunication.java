@@ -26,7 +26,7 @@ public class ServerCommunication {
     public void startThreads(){
         svL = new ServerListener(mcC.getmSocket(), infoSv, "rc1");
         udpT = new UDP_Thread(udpC, mcC, infoSv);
-        //svL.start();
+        svL.start();
         udpT.start();
     }
     
@@ -36,6 +36,8 @@ public class ServerCommunication {
     }
     
     public void initializeComms(){
+        
+        infoSv.getUsersRegistrations().put(udpC.getServerPort(), new ServerInfoToClients("localhost", udpC.getServerPort(), 0));
         try {
             udpC.initializeUDP();
         } catch (SocketException ex) {

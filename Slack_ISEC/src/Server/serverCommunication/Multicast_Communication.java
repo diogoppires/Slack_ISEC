@@ -49,12 +49,12 @@ public class Multicast_Communication {
      * the servers on the network.
      * @param info the information that was updated.
      */
-    public void spreadInfo(InfoServer info){
+    public void spreadInfo(InfoServer info,int serverPort ){
         try {
             ByteArrayOutputStream bOut = new ByteArrayOutputStream();
             ObjectOutputStream out = new ObjectOutputStream(bOut);
             
-            out.writeUnshared(info);
+            out.writeUnshared(info.getServerInfo(serverPort));
             out.flush();
             DatagramPacket dP = new DatagramPacket(bOut.toByteArray(), bOut.size(), mGroup, multicastPort);
             mSocket.send(dP);

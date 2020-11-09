@@ -24,4 +24,9 @@ public class ServerInfoToClients implements Serializable {
     public int getnClients() {
         return nClients;
     }
+
+    public void setnClients(int nClients) {
+        this.nClients = nClients;
+    }
+    
 }
