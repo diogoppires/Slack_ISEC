@@ -1,13 +1,18 @@
-package Server.serverCommunication;
+package Server.serverCommunication.Data;
 
 import java.io.Serializable;
 
-public class ServerInfoToClients implements Serializable {
+/**
+ * Contains the number of clients actives on the server.
+ * Also has the Ip and Port of the current server.
+ * 
+ */
+public class ServerDetails implements Serializable {
     private String ipServer;
     private int portServer;
     private int nClients;
 
-    public ServerInfoToClients(String ipServer, int portServer, int nClients) {
+    public ServerDetails(String ipServer, int portServer, int nClients) {
         this.ipServer = ipServer;
         this.portServer = portServer;
         this.nClients = nClients;

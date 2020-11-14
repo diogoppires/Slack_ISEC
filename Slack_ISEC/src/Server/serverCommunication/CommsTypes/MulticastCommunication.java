@@ -1,10 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package Server.serverCommunication;
+package Server.serverCommunication.CommsTypes;
 
+import Server.serverCommunication.Data.ServerInfo;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -16,15 +12,16 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Rui
+ * This class will be responsible by the whole Multicast process.
+ * This class was made with the purpose of make the Multicast communication much more easier to use.  
  */
-public class Multicast_Communication {
+public class MulticastCommunication {
     private final int multicastPort;
     private final String multicastIp;
     private InetAddress mGroup;
     private MulticastSocket mSocket;
     
-    public Multicast_Communication(int multicastPort, String multicastIp) {
+    public MulticastCommunication(int multicastPort, String multicastIp) {
         this.multicastPort = multicastPort;
         this.multicastIp = multicastIp;
     }
@@ -48,18 +45,20 @@ public class Multicast_Communication {
      * Method that will spread all the information that was recently updated to all
      * the servers on the network.
      * @param info the information that was updated.
+     * @param serverPort the server index that is supposed to be shared. 
      */
-    public void spreadInfo(InfoServer info,int serverPort ){
+    public void spreadInfo(ServerInfo info,int serverPort ){
         try {
             ByteArrayOutputStream bOut = new ByteArrayOutputStream();
             ObjectOutputStream out = new ObjectOutputStream(bOut);
+            
             
             out.writeUnshared(info.getServerInfo(serverPort));
             out.flush();
             DatagramPacket dP = new DatagramPacket(bOut.toByteArray(), bOut.size(), mGroup, multicastPort);
             mSocket.send(dP);
         } catch (IOException ex) {
-            Logger.getLogger(Multicast_Communication.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MulticastCommunication.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
