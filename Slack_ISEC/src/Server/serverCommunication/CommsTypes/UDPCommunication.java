@@ -1,9 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package Server.serverCommunication;
+package Server.serverCommunication.CommsTypes;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -13,16 +8,17 @@ import java.net.SocketException;
 
 /**
  *
- * @author DiogoPires
+ * This class will be responsible by the whole UDP process.
+ * This class was made with the purpose of make the UDP communication much more easier to use.  
  */
-public class UDP_Communication {
+public class UDPCommunication {
     private final static int SIZE = 256;
     private final int serverPort;
     private int lastClientPort;
     private InetAddress lastClientIp;
     private DatagramSocket dS;
 
-    public UDP_Communication(int serverPort) {
+    public UDPCommunication(int serverPort) {
         this.serverPort = serverPort;
     }
     
