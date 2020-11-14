@@ -40,7 +40,5 @@ public class ServerListener extends Thread {
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(ServerListener.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
     }
-
 }

@@ -36,14 +36,4 @@ public class UDP_Thread extends Thread {
             Logger.getLogger(UDP_Thread.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    /**
-     * This interrupt is important because it will interrupt the thread and finish it
-     * even if the thread is waiting for some message.
-     */
-    @Override
-    public void interrupt() {
-        super.interrupt(); //To change body of generated methods, choose Tools | Templates.
-        udpC.closeUDP();
-    }
 }
