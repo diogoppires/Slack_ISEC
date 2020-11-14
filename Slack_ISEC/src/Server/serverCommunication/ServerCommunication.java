@@ -31,8 +31,12 @@ public class ServerCommunication {
     }
     
     public void finishThreads(){
-        //svL.interrupt();
-        udpT.interrupt();
+        try {
+            mcC.closeMulticast();
+        } catch (IOException ex) {
+            Logger.getLogger(ServerCommunication.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        udpC.closeUDP();
     }
     
     public void initializeComms(){
