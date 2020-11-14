@@ -35,7 +35,7 @@ public class ServerListener extends Thread {
                         " Clients: " + buffer.getnClients() + "\n");
 
 
-                infoServer.getUsersRegistrations().put(buffer.getPortServer(), buffer);
+                infoServer.getUsersRegistrations().put(buffer.getPortServer(), new InfoServerActive(buffer));  // Take care of value of ping
             }
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(ServerListener.class.getName()).log(Level.SEVERE, null, ex);

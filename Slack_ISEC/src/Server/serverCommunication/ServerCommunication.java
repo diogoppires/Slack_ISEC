@@ -41,7 +41,7 @@ public class ServerCommunication {
     
     public void initializeComms(){
         
-        infoSv.getUsersRegistrations().put(udpC.getServerPort(), new ServerInfoToClients("localhost", udpC.getServerPort(), 0));
+        infoSv.getUsersRegistrations().put(udpC.getServerPort(), new InfoServerActive(new ServerInfoToClients("localhost", udpC.getServerPort(), 0)));
         try {
             udpC.initializeUDP();
         } catch (SocketException ex) {
