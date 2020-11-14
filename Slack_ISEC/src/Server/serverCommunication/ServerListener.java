@@ -23,20 +23,20 @@ public class ServerListener extends Thread {
     @Override
     public void run() {
         try {
-            DatagramPacket dP = new DatagramPacket(new byte[512],512);
-            mSocket.receive(dP); 
-            ObjectInputStream oIN = new ObjectInputStream(new ByteArrayInputStream(dP.getData()));
-        
-            ServerInfoToClients buffer = (ServerInfoToClients) oIN.readObject();
-        
-            System.out.println("(server" + buffer.getPortServer() + ") IP: " +
-                    buffer.getIpServer() + " Port: " + buffer.getPortServer() +
-                    " Clients: " + buffer.getnClients() + "\n");
-            
-            
-            infoServer.getUsersRegistrations().put(buffer.getPortServer(), buffer);
+            while(true){
+                DatagramPacket dP = new DatagramPacket(new byte[512],512);
+                mSocket.receive(dP); 
+                ObjectInputStream oIN = new ObjectInputStream(new ByteArrayInputStream(dP.getData()));
 
-        
+                ServerInfoToClients buffer = (ServerInfoToClients) oIN.readObject();
+
+                System.out.println("(server" + buffer.getPortServer() + ") IP: " +
+                        buffer.getIpServer() + " Port: " + buffer.getPortServer() +
+                        " Clients: " + buffer.getnClients() + "\n");
+
+
+                infoServer.getUsersRegistrations().put(buffer.getPortServer(), buffer);
+            }
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(ServerListener.class.getName()).log(Level.SEVERE, null, ex);
         }
