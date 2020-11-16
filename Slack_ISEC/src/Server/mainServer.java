@@ -8,7 +8,7 @@ public class mainServer {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         String getVal = "";
-        ServerCommunication sC = new ServerCommunication(9998, 9321, "localhost");
+        ServerCommunication sC = new ServerCommunication(9999, 9321, "localhost");
         sC.initializeComms();
         sC.startThreads();
         while(!getVal.equals("exit")){

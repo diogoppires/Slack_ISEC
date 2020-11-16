@@ -64,9 +64,11 @@ public class UDP_Thread extends Thread {
 
         for (Map.Entry<Integer, ServerData> obj : iS.getAllServersData().entrySet()) {
             synchronized (iS.getAllServersData()) {
-                if (obj.getValue().getServerDetails().getnClients() < sI.getServerInfo(udpC.getServerPort()).getNClientsServer() / 2) {
-                    System.out.println("Este Servidor tem: " + sI.getServerInfo(udpC.getServerPort()).getNClientsServer() + " Clientes.");
-                    System.out.println("O Servidor: " + obj.getValue().getServerDetails().getPortServer() + " tem " + obj.getValue().getServerDetails().getnClients() + " Clientes");
+                double count = (double)sI.getServerInfo(udpC.getServerPort()).getNClientsServer() / 2;
+                //System.out.println("DOUBLE: " +  count); 
+                if (obj.getValue().getServerDetails().getnClients() < count) {
+                   //System.out.println("Este Servidor tem: " + sI.getServerInfo(udpC.getServerPort()).getNClientsServer() + " Clientes.");
+                   //System.out.println("O Servidor: " + obj.getValue().getServerDetails().getPortServer() + " tem " + obj.getValue().getServerDetails().getnClients() + " Clientes");
                     return false;
                 }
             }
@@ -80,6 +82,7 @@ public class UDP_Thread extends Thread {
 
         for (Map.Entry<Integer, ServerData> obj : iS.getAllServersData().entrySet()) {
             synchronized (iS.getAllServersData()) {
+                //System.out.println("TESTE NULL: " + obj.getValue().getServerDetails().getIpServer());
                 serversList.add(new ServerDetails(obj.getValue().getServerDetails().getIpServer(),
                         obj.getValue().getServerDetails().getPortServer(),
                         obj.getValue().getServerDetails().getnClients()));
@@ -88,15 +91,13 @@ public class UDP_Thread extends Thread {
                 Collections.sort(serversList, new sortByClients());
             }
         }
-        String bufStr;
+        String bufStr = "";
         for (ServerDetails s : serversList) {
-            System.out.println(s.toString());
-            bufStr = s.getIpServer() + " " + s.getPortServer() + " " + s.getnClients() + " ";
-            System.out.println(bufStr);
-
+            //System.out.println(s.toString());
+            bufStr += s.getIpServer() + " " + s.getPortServer() + " " + s.getnClients() + " ";
         }
-        //System.out.println(bufStr);
-        return "";//bufStr;
+        System.out.println(bufStr);
+        return bufStr;
 
     }
 }
