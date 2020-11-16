@@ -33,5 +33,9 @@ public class ServerDetails implements Serializable {
     public void setnClients(int nClients) {
         this.nClients = nClients;
     }
+     @Override
+    public String toString(){
+        return "Server: " + ipServer +":"+ portServer + " Clientes " + nClients;
+    }
     
 }
