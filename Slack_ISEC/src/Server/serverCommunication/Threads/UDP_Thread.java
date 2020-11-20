@@ -54,13 +54,13 @@ public class UDP_Thread extends Thread {
                 }
             }
         } catch (SocketException ex) {
-            System.out.println("[UDP_THREAD]: Socket closed.");
+            System.out.println("[UDP_THREAD]: Closed.");
         } catch (IOException ex) {
             Logger.getLogger(UDP_Thread.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public boolean verifyCap(ServerInfo sI, UDPCommunication updC) {
+    private boolean verifyCap(ServerInfo sI, UDPCommunication updC) {
 
         for (Map.Entry<Integer, ServerData> obj : iS.getAllServersData().entrySet()) {
             synchronized (iS.getAllServersData()) {
@@ -76,7 +76,7 @@ public class UDP_Thread extends Thread {
         return true;
     }
 
-    public String getServersList(ServerInfo iS, UDPCommunication udpC) {
+    private String getServersList(ServerInfo iS, UDPCommunication udpC) {
 
         ArrayList<ServerDetails> serversList = new ArrayList<>();
 
@@ -106,6 +106,7 @@ class sortByClients implements Comparator<ServerDetails> {
 
     // Used for sorting in ascending order of 
     // nClients
+    @Override
     public int compare(ServerDetails a, ServerDetails b) {
         return a.getnClients() - b.getnClients();
     }

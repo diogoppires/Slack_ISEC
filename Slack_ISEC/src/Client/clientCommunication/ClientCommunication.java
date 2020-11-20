@@ -48,21 +48,13 @@ public class ClientCommunication {
                     String serversListBuffer = udpC.receiveUDP();
                     //System.out.println(serversListBuffer);
                     ArrayList<ServerDetails> serversList = getServersList(serversListBuffer);
-                    
                     serverIp = serversList.get(0).getIpServer();
                     serverUdpPort = serversList.get(0).getPortServer();
-                    
-                    System.out.println("Vou connectar ao Servidor: " + serverIp + ":" + serverUdpPort);
-
-                    /*
                     System.out.println("ARRAY List");
                     for (ServerDetails s : serversList) {
                         System.out.println(s.toString());
-
                     }
-                    */
-
-
+                    System.out.println("Vou connectar ao Servidor: " + serverIp + ":" + serverUdpPort);
                 }
               attempt++;
             }

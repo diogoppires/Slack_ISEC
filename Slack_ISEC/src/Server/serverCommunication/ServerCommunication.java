@@ -5,6 +5,7 @@ import Server.serverCommunication.CommsTypes.*;
 import Server.serverCommunication.Data.*;
 import java.io.IOException;
 import java.net.SocketException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,19 +27,22 @@ public class ServerCommunication {
     private UDP_Thread udpT;
     private VerifyPing_Thread pingVerify;
     private Ping_Thread sendPing;
+    private AtomicBoolean end;
     
 
     public ServerCommunication(int udpPort, int tcpPort, String ip) {
         udpC = new UDPCommunication(udpPort);
         mcC = new MulticastCommunication(MULTICAST_PORT, MULTICAST_IP);
         infoSv = new ServerInfo();
+        end = new AtomicBoolean();
     }
     
     public void startThreads(){
         svL = new ServerListener_Thread(mcC.getmSocket(), infoSv, "rc1");
         udpT = new UDP_Thread(udpC, mcC, infoSv);
-        pingVerify = new VerifyPing_Thread(infoSv);
-        sendPing = new Ping_Thread(udpC, mcC, infoSv);
+        pingVerify = new VerifyPing_Thread(infoSv, end);
+        sendPing = new Ping_Thread(udpC, mcC, infoSv, end);
+        
         svL.start();
         udpT.start();
         pingVerify.start();
@@ -48,6 +52,7 @@ public class ServerCommunication {
     // close pingVerify and sendPing correctly.
     
     public void finishThreads(){
+        end.set(true);
         try {
             mcC.closeMulticast();
         } catch (IOException ex) {
@@ -60,7 +65,6 @@ public class ServerCommunication {
      * This method will initialize the sockets from UDP and Multicast communication.
      */
     public void initializeComms(){
-        
         infoSv.getAllServersData().put(udpC.getServerPort(), new ServerData(new ServerDetails("localhost", udpC.getServerPort(), 0)));
         try {
             udpC.initializeUDP();
@@ -72,5 +76,6 @@ public class ServerCommunication {
         } catch (IOException ex) {
             Logger.getLogger(ServerCommunication.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
     }
 }
