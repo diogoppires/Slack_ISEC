@@ -18,10 +18,10 @@ import java.util.logging.Logger;
 public class ServerListener_Thread extends Thread {
     
     private MulticastSocket mSocket;
-    private String username;
+    private String username;        //What is this 'username'?
     private ServerInfo infoServer;
     
-    public ServerListener_Thread(MulticastSocket mSocket,ServerInfo infoServer,String username) {
+    public ServerListener_Thread(MulticastSocket mSocket,ServerInfo infoServer, String username) {
         this.mSocket = mSocket;
         this.infoServer = infoServer;
         this.username = username;

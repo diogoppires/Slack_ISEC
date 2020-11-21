@@ -2,6 +2,7 @@ package Server.serverCommunication.Threads;
 
 import Server.serverCommunication.Data.ServerInfo;
 import Server.serverCommunication.CommsTypes.MulticastCommunication;
+import Server.serverCommunication.CommsTypes.TCP_Communication;
 import Server.serverCommunication.CommsTypes.UDPCommunication;
 import Server.serverCommunication.Data.ServerData;
 import Server.serverCommunication.Data.ServerDetails;
@@ -19,15 +20,20 @@ import java.util.logging.Logger;
  *
  */
 public class UDP_Thread extends Thread {
-
+    private static final String TCP_CONNECTION = "TCP_CONNECTION?";
+    private static boolean exit;
+    private Integer tcpPort;
     private UDPCommunication udpC;
     private MulticastCommunication mcC;
     private ServerInfo iS;
-    private static final String TCP_CONNECTION = "TCP_CONNECTION?";
-    private static boolean exit;
+    
 
-    public UDP_Thread(UDPCommunication udpC, MulticastCommunication mcC, ServerInfo infoS) {
+    public UDP_Thread(int tcpC,
+            UDPCommunication udpC,
+            MulticastCommunication mcC, 
+            ServerInfo infoS) {
         this.udpC = udpC;
+        this.tcpPort = tcpC;
         this.mcC = mcC;
         this.iS = infoS;
         this.exit = true;
@@ -41,12 +47,12 @@ public class UDP_Thread extends Thread {
                 if (msg.equals(TCP_CONNECTION)) {
                     if (verifyCap(iS, udpC)) {
                         iS.addClient(udpC.getServerPort());
-                        udpC.sendUDP("SUCCESS");
+                        udpC.sendUDP(tcpPort.toString());
                     } else {
                         udpC.sendUDP("FAIL");
                         udpC.sendUDP(getServersList(iS, udpC));
                     }
-
+                    
                     synchronized (iS.getAllServersData()) {
                         iS.getAllServersData().get(udpC.getServerPort()).setPing(true);
                     }

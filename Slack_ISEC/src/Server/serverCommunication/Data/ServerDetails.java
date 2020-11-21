@@ -9,7 +9,7 @@ import java.io.Serializable;
  */
 public class ServerDetails implements Serializable {
     private String ipServer;
-    private int portServer;
+    private int portServer; //Is this the UDP port?
     private int nClients;
 
     public ServerDetails(String ipServer, int portServer, int nClients) {
