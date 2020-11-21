@@ -23,6 +23,7 @@ public class ServerCommunication {
     private TCPCommunication tcpC;
     private MulticastCommunication mcC;
     private ServerInfo infoSv; 
+    private DBCommuncation dbC;
     
     //Threads
     private ServerListener_Thread svL;
@@ -37,8 +38,10 @@ public class ServerCommunication {
         udpC = new UDPCommunication(udpPort);
         tcpC = new TCPCommunication(tcpPort);
         mcC = new MulticastCommunication(MULTICAST_PORT, MULTICAST_IP);
+        dbC =  new DBCommuncation(ip, udpC.getServerPort());
         infoSv = new ServerInfo();
         end = new AtomicBoolean();
+        
     }
     
     public void startThreads(){
