@@ -33,7 +33,7 @@ public class ClientCommunication {
             serversList.add(new ServerDetails(sc.next(), sc.nextInt(), sc.nextInt()));
         }
         return serversList;
-    }
+    } 
     private void handleFail() throws IOException{
         //System.out.println("Recebi FaIl");
         String serversListBuffer = udpC.receiveUDP();
@@ -54,7 +54,7 @@ public class ClientCommunication {
      *
      * @return true if the connection was made with success and false if not.
      */
-    public boolean askForConnection() throws InterruptedException {
+    public boolean askForConnection(){
         try {
             udpC.initializeUDP();
         } catch (SocketException ex) {
