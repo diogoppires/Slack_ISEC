@@ -2,6 +2,7 @@ package Server.serverCommunication.Threads;
 
 import Server.serverCommunication.Data.ServerInfo;
 import Server.serverCommunication.CommsTypes.MulticastCommunication;
+import Server.serverCommunication.CommsTypes.TCP_Communication;
 import Server.serverCommunication.CommsTypes.UDPCommunication;
 import Server.serverCommunication.Data.ServerData;
 import Server.serverCommunication.Data.ServerDetails;
@@ -19,15 +20,20 @@ import java.util.logging.Logger;
  *
  */
 public class UDP_Thread extends Thread {
-
+    private static final String TCP_CONNECTION = "TCP_CONNECTION?";
+    private static boolean exit;
+    private Integer tcpPort;
     private UDPCommunication udpC;
     private MulticastCommunication mcC;
     private ServerInfo iS;
-    private static final String TCP_CONNECTION = "TCP_CONNECTION?";
-    private static boolean exit;
+    
 
-    public UDP_Thread(UDPCommunication udpC, MulticastCommunication mcC, ServerInfo infoS) {
+    public UDP_Thread(int tcpC,
+            UDPCommunication udpC,
+            MulticastCommunication mcC, 
+            ServerInfo infoS) {
         this.udpC = udpC;
+        this.tcpPort = tcpC;
         this.mcC = mcC;
         this.iS = infoS;
         this.exit = true;
@@ -41,12 +47,12 @@ public class UDP_Thread extends Thread {
                 if (msg.equals(TCP_CONNECTION)) {
                     if (verifyCap(iS, udpC)) {
                         iS.addClient(udpC.getServerPort());
-                        udpC.sendUDP("SUCCESS");
+                        udpC.sendUDP(tcpPort.toString());
                     } else {
                         udpC.sendUDP("FAIL");
                         udpC.sendUDP(getServersList(iS, udpC));
                     }
-
+                    
                     synchronized (iS.getAllServersData()) {
                         iS.getAllServersData().get(udpC.getServerPort()).setPing(true);
                     }
@@ -54,13 +60,13 @@ public class UDP_Thread extends Thread {
                 }
             }
         } catch (SocketException ex) {
-            System.out.println("[UDP_THREAD]: Socket closed.");
+            System.out.println("[UDP_THREAD]: Closed.");
         } catch (IOException ex) {
             Logger.getLogger(UDP_Thread.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public boolean verifyCap(ServerInfo sI, UDPCommunication updC) {
+    private boolean verifyCap(ServerInfo sI, UDPCommunication updC) {
 
         for (Map.Entry<Integer, ServerData> obj : iS.getAllServersData().entrySet()) {
             synchronized (iS.getAllServersData()) {
@@ -76,7 +82,7 @@ public class UDP_Thread extends Thread {
         return true;
     }
 
-    public String getServersList(ServerInfo iS, UDPCommunication udpC) {
+    private String getServersList(ServerInfo iS, UDPCommunication udpC) {
 
         ArrayList<ServerDetails> serversList = new ArrayList<>();
 
@@ -106,6 +112,7 @@ class sortByClients implements Comparator<ServerDetails> {
 
     // Used for sorting in ascending order of 
     // nClients
+    @Override
     public int compare(ServerDetails a, ServerDetails b) {
         return a.getnClients() - b.getnClients();
     }

@@ -7,6 +7,7 @@ import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,18 +48,14 @@ public class MulticastCommunication {
      * @param info the information that was updated.
      * @param serverPort the server index that is supposed to be shared. 
      */
-    public void spreadInfo(ServerInfo info,int serverPort ){
-        try {
-            ByteArrayOutputStream bOut = new ByteArrayOutputStream();
-            ObjectOutputStream out = new ObjectOutputStream(bOut);
-            
-            
-            out.writeUnshared(info.getServerInfo(serverPort));
-            out.flush();
-            DatagramPacket dP = new DatagramPacket(bOut.toByteArray(), bOut.size(), mGroup, multicastPort);
-            mSocket.send(dP);
-        } catch (IOException ex) {
-            Logger.getLogger(MulticastCommunication.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void spreadInfo(ServerInfo info,int serverPort ) throws SocketException, IOException{
+        ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+        ObjectOutputStream out = new ObjectOutputStream(bOut);
+
+
+        out.writeUnshared(info.getServerInfo(serverPort));
+        out.flush();
+        DatagramPacket dP = new DatagramPacket(bOut.toByteArray(), bOut.size(), mGroup, multicastPort);
+        mSocket.send(dP);
     }
 }
