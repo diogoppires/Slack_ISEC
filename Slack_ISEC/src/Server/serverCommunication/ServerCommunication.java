@@ -55,7 +55,6 @@ public class ServerCommunication {
         sendPing.start();      
     }
     
-    // close pingVerify and sendPing correctly.
     
     public void finishThreads(){
         end.set(true);
