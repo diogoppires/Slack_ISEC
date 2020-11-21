@@ -64,6 +64,7 @@ public class TCPCommunication {
     private void setServerPort(int serverPort){
         this.serverPort = serverPort;
     }
+  
     
     //We probably have to develop a method that can send a serializable object
     //through a TCP connection.
