@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package Server.serverCommunication.Threads;
-import Server.serverCommunication.CommsTypes.TCP_Communication;
+import Server.serverCommunication.CommsTypes.TCPCommunication;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,10 +12,10 @@ import java.util.logging.Logger;
 
 public class TCP_Thread extends Thread{
     private final int SIZE = 256; 
-    private TCP_Communication tcpC;
+    private TCPCommunication tcpC;
     
     
-    public TCP_Thread(TCP_Communication tcpC){
+    public TCP_Thread(TCPCommunication tcpC){
         this.tcpC = tcpC;
     }
 

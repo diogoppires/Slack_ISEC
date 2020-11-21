@@ -4,6 +4,7 @@ import Server.serverCommunication.Threads.*;
 import Server.serverCommunication.CommsTypes.*;
 import Server.serverCommunication.Data.*;
 import java.io.IOException;
+import java.net.BindException;
 import java.net.SocketException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
@@ -19,7 +20,7 @@ public class ServerCommunication {
     private final static int MULTICAST_PORT = 5432;
     private final static String MULTICAST_IP = "239.3.2.1";
     private UDPCommunication udpC;
-    private TCP_Communication tcpC;
+    private TCPCommunication tcpC;
     private MulticastCommunication mcC;
     private ServerInfo infoSv; 
     
@@ -34,7 +35,7 @@ public class ServerCommunication {
 
     public ServerCommunication(int udpPort, int tcpPort, String ip) {
         udpC = new UDPCommunication(udpPort);
-        tcpC = new TCP_Communication(tcpPort);
+        tcpC = new TCPCommunication(tcpPort);
         mcC = new MulticastCommunication(MULTICAST_PORT, MULTICAST_IP);
         infoSv = new ServerInfo();
         end = new AtomicBoolean();
@@ -72,12 +73,15 @@ public class ServerCommunication {
      * This method will initialize the sockets from UDP and Multicast communication.
      */
     public void initializeComms(){
-        infoSv.getAllServersData().put(udpC.getServerPort(), new ServerData(new ServerDetails("localhost", udpC.getServerPort(), 0)));
+               
         try {
             udpC.initializeUDP();
+            
         } catch (SocketException ex) {
             Logger.getLogger(ServerCommunication.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        infoSv.getAllServersData().put(udpC.getServerPort(), new ServerData(new ServerDetails("localhost", udpC.getServerPort(), 0)));
         try {
             mcC.initializeMulticast();
             tcpC.initializeTCP();

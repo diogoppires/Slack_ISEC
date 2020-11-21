@@ -1,26 +1,23 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Server.serverCommunication.CommsTypes;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 
-public class TCP_Communication {
+public class TCPCommunication {
     private final static int SIZE = 256;
     private final static String ERROR_RECEIVE = "ERROR";
-    private final int serverPort;
+    private int serverPort;
+    private boolean foundPort = false;
     private ServerSocket sS;
     private Socket s;
     private InputStream iS;
     private OutputStream oS;
     
-    public TCP_Communication(int serverPort){
+    public TCPCommunication(int serverPort){
         this.serverPort = serverPort;
     }
     
@@ -29,7 +26,15 @@ public class TCP_Communication {
     }
     
     public void initializeTCP() throws IOException{
-        sS = new ServerSocket(serverPort);
+        while(!foundPort){
+            try{
+                sS = new ServerSocket(serverPort);
+                foundPort = true;
+            }catch(BindException ex){
+                setServerPort(serverPort+1);
+            }
+        }
+        
     }
     
     public void closeTCP() throws IOException{
@@ -54,6 +59,10 @@ public class TCP_Communication {
         int nBytes = iS.read(bufStr);
         String tempStr = new String(bufStr, 0, nBytes);
         return tempStr;
+    }
+    
+    private void setServerPort(int serverPort){
+        this.serverPort = serverPort;
     }
     
     //We probably have to develop a method that can send a serializable object

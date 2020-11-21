@@ -1,6 +1,7 @@
 package Server.serverCommunication.CommsTypes;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -13,10 +14,11 @@ import java.net.SocketException;
  */
 public class UDPCommunication {
     private final static int SIZE = 256;
-    private final int serverPort;
+    private int serverPort;
     private int lastClientPort;
     private InetAddress lastClientIp;
     private DatagramSocket dS;
+    private boolean foundPort = false;
 
     public UDPCommunication(int serverPort) {
         this.serverPort = serverPort;
@@ -27,7 +29,14 @@ public class UDPCommunication {
      * @throws SocketException will be thrown if the port is already being used
      */
     public void initializeUDP() throws SocketException{
-        dS = new DatagramSocket(serverPort);
+        while(!foundPort){
+            try{
+                dS = new DatagramSocket(serverPort);
+                foundPort = true;
+            }catch(BindException ex){
+                setServerPort(serverPort-1);
+            }
+        }
     }
     
     /**
@@ -68,4 +77,9 @@ public class UDPCommunication {
         return serverPort;
     }
     
+    private void setServerPort(int serverPort) {
+        this.serverPort = serverPort;
+    }
+    
 }
+

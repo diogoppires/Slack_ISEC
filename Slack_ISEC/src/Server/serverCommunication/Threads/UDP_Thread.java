@@ -2,7 +2,7 @@ package Server.serverCommunication.Threads;
 
 import Server.serverCommunication.Data.ServerInfo;
 import Server.serverCommunication.CommsTypes.MulticastCommunication;
-import Server.serverCommunication.CommsTypes.TCP_Communication;
+import Server.serverCommunication.CommsTypes.TCPCommunication;
 import Server.serverCommunication.CommsTypes.UDPCommunication;
 import Server.serverCommunication.Data.ServerData;
 import Server.serverCommunication.Data.ServerDetails;
