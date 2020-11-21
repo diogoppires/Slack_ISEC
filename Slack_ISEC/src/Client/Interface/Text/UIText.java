@@ -89,7 +89,9 @@ public class UIText {
         }
     }
     private void uiRegister(){
+        Scanner sc = new Scanner(System.in);
         System.out.println("[CLIENT]: NOT IMPLEMENTED");
+        cC.sendMessage(sc.next());
     }
     private void uiAuthentication(){
         System.out.println("[CLIENT]: NOT IMPLEMENTED");

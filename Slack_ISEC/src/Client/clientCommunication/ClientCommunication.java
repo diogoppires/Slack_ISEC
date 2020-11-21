@@ -86,4 +86,9 @@ public class ClientCommunication {
         }
         return false;
     }
+    
+    public void sendMessage(String s){       
+        tcpC.sendTCP(s);
+    }
 }
+
