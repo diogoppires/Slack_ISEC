@@ -8,7 +8,7 @@ public class DataBase {
     Connection conn = null;
     Statement stmt = null;
     ResultSet rs = null;
-    
+
     public boolean connectDB(String ip, String dbName) {
         try {
             Class.forName(JDBC_DRIVER);
@@ -31,6 +31,20 @@ public class DataBase {
                     + "PRIMARY KEY (id))");
         } catch (ClassNotFoundException | SQLException sqlEx) {
             System.out.println(sqlEx);
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException se2) {
+            }// nothing we can do
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }//end finally try
         }
         return true;
     }
