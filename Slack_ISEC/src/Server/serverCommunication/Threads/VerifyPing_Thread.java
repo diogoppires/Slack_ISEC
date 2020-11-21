@@ -29,8 +29,9 @@ public class VerifyPing_Thread extends Thread {
     @Override
     public void run() {
         while(!end.get()) {
-            for (Map.Entry<Integer, ServerData> obj : iS.getAllServersData().entrySet()) {
-                synchronized (iS.getAllServersData()) {
+            synchronized (iS.getAllServersData()) {
+                for (Map.Entry<Integer, ServerData> obj : iS.getAllServersData().entrySet()) {
+
                     if (obj.getValue().getPing()) {
                         obj.getValue().setPing(false);
                     } else {
