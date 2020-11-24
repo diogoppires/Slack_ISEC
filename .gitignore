@@ -82,6 +82,8 @@ fabric.properties
 # .idea/misc.xml
 # *.ipr
 
+Slack_ISEC/.idea
+Slack_ISEC/Slack_ISEC.iml
 # Sonarlint plugin
 # https://plugins.jetbrains.com/plugin/7973-sonarlint
 .idea/**/sonarlint/
