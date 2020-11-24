@@ -6,7 +6,7 @@ import Client.clientCommunication.ClientCommunication;
 
 public class mainClient {
     public static void main(String[] args) throws InterruptedException {
-        System.out.println("Teste IntelliJ");
+        System.out.println("Testing IntelliJ[RUI]");
         ClientCommunication cC;
         if(args.length == 0)
             cC = new ClientCommunication(9999, "localhost");
