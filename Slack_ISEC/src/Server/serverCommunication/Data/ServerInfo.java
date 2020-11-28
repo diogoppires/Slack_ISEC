@@ -12,8 +12,10 @@ import java.util.Map;
  */
 public class ServerInfo {
     private Map<Integer,ServerData> allServersData;
+    private final int serverId;
 
-    public ServerInfo() {
+    public ServerInfo(int serverId) {
+        this.serverId = serverId;
         this.allServersData = new HashMap<>();
     }
 
@@ -31,12 +33,11 @@ public class ServerInfo {
     
     /**
      * add a client from the server details
-     * @param index -> server port
      * @return true -> if a client has been added 
      * false -> if not
      */
-    public boolean addClient(int index){
-        ServerDetails aux = allServersData.get(index).getServerDetails();
+    public boolean addClient(){
+        ServerDetails aux = allServersData.get(serverId).getServerDetails();
         
         if(aux != null){
             aux.setnClients((aux.getnClients()) + 1);
@@ -47,12 +48,11 @@ public class ServerInfo {
     
     /**
      * subtract a client from the server details
-     * @param index -> server port
      * @return true -> if a client has been subtracted
      * false -> if not
      */
-    public boolean subClient(int index){   
-        ServerDetails aux = allServersData.get(index).getServerDetails();
+    public boolean subClient(){
+        ServerDetails aux = allServersData.get(serverId).getServerDetails();
         
         if(aux != null){
             aux.setnClients((aux.getnClients()) - 1);

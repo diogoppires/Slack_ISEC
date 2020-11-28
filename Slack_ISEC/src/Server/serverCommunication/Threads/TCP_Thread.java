@@ -4,7 +4,9 @@
  * and open the template in the editor.
  */
 package Server.serverCommunication.Threads;
+import Server.serverCommunication.CommsTypes.MulticastCommunication;
 import Server.serverCommunication.CommsTypes.TCPCommunication;
+import Server.serverCommunication.Data.ServerInfo;
 import jdk.swing.interop.SwingInterOpUtils;
 
 import java.io.IOException;
@@ -18,10 +20,14 @@ public class TCP_Thread extends Thread{
     private final int SIZE = 256; 
     private TCPCommunication tcpC;
     private List<TCPClient_Thread> clientConnections;
+    private ServerInfo iS;
+    private MulticastCommunication mcC;
     
-    public TCP_Thread(TCPCommunication tcpC){
+    public TCP_Thread(TCPCommunication tcpC,ServerInfo iS,MulticastCommunication mcC){
         this.tcpC = tcpC;
         clientConnections = new ArrayList<>();
+        this.iS = iS;
+        this.mcC = mcC;
     }
 
     @Override
@@ -29,7 +35,7 @@ public class TCP_Thread extends Thread{
         try {
             while(true){              
                 tcpC.acceptConnection();
-                Thread t1 = new Thread(new TCPClient_Thread(tcpC));
+                Thread t1 = new Thread(new TCPClient_Thread(tcpC,iS,mcC));
                 t1.start();
             }
         } catch (IOException ex) {

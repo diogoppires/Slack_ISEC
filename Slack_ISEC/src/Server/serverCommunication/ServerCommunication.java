@@ -36,10 +36,15 @@ public class ServerCommunication {
 
     public ServerCommunication(int udpPort, int tcpPort, String ip) {
         udpC = new UDPCommunication(udpPort);
+        try {
+            udpC.initializeUDP();
+        } catch (SocketException ex) {
+            Logger.getLogger(ServerCommunication.class.getName()).log(Level.SEVERE, null, ex);
+        }
         tcpC = new TCPCommunication(tcpPort);
-        mcC = new MulticastCommunication(MULTICAST_PORT, MULTICAST_IP);
+        mcC = new MulticastCommunication(MULTICAST_PORT, MULTICAST_IP,udpC.getServerPort());
         dbC =  new DBCommuncation(ip, udpC.getServerPort());
-        infoSv = new ServerInfo();
+        infoSv = new ServerInfo(udpC.getServerPort());
         end = new AtomicBoolean();
         
     }
@@ -47,7 +52,7 @@ public class ServerCommunication {
     public void startThreads(){
         svL = new ServerListener_Thread(mcC.getmSocket(), infoSv, "rc1");
         udpT = new UDP_Thread(tcpC.getServerPort(), udpC, mcC, infoSv);
-        tcpT = new TCP_Thread(tcpC);
+        tcpT = new TCP_Thread(tcpC,infoSv,mcC);
         pingVerify = new VerifyPing_Thread(infoSv, end);
         sendPing = new Ping_Thread(udpC, mcC, infoSv, end);
         
@@ -74,14 +79,7 @@ public class ServerCommunication {
      * This method will initialize the sockets from UDP and Multicast communication.
      */
     public void initializeComms(){
-               
-        try {
-            udpC.initializeUDP();
-            
-        } catch (SocketException ex) {
-            Logger.getLogger(ServerCommunication.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
+
         infoSv.getAllServersData().put(udpC.getServerPort(), new ServerData(new ServerDetails("localhost", udpC.getServerPort(), 0)));
         try {
             mcC.initializeMulticast();

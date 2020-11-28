@@ -19,12 +19,14 @@ import java.util.logging.Logger;
 public class MulticastCommunication {
     private final int multicastPort;
     private final String multicastIp;
+    private int serverId;
     private InetAddress mGroup;
     private MulticastSocket mSocket;
     
-    public MulticastCommunication(int multicastPort, String multicastIp) {
+    public MulticastCommunication(int multicastPort, String multicastIp,int serverId) {
         this.multicastPort = multicastPort;
         this.multicastIp = multicastIp;
+        this.serverId = serverId;
     }
     
     public void initializeMulticast() throws IOException{
@@ -46,14 +48,12 @@ public class MulticastCommunication {
      * Method that will spread all the information that was recently updated to all
      * the servers on the network.
      * @param info the information that was updated.
-     * @param serverPort the server index that is supposed to be shared. 
      */
-    public void spreadInfo(ServerInfo info,int serverPort ) throws SocketException, IOException{
+    public void spreadInfo(ServerInfo info) throws SocketException, IOException{
         ByteArrayOutputStream bOut = new ByteArrayOutputStream();
         ObjectOutputStream out = new ObjectOutputStream(bOut);
 
-
-        out.writeUnshared(info.getServerInfo(serverPort));
+        out.writeUnshared(info.getServerInfo(serverId));
         out.flush();
         DatagramPacket dP = new DatagramPacket(bOut.toByteArray(), bOut.size(), mGroup, multicastPort);
         mSocket.send(dP);
