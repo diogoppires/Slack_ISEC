@@ -38,9 +38,12 @@ public class TCPCommunication {
     }
     
     public void closeTCP() throws IOException{
-        iS.close();
-        oS.close();
-        s.close();
+        if(iS != null && oS != null && s != null) {
+            iS.close();
+            oS.close();
+            s.close();
+        }
+        sS.close();
     }
     
     public void acceptConnection() throws IOException{

@@ -68,7 +68,6 @@ public class ServerCommunication {
             Logger.getLogger(ServerCommunication.class.getName()).log(Level.SEVERE, null, ex);
         }
         udpC.closeUDP();
-        
     }
     
     /**
