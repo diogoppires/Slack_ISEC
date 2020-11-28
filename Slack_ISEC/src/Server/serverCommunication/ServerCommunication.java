@@ -36,9 +36,9 @@ public class ServerCommunication {
 
     public ServerCommunication(int udpPort, int tcpPort, String ip) {
         udpC = new UDPCommunication(udpPort);
-        tcpC = new TCPCommunication(tcpPort);
         mcC = new MulticastCommunication(MULTICAST_PORT, MULTICAST_IP);
         dbC =  new DBCommuncation(ip, udpC.getServerPort());
+        tcpC = new TCPCommunication(tcpPort);
         infoSv = new ServerInfo();
         end = new AtomicBoolean();
         
@@ -47,7 +47,7 @@ public class ServerCommunication {
     public void startThreads(){
         svL = new ServerListener_Thread(mcC.getmSocket(), infoSv, "rc1");
         udpT = new UDP_Thread(tcpC.getServerPort(), udpC, mcC, infoSv);
-        tcpT = new TCP_Thread(tcpC);
+        tcpT = new TCP_Thread(tcpC, dbC);
         pingVerify = new VerifyPing_Thread(infoSv, end);
         sendPing = new Ping_Thread(udpC, mcC, infoSv, end);
         

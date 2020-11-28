@@ -1,6 +1,7 @@
 package Server.DataBase;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class DataBase {
 
@@ -29,9 +30,11 @@ public class DataBase {
                     + "address TEXT NOT NULL, "
                     + "port INT NOT NULL, "
                     + "PRIMARY KEY (id))");
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (username VARCHAR(20) NOT NULL PRIMARY KEY, password TEXT NOT NULL)");
+
         } catch (ClassNotFoundException | SQLException sqlEx) {
             System.out.println(sqlEx);
-        } finally {
+        /*} finally {
             try {
                 if (stmt != null) {
                     stmt.close();
@@ -45,7 +48,30 @@ public class DataBase {
             } catch (SQLException se) {
                 se.printStackTrace();
             }//end finally try
-        }
+       */ }
         return true;
+    }
+
+    public void newUser(String username, String password) {
+        try {
+            String query = "INSERT INTO users VALUES ('" + username +"', '"+ password+ "')";
+            stmt.executeUpdate(query);
+            System.out.println(query);
+            rs = stmt.executeQuery("SELECT * FROM users");
+           // ArrayList<String> usersList = new ArrayList<>(); 
+            while (rs.next()){
+                System.out.print(" Pass: "+rs.getString("username"));
+                System.out.print(" Pass: "+rs.getString("password"));
+               System.out.println("");
+            }
+        } 
+        catch (SQLIntegrityConstraintViolationException ex){
+            System.out.println("Já existe um utilizador com este nome!");
+        } catch (SQLException ex) {
+            System.out.println("DB ERROR - " + ex);
+        }
+        
+        
+
     }
 }

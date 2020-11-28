@@ -90,10 +90,18 @@ public class UIText {
     }
     private void uiRegister(){
         Scanner sc = new Scanner(System.in);
-        System.out.println("[CLIENT]: NOT IMPLEMENTED");
-        cC.sendMessage(sc.next());
+        String s = new String("");
+        s = "1+";
+        System.out.println("Please Insert Username: ");
+        s += sc.next() + "+";
+        System.out.println("Please Insert Password: ");
+        s += sc.next();
+        cC.sendMessage(s);
+        //.out.println("[CLIENT]: NOT IMPLEMENTED");
+        //cC.sendMessage(sc.next());
     }
     private void uiAuthentication(){
+        
         System.out.println("[CLIENT]: NOT IMPLEMENTED");
     }
     private void uiCreateChannel(){

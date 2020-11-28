@@ -16,5 +16,9 @@ public class DBCommuncation {
         dataBase.connectDB(ip, ip + udpPort);
 
     }
+
+    public void userRegister(String username, String password) {
+        dataBase.newUser(username, password);
+    }
 }
 
