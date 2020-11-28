@@ -5,6 +5,8 @@
  */
 package Server.serverCommunication.Threads;
 import Server.serverCommunication.CommsTypes.TCPCommunication;
+import jdk.swing.interop.SwingInterOpUtils;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +33,7 @@ public class TCP_Thread extends Thread{
                 t1.start();
             }
         } catch (IOException ex) {
-            Logger.getLogger(TCP_Thread.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("[TCP THREAD]: Closed.");
         }
     }
 }
