@@ -56,17 +56,22 @@ public class DataBase {
         try {
             String query = "INSERT INTO users VALUES ('" + username +"', '"+ password+ "')";
             stmt.executeUpdate(query);
+            /*
             System.out.println(query);
             rs = stmt.executeQuery("SELECT * FROM users");
-           // ArrayList<String> usersList = new ArrayList<>(); 
+            
             while (rs.next()){
                 System.out.print(" Pass: "+rs.getString("username"));
                 System.out.print(" Pass: "+rs.getString("password"));
                System.out.println("");
             }
+            */
+            
+            //Enviar Registo com Sucesso
         } 
         catch (SQLIntegrityConstraintViolationException ex){
             System.out.println("Já existe um utilizador com este nome!");
+            // Enviar Resposta Ao utilizador 
         } catch (SQLException ex) {
             System.out.println("DB ERROR - " + ex);
         }

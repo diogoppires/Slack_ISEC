@@ -25,8 +25,7 @@ public class TCP_Thread extends Thread{
     private MulticastCommunication mcC;
     private DBCommuncation dbC;
     
-    public TCP_Thread(TCPCommunication tcpC, DBCommuncation dbC){
-    public TCP_Thread(TCPCommunication tcpC,ServerInfo iS,MulticastCommunication mcC){
+    public TCP_Thread(TCPCommunication tcpC,ServerInfo iS,MulticastCommunication mcC, DBCommuncation dbC){
         this.tcpC = tcpC;
         this.dbC = dbC;
         clientConnections = new ArrayList<>();
@@ -39,8 +38,7 @@ public class TCP_Thread extends Thread{
         try {
             while(true){              
                 tcpC.acceptConnection();
-                Thread t1 = new Thread(new TCPClient_Thread(tcpC,iS,mcC));
-                Thread t1 = new Thread(new TCPClient_Thread(tcpC, dbC));
+                Thread t1 = new Thread(new TCPClient_Thread(tcpC,iS,mcC, dbC));
                 t1.start();
             }
         } catch (IOException ex) {

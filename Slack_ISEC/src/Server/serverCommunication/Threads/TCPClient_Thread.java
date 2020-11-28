@@ -1,5 +1,6 @@
 package Server.serverCommunication.Threads;
 
+import Server.serverCommunication.CommsTypes.DBCommuncation;
 import Server.serverCommunication.CommsTypes.MulticastCommunication;
 import Server.serverCommunication.CommsTypes.TCPCommunication;
 import Server.serverCommunication.Data.ServerInfo;
@@ -16,11 +17,13 @@ public class TCPClient_Thread implements Runnable {
     private TCPCommunication tcpC;
     private ServerInfo iS;
     private MulticastCommunication mcC;
+    private DBCommuncation dbC;
     
-    public TCPClient_Thread(TCPCommunication tcpC,ServerInfo iS,MulticastCommunication mcC) {
+    public TCPClient_Thread(TCPCommunication tcpC,ServerInfo iS,MulticastCommunication mcC, DBCommuncation dbC) {
         this.iS = iS;
         this.tcpC = tcpC;
         this.mcC = mcC;
+        this.dbC = dbC;
     }
 
     @Override
