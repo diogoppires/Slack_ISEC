@@ -27,9 +27,7 @@ public class ServerData implements Serializable{
         return sIC;
     }
     
-    public int getPortServer() {
-        return sIC.getPortServer();
-    }
+    public int getPortServer() {return sIC.getPortServer();}
     
     public String getIPServer(){
         return sIC.getIpServer();

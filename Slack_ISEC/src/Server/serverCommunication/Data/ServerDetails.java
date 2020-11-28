@@ -22,9 +22,7 @@ public class ServerDetails implements Serializable {
         return ipServer;
     }
 
-    public int getPortServer() {
-        return portServer;
-    }
+    public int getPortServer() {return portServer;}
 
     public int getnClients() {
         return nClients;

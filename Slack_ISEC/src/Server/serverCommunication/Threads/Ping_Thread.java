@@ -29,10 +29,10 @@ public class Ping_Thread extends Thread{
     public void run() {
         try {
             while(!end.get()){
-                    synchronized(iS.getAllServersData()){
+                    synchronized(iS){
                         iS.getAllServersData().get(udpC.getServerPort()).setPing(true);
+                        mcC.spreadInfo(iS);
                     }
-                    mcC.spreadInfo(iS,udpC.getServerPort());
                     Thread.sleep(10000);
             }
         } catch (SocketException ex){

@@ -46,17 +46,18 @@ public class UDP_Thread extends Thread {
                 String msg = udpC.receiveUDP();
                 if (msg.equals(TCP_CONNECTION)) {
                     if (verifyCap(iS, udpC)) {
-                        iS.addClient(udpC.getServerPort());
+                        iS.addClient();
                         udpC.sendUDP(tcpPort.toString());
                     } else {
                         udpC.sendUDP("FAIL");
                         udpC.sendUDP(getServersList(iS, udpC));
                     }
                     
-                    synchronized (iS.getAllServersData()) {
+                    synchronized (iS) {
                         iS.getAllServersData().get(udpC.getServerPort()).setPing(true);
+                        mcC.spreadInfo(iS);
                     }
-                    mcC.spreadInfo(iS, udpC.getServerPort());
+
                 }
             }
         } catch (SocketException ex) {
