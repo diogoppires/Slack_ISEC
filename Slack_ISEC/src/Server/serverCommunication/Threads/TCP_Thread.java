@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package Server.serverCommunication.Threads;
+import Server.serverCommunication.CommsTypes.DBCommuncation;
 import Server.serverCommunication.CommsTypes.MulticastCommunication;
 import Server.serverCommunication.CommsTypes.TCPCommunication;
 import Server.serverCommunication.Data.ServerInfo;
@@ -22,9 +23,12 @@ public class TCP_Thread extends Thread{
     private List<TCPClient_Thread> clientConnections;
     private ServerInfo iS;
     private MulticastCommunication mcC;
+    private DBCommuncation dbC;
     
+    public TCP_Thread(TCPCommunication tcpC, DBCommuncation dbC){
     public TCP_Thread(TCPCommunication tcpC,ServerInfo iS,MulticastCommunication mcC){
         this.tcpC = tcpC;
+        this.dbC = dbC;
         clientConnections = new ArrayList<>();
         this.iS = iS;
         this.mcC = mcC;
@@ -36,6 +40,7 @@ public class TCP_Thread extends Thread{
             while(true){              
                 tcpC.acceptConnection();
                 Thread t1 = new Thread(new TCPClient_Thread(tcpC,iS,mcC));
+                Thread t1 = new Thread(new TCPClient_Thread(tcpC, dbC));
                 t1.start();
             }
         } catch (IOException ex) {
