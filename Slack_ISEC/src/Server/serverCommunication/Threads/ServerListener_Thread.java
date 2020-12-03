@@ -2,6 +2,7 @@ package Server.serverCommunication.Threads;
 
 import Server.serverCommunication.Data.ServerInfo;
 import Server.serverCommunication.Data.ServerData;
+import java.awt.Toolkit;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -34,7 +35,7 @@ public class ServerListener_Thread extends Thread {
                 DatagramPacket dP = new DatagramPacket(new byte[512],512);
                 mSocket.receive(dP); 
                 ObjectInputStream oIN = new ObjectInputStream(new ByteArrayInputStream(dP.getData()));
-
+                Toolkit.getDefaultToolkit().beep();    
                 ServerData buffer = (ServerData) oIN.readObject();
 
                 System.out.println("(server" + buffer.getPortServer() + ") IP: " +

@@ -18,10 +18,17 @@ import java.util.Scanner;
 
 public class UIText {
     private final static String DEFAULT = "[CLIENT]: Invalid command.";
+
+
     private final ClientCommunication cC;
-    private boolean validation;
+    private static boolean validation;
     private boolean end;
+    private String username;
     
+        public static void setValidation(boolean b) {
+        validation = b;
+            System.out.println("validation: " + validation);
+    }
     
     public UIText(ClientCommunication cC){
         this.cC = cC;
@@ -30,9 +37,9 @@ public class UIText {
         cC.askForConnection();
     }
     
-    private String getOptions(Options actualOpt){
+    private String getOptions(){
         StringBuilder sb = new StringBuilder();
-        if(actualOpt == Options.authentication || actualOpt == Options.register){
+        if(!validation){
             sb.append("\t\t>> SLACK ISEC <<\n");
             sb.append("________________________________________________________\n");
             sb.append("[1] - Register.\n");
@@ -52,9 +59,9 @@ public class UIText {
         }
         return sb.toString();
     }
-    private Options chooseOpt(Options actualOpt){
-        System.out.print(getOptions(actualOpt));
-        if(actualOpt == Options.register || actualOpt == Options.authentication){
+    private Options chooseOpt(){
+        System.out.print(getOptions());
+        if(!validation){
             int opt = readInt();
             switch(opt){
                 case 1: return Options.register;
@@ -92,20 +99,45 @@ public class UIText {
         Scanner sc = new Scanner(System.in);
         String s = new String("");
         s = "1+";
+        System.out.println("Please Insert Name: ");
+        s += sc.next() + "+";
         System.out.println("Please Insert Username: ");
         s += sc.next() + "+";
         System.out.println("Please Insert Password: ");
+        s += sc.next() + "+";
+         System.out.println("Please Insert PhotoPath: ");
         s += sc.next();
-        cC.sendMessage(s);
+        cC.sendMessage(s);  
         //.out.println("[CLIENT]: NOT IMPLEMENTED");
         //cC.sendMessage(sc.next());
     }
     private void uiAuthentication(){
-        
-        System.out.println("[CLIENT]: NOT IMPLEMENTED");
+        Scanner sc = new Scanner(System.in);
+        String s = new String("");
+        s = "2+";
+        System.out.println("Please Insert Username: ");
+        username = sc.next();
+        s += username + "+";
+        System.out.println("Please Insert Password: ");
+        s += sc.next();
+         cC.sendMessage(s);  
     }
     private void uiCreateChannel(){
-        System.out.println("[CLIENT]: NOT IMPLEMENTED");
+        if (validation){
+        Scanner sc = new Scanner(System.in);
+        String s = new String("");
+        s = "3+";
+        System.out.println("Please Insert Channel Name: ");
+        s += sc.nextLine()+ "+";
+        System.out.println("Please Insert Description: ");
+        s += sc.nextLine()+ "+";
+        System.out.println("Please Insert Channel Password: ");
+        s += sc.next()+ "+";
+        s += username;
+         cC.sendMessage(s);  
+        }
+        else 
+            System.out.println("Please Login!");
     }
     private void uiEditChannel(){
         System.out.println("[CLIENT]: NOT IMPLEMENTED");
@@ -133,9 +165,9 @@ public class UIText {
     }
     
     public void run(){
-        Options opt = Options.register;
+        Options opt;
         while(!end){
-            opt = chooseOpt(opt);
+            opt = chooseOpt();
             switch(opt){
                 case register: uiRegister();
                     break;

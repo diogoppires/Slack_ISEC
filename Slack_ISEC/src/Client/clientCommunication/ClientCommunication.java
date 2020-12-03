@@ -1,5 +1,6 @@
 package Client.clientCommunication;
 
+import Client.Interface.Text.UIText;
 import Client.clientCommunication.CommsType.TCP_Communication;
 import Client.clientCommunication.CommsType.UDP_Communication;
 import Server.serverCommunication.Data.ServerDetails;
@@ -26,6 +27,7 @@ public class ClientCommunication {
         this.serverUdpPort = serverUdpPort;
         this.udpC = new UDP_Communication();
     }
+
     private ArrayList getServersList(String serversListBuffer) {
         ArrayList<ServerDetails> serversList = new ArrayList<>();
         Scanner sc = new Scanner(serversListBuffer);
@@ -33,8 +35,9 @@ public class ClientCommunication {
             serversList.add(new ServerDetails(sc.next(), sc.nextInt(), sc.nextInt()));
         }
         return serversList;
-    } 
-    private void handleFail() throws IOException{
+    }
+
+    private void handleFail() throws IOException {
         //System.out.println("Recebi FaIl");
         String serversListBuffer = udpC.receiveUDP();
         //System.out.println(serversListBuffer);
@@ -54,7 +57,7 @@ public class ClientCommunication {
      *
      * @return true if the connection was made with success and false if not.
      */
-    public boolean askForConnection(){
+    public boolean askForConnection() {
         try {
             udpC.initializeUDP();
         } catch (SocketException ex) {
@@ -69,26 +72,37 @@ public class ClientCommunication {
                     int serverTcpPort = Integer.parseInt(ans);
                     //
                     System.out.println("TCP PORT: " + serverTcpPort); //DEBUG
-                    tcpC = new TCP_Communication(serverIp
-                            ,serverTcpPort);
+                    tcpC = new TCP_Communication(serverIp,
+                            serverTcpPort);
                     tcpC.initializeTCP();
                     tcpC.sendTCP("Sent by client");               //[DEBUG]
-                    System.out.println("Received by server:" + tcpC.receiveTCP()); //[DEBUG]
-                    //
+                    System.out.println("Received by server: " + tcpC.receiveTCP()); //[DEBUG]
+
+                    Runnable runnable = () -> {
+
+                        while (true) {
+                            String receiveTCP = tcpC.receiveTCP();
+                            System.out.println(receiveTCP);
+                            if(receiveTCP.equals("Logged"))
+                                UIText.setValidation(true);
+                        }
+                    };
+                    Thread t = new Thread(runnable);
+                    t.start();
+                    
                     break;
-                } else{
+                } else {
                     handleFail();
                 }
-              attempt++;
+                attempt++;
             }
         } catch (IOException ex) {
             Logger.getLogger(ClientCommunication.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
-    
-    public void sendMessage(String s){       
+
+    public void sendMessage(String s) {
         tcpC.sendTCP(s);
     }
 }
-

@@ -14,11 +14,18 @@ public class DBCommuncation {
         dataBase = new DataBase();
         // Create DB Connection and DB if not exists
         dataBase.connectDB(ip, ip + udpPort);
-
     }
 
-    public void userRegister(String username, String password) {
-        dataBase.newUser(username, password);
+    public boolean userRegister(String name, String username, String password, String photopath){
+       return dataBase.newUser(name, username, password, photopath);
+    }
+
+    public boolean userLogin(String username, String password) {
+         return dataBase.loginUser(username, password);
+    }
+
+    public boolean newChannel(String name, String description, String password, String username) {
+        return dataBase.newChannel(name, description, password, username);
     }
 }
 

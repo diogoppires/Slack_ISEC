@@ -37,20 +37,54 @@ public class TCPClient_Thread implements Runnable {
                 try {
                     if (count > 1) {
                         switch (Integer.parseInt(tokenizer.nextToken())) {
+                            
                             case 1:
+                            {
                                 System.out.println("Recebi um registo");
+                                String name = tokenizer.nextToken();
+                                String username = tokenizer.nextToken();
+                                String password = tokenizer.nextToken();
+                                String photopath = tokenizer.nextToken();
+                                System.out.println(username);
+                                System.out.println(password);
+                                
+                                if(dbC.userRegister(name, username, password, photopath))
+                                    tcpC.sendTCP("REGISTERED");
+                                else tcpC.sendTCP("UNREGISTERD");
+                                
+                                break;
+                            }
+                            case 2:
+                            {
+                                System.out.println("Recebi um Login");
                                 String username = tokenizer.nextToken();
                                 String password = tokenizer.nextToken();
                                 System.out.println(username);
                                 System.out.println(password);
-                                dbC.userRegister(username, password);
+                                
+                                if(dbC.userLogin(username, password))
+                                    tcpC.sendTCP("Logged");
+                                else tcpC.sendTCP("UNLOGGED");
                                 break;
-                            case 2:
+                            }
+                            
+                            case 3:
+                                System.out.println("Recebi um Canal Novo");
+                                String name = tokenizer.nextToken();
+                                String description = tokenizer.nextToken();
+                                String password = tokenizer.nextToken();
+                                String username = tokenizer.nextToken();
+                                System.out.println(username);
+                                System.out.println(password);
+                                
+                                if(dbC.newChannel(name, description, password, username))
+                                    tcpC.sendTCP("CREATED");
+                                else tcpC.sendTCP("UNCREATED");
                                 break;
                         }
                     }
                 } catch (Exception e) {
-                    System.out.println("Invalid!");
+                    System.out.println("Invalid! " + e);
                     continue;
                 }
 
