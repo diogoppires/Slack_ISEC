@@ -8,46 +8,44 @@ package Client.Interface.Text;
 import Client.clientCommunication.ClientCommunication;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Rui
  */
-
-
-
 public class UIText {
-    private final static String DEFAULT = "[CLIENT]: Invalid command.";
 
+    private final static String DEFAULT = "[CLIENT]: Invalid command.";
 
     private final ClientCommunication cC;
     private static boolean validation;
     private boolean end;
     private String username;
-    
-        public static void setValidation(boolean b) {
+
+    public static void setValidation(boolean b) {
         validation = b;
-            System.out.println("validation: " + validation);
+        System.out.println("validation: " + validation);
     }
-    
-    public UIText(ClientCommunication cC){
+
+    public UIText(ClientCommunication cC) {
         this.cC = cC;
         validation = false;
         end = false;
         cC.askForConnection();
     }
-    
-    private String getOptions(){
+
+    private String getOptions() {
         StringBuilder sb = new StringBuilder();
-        if(!validation){
+        if (!validation) {
             sb.append("\t\t>> SLACK ISEC <<\n");
             sb.append("________________________________________________________\n");
             sb.append("[1] - Register.\n");
             sb.append("[2] - Log In.\n");
             sb.append("[3] - Exit.\n");
             sb.append(">> ");
-        }
-        else{
+        } else {
             sb.append("\t\t>> SLACK ISEC <<\n");
             sb.append("________________________________________________________\n");
             sb.append("[1] - Create a channel           [6] - List all channels and users\n");
@@ -59,32 +57,47 @@ public class UIText {
         }
         return sb.toString();
     }
-    private Options chooseOpt(){
+
+    private Options chooseOpt() {
         System.out.print(getOptions());
-        if(!validation){
+        if (!validation) {
             int opt = readInt();
-            switch(opt){
-                case 1: return Options.register;
-                case 2: return Options.authentication;
-                case 3: return Options.exit;
+            switch (opt) {
+                case 1:
+                    return Options.register;
+                case 2:
+                    return Options.authentication;
+                case 3:
+                    return Options.exit;
             }
-        }else{
+        } else {
             int opt = readInt();
-            switch(opt){
-                case 1: return Options.createChannel;
-                case 2: return Options.editChannel;
-                case 3: return Options.deleteChannel;
-                case 4: return Options.talkWithUser;
-                case 5: return Options.shareFiles;
-                case 6: return Options.listAll;
-                case 7: return Options.listLastMsg;
-                case 8: return Options.showStats;
-                case 9: return Options.logOut;
-                case 10: return Options.exit;
+            switch (opt) {
+                case 1:
+                    return Options.createChannel;
+                case 2:
+                    return Options.editChannel;
+                case 3:
+                    return Options.deleteChannel;
+                case 4:
+                    return Options.talkWithUser;
+                case 5:
+                    return Options.shareFiles;
+                case 6:
+                    return Options.listAll;
+                case 7:
+                    return Options.listLastMsg;
+                case 8:
+                    return Options.showStats;
+                case 9:
+                    return Options.logOut;
+                case 10:
+                    return Options.exit;
             }
         }
         return Options.invalid;
     }
+
     private int readInt() {
         Scanner sc = new Scanner(System.in);
         try {
@@ -95,7 +108,8 @@ public class UIText {
             return -1;
         }
     }
-    private void uiRegister(){
+
+    private void uiRegister() {
         Scanner sc = new Scanner(System.in);
         String s = new String("");
         s = "1+";
@@ -105,13 +119,16 @@ public class UIText {
         s += sc.next() + "+";
         System.out.println("Please Insert Password: ");
         s += sc.next() + "+";
-         System.out.println("Please Insert PhotoPath: ");
+        System.out.println("Please Insert PhotoPath: ");
         s += sc.next();
-        cC.sendMessage(s);  
+        cC.sendMessage(s);
+        cC.awaitResponse();
+        
         //.out.println("[CLIENT]: NOT IMPLEMENTED");
         //cC.sendMessage(sc.next());
     }
-    private void uiAuthentication(){
+
+    private void uiAuthentication() {
         Scanner sc = new Scanner(System.in);
         String s = new String("");
         s = "2+";
@@ -120,85 +137,110 @@ public class UIText {
         s += username + "+";
         System.out.println("Please Insert Password: ");
         s += sc.next();
-         cC.sendMessage(s);  
+        cC.sendMessage(s);
+        cC.awaitResponse();
+
     }
-    private void uiCreateChannel(){
-        if (validation){
-        Scanner sc = new Scanner(System.in);
-        String s = new String("");
-        s = "3+";
-        System.out.println("Please Insert Channel Name: ");
-        s += sc.nextLine()+ "+";
-        System.out.println("Please Insert Description: ");
-        s += sc.nextLine()+ "+";
-        System.out.println("Please Insert Channel Password: ");
-        s += sc.next()+ "+";
-        s += username;
-         cC.sendMessage(s);  
-        }
-        else 
+
+    private void uiCreateChannel() {
+        if (validation) {
+            Scanner sc = new Scanner(System.in);
+            String s = new String("");
+            s = "3+";
+            System.out.println("Please Insert Channel Name: ");
+            s += sc.nextLine() + "+";
+            System.out.println("Please Insert Description: ");
+            s += sc.nextLine() + "+";
+            System.out.println("Please Insert Channel Password: ");
+            s += sc.next() + "+";
+            s += username;
+            cC.sendMessage(s);
+        } else {
             System.out.println("Please Login!");
+        }
     }
-    private void uiEditChannel(){
+
+    private void uiEditChannel() {
         System.out.println("[CLIENT]: NOT IMPLEMENTED");
     }
-    private void uiDeleteChannel(){
+
+    private void uiDeleteChannel() {
         System.out.println("[CLIENT]: NOT IMPLEMENTED");
     }
-    private void uiConversation(){
+
+    private void uiConversation() {
         System.out.println("[CLIENT]: NOT IMPLEMENTED");
     }
-    private void uiShareFiles(){
+
+    private void uiShareFiles() {
         System.out.println("[CLIENT]: NOT IMPLEMENTED");
     }
-    private void uiListAll(){
+
+    private void uiListAll() {
         System.out.println("[CLIENT]: NOT IMPLEMENTED");
     }
-    private void uiListLastMsg(){
+
+    private void uiListLastMsg() {
         System.out.println("[CLIENT]: NOT IMPLEMENTED");
     }
-    private void uiShowStats(){
+
+    private void uiShowStats() {
         System.out.println("[CLIENT]: NOT IMPLEMENTED");
     }
-    private void uiLogOut(){
+
+    private void uiLogOut() {
         System.out.println("[CLIENT]: NOT IMPLEMENTED");
     }
-    
-    public void run(){
+
+    public void run() {
         Options opt;
-        while(!end){
+        while (!end) {
             opt = chooseOpt();
-            switch(opt){
-                case register: uiRegister();
+            switch (opt) {
+                case register:
+                    uiRegister();
                     break;
-                case authentication: uiAuthentication();
+                case authentication:
+                    uiAuthentication();
                     break;
-                case createChannel: uiCreateChannel();
+                case createChannel:
+                    uiCreateChannel();
                     break;
-                case editChannel: uiEditChannel();
+                case editChannel:
+                    uiEditChannel();
                     break;
-                case deleteChannel: uiDeleteChannel();
+                case deleteChannel:
+                    uiDeleteChannel();
                     break;
-                case talkWithUser: uiConversation();
+                case talkWithUser:
+                    uiConversation();
                     break;
-                case shareFiles: uiShareFiles();
+                case shareFiles:
+                    uiShareFiles();
                     break;
-                case listAll: uiListAll();
+                case listAll:
+                    uiListAll();
                     break;
-                case listLastMsg: uiListLastMsg();
+                case listLastMsg:
+                    uiListLastMsg();
                     break;
-                case showStats: uiShowStats();
+                case showStats:
+                    uiShowStats();
                     break;
-                case logOut: uiLogOut();
+                case logOut:
+                    uiLogOut();
                     break;
-                case invalid: System.out.println(DEFAULT);
+                case invalid:
+                    System.out.println(DEFAULT);
                     break;
-                case exit: end = true;
+                case exit:
+                    end = true;
                     break;
             }
         }
     }
-    public enum Options{
+
+    public enum Options {
         register,
         authentication,
         createChannel,

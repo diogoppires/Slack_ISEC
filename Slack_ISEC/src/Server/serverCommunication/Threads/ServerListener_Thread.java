@@ -34,8 +34,7 @@ public class ServerListener_Thread extends Thread {
             while(true){
                 DatagramPacket dP = new DatagramPacket(new byte[512],512);
                 mSocket.receive(dP); 
-                ObjectInputStream oIN = new ObjectInputStream(new ByteArrayInputStream(dP.getData()));
-                Toolkit.getDefaultToolkit().beep();    
+                ObjectInputStream oIN = new ObjectInputStream(new ByteArrayInputStream(dP.getData())); 
                 ServerData buffer = (ServerData) oIN.readObject();
 
                 System.out.println("(server" + buffer.getPortServer() + ") IP: " +

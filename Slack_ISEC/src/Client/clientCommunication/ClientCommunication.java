@@ -77,7 +77,7 @@ public class ClientCommunication {
                     tcpC.initializeTCP();
                     tcpC.sendTCP("Sent by client");               //[DEBUG]
                     System.out.println("Received by server: " + tcpC.receiveTCP()); //[DEBUG]
-
+                    /*
                     Runnable runnable = () -> {
 
                         while (true) {
@@ -91,6 +91,7 @@ public class ClientCommunication {
                     t.start();
                     
                     break;
+                     */
                 } else {
                     handleFail();
                 }
@@ -104,5 +105,35 @@ public class ClientCommunication {
 
     public void sendMessage(String s) {
         tcpC.sendTCP(s);
+    }
+
+    public TCP_Communication getTCP() {
+        return tcpC;
+    }
+
+    public void createThreadTCP() {
+
+        Runnable runnable = () -> {
+
+            while (true) {
+                String receiveTCP = tcpC.receiveTCP();
+                System.out.println(receiveTCP);
+                
+            }
+        };
+        Thread t = new Thread(runnable);
+        t.start();
+    }
+
+    public String awaitResponse() {
+
+        String receiveTCP = tcpC.receiveTCP();
+        System.out.println(receiveTCP);
+        if (receiveTCP.equals("Logged")) {
+            UIText.setValidation(true);
+            createThreadTCP();
+        }
+        return receiveTCP;
+
     }
 }
