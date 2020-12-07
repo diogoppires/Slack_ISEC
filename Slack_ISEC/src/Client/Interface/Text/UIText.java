@@ -165,7 +165,17 @@ public class UIText {
     }
 
     private void uiDeleteChannel() {
-        System.out.println("[CLIENT]: NOT IMPLEMENTED");
+        if (validation) {
+            Scanner sc = new Scanner(System.in);
+            String s = new String("");
+            s = "5+";
+            System.out.println("Please Insert Channel Name: ");
+            s += sc.nextLine() + "+";
+            s += username;
+            cC.sendMessage(s);
+        } else {
+            System.out.println("Please Login!");
+        }
     }
 
     private void uiConversation() {

@@ -141,4 +141,22 @@ public class DataBase {
         }
         return true;
     }
+
+    public boolean deleteChannel(String name,String username){
+        String query = "SELECT creator FROM channels where name='" + name + "'";
+        try {
+            rs = stmt.executeQuery(query);
+            rs.next();
+            if(username.equals(rs.getString(1))) {
+                query = "DELETE FROM channels WHERE name='" + name + "'";
+                stmt.executeUpdate(query);
+            }else {
+                return false;
+            }
+        } catch (SQLException ex) {
+            System.out.println("ERROR CHANNEL: " + ex);
+            return false;
+        }
+        return true;
+    }
 }

@@ -89,9 +89,9 @@ public class ClientCommunication {
                     };
                     Thread t = new Thread(runnable);
                     t.start();
-                    
-                    break;
                      */
+                    break;
+
                 } else {
                     handleFail();
                 }
