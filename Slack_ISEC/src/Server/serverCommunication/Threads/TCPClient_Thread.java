@@ -1,12 +1,16 @@
 package Server.serverCommunication.Threads;
 
+import Server.Utils.Channels;
 import Server.Utils.Register;
 import Server.serverCommunication.CommsTypes.DBCommuncation;
 import Server.serverCommunication.CommsTypes.MulticastCommunication;
 import Server.serverCommunication.CommsTypes.TCPCommunication;
+import Server.serverCommunication.Data.ClientData;
 import Server.serverCommunication.Data.ServerInfo;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.StringTokenizer;
@@ -14,24 +18,43 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class TCPClient_Thread implements Runnable {
-
-    private TCPCommunication tcpC;
+    
+    private static final int SIZE =  5000;
+    private ClientData cD;
     private ServerInfo iS;
     private MulticastCommunication mcC;
     private DBCommuncation dbC;
+    private InputStream inS; 
+    private OutputStream outS; 
     
-    public TCPClient_Thread(TCPCommunication tcpC,ServerInfo iS,MulticastCommunication mcC, DBCommuncation dbC) {
+    
+    public TCPClient_Thread(ClientData cD,ServerInfo iS,MulticastCommunication mcC, DBCommuncation dbC) {
         this.iS = iS;
-        this.tcpC = tcpC;
+        this.cD = cD;
         this.mcC = mcC;
         this.dbC = dbC;
+    }
+    public void sendTCP(String msg) throws IOException{
+        outS.write(msg.getBytes());
+        outS.flush();
+    }
+    
+    public String receiveTCP() throws IOException{
+        byte[] bufStr = new byte[SIZE];
+        int nBytes = inS.read(bufStr);
+        String tempStr = new String(bufStr, 0, nBytes);
+        return tempStr;
     }
 
     @Override
     public void run() {
         try {
+            
+            inS = cD.getSocket().getInputStream();
+            outS = cD.getSocket().getOutputStream();
+            
             while (true) {
-                String ansClient = tcpC.receiveTCP();
+                String ansClient = receiveTCP();
                 System.out.println("[TCP] Received: " + ansClient); // [DEBUG
                 StringTokenizer tokenizer = new StringTokenizer(ansClient, "+");
                 int count = tokenizer.countTokens();
@@ -49,11 +72,11 @@ public class TCPClient_Thread implements Runnable {
                                 System.out.println(password);
                                 
                                 if(dbC.userRegister(name, username, password, photopath)){
-                                    tcpC.sendTCP("REGISTERED");
+                                    sendTCP("REGISTERED");
                                     Register r = new Register(name, username, password, photopath);
                                     mcC.spreadInfo(r);
                                 }
-                                else tcpC.sendTCP("UNREGISTERED");
+                                else sendTCP("UNREGISTERED");
                                 break;
                             }
                             case 2:{
@@ -63,9 +86,11 @@ public class TCPClient_Thread implements Runnable {
                                 System.out.println(username);
                                 System.out.println(password);
                                 
-                                if(dbC.userLogin(username, password))
-                                    tcpC.sendTCP("Logged");
-                                else tcpC.sendTCP("UNLOGGED");
+                                if(dbC.userLogin(username, password)){
+                                    cD.setUsername(username);
+                                    sendTCP("Logged");
+                                }
+                                else sendTCP("UNLOGGED");
                                 break;
                             }
                             
@@ -78,9 +103,12 @@ public class TCPClient_Thread implements Runnable {
                                 System.out.println(username);
                                 System.out.println(password);
 
-                                if (dbC.newChannel(name, description, password, username))
-                                    tcpC.sendTCP("CREATED");
-                                else tcpC.sendTCP("UNCREATED");
+                                if (dbC.newChannel(name, description, password, username)) {
+                                   sendTCP("CREATED");
+                                    Channels c = new Channels(name, description, password, username, 1);
+                                    mcC.spreadInfo(c);
+                                }
+                                else sendTCP("UNCREATED");
                                 break;
                             }
                             case 4:{
@@ -94,8 +122,8 @@ public class TCPClient_Thread implements Runnable {
                                 System.out.println(password);
                                 
                                 if(dbC.editChannel(name, newName, description, password, username))
-                                    tcpC.sendTCP("EDITED");
-                                else tcpC.sendTCP("PLEASE VERIFY lOGIN AND PASSWORD");
+                                    sendTCP("EDITED");
+                                else sendTCP("PLEASE VERIFY lOGIN AND PASSWORD");
                                 break;
                             }
                             case 8:{
@@ -103,7 +131,7 @@ public class TCPClient_Thread implements Runnable {
                                 String text = tokenizer.nextToken();
                                 String teste = dbC.searchUserAndChannel(text);
                                 System.out.println(teste);
-                                tcpC.sendTCP(teste);
+                                sendTCP(teste);
                                 break;
                             }
                             
@@ -112,9 +140,9 @@ public class TCPClient_Thread implements Runnable {
                                 String name = tokenizer.nextToken();
                                 String username = tokenizer.nextToken();
                                 if(dbC.deleteChannel(name,username)){
-                                    tcpC.sendTCP("Channel Deleted");
+                                    sendTCP("Channel Deleted");
                                 }else{
-                                    tcpC.sendTCP("Failure Deleting channel");
+                                    sendTCP("Failure Deleting channel");
                                 }
                             }
 

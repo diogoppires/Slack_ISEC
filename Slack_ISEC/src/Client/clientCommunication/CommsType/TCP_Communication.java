@@ -57,7 +57,12 @@ public class TCP_Communication {
         }
     }
     
-    public String receiveTCP(){
+    public String receiveTCP() throws IOException{
+         byte[] bufStr = new byte[SIZE];
+            int nBytes = iS.read(bufStr);
+            String tempStr = new String(bufStr, 0, nBytes);
+            return tempStr;
+        /*
         try {
             byte[] bufStr = new byte[SIZE];
             int nBytes = iS.read(bufStr);
@@ -67,8 +72,13 @@ public class TCP_Communication {
             Logger.getLogger(TCP_Communication.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ERROR_RECEIVE;
+*/
     }
     
     //We probably have to develop a method that can send a serializable object
     //through a TCP connection.
+
+    public int getSocketPort() {
+        return s.getLocalPort();
+    }
 }
