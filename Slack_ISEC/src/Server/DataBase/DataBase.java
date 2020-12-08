@@ -2,6 +2,8 @@ package Server.DataBase;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DataBase {
 
@@ -39,19 +41,20 @@ public class DataBase {
                     + "photopath VARCHAR(250))");
             // Channels Table
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS channels ("
-                    + "name VARCHAR(30) NOT NULL PRIMARY KEY, "
+                    + "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
+                    + "name VARCHAR(30) NOT NULL, "
                     + "description VARCHAR(100) , "
                     + "password TEXT NOT NULL, "
                     + "creator VARCHAR(20) NOT NULL)");
             // Messages Table
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS messages ("
                     + "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
-                    + "idchannel VARCHAR(30), "
+                    + "idchannel INT, "
                     + "senduser VARCHAR (20) , "
                     + "originuser VARCHAR (20)  ,"
                     + " message TEXT NOT NULL, "
                     + "FOREIGN KEY(senduser) REFERENCES users(username), "
-                    + "FOREIGN KEY (idchannel) REFERENCES channels(name), "
+                    + "FOREIGN KEY (idchannel) REFERENCES channels(id), "
                     + "FOREIGN KEY(originuser) REFERENCES users(username))");
 
         } catch (ClassNotFoundException | SQLException sqlEx) {
@@ -63,7 +66,7 @@ public class DataBase {
 
     public boolean newUser(String name, String username, String password, String photopath) {
         try {                                       // ( 'name', 'username' , 'password' , 'photopath')    
-            String query = "INSERT INTO users VALUES ('" + name + "', '" + username + "', '" + password + "', '" + photopath + "')";
+            String query = "INSERT INTO users (name, username, password, photopath) VALUES ('" + name + "', '" + username + "', '" + password + "', '" + photopath + "')";
             stmt.executeUpdate(query);
             /*
             System.out.println(query);
@@ -132,7 +135,7 @@ public class DataBase {
     }
 
     public boolean newChannel(String name, String description, String password, String creator) {
-        String query = "INSERT INTO channels VALUES ('" + name + "', '" + description + "', '" + password + "', '" + creator + "')";
+        String query = "INSERT INTO channels (name, description, password, creator )VALUES ('" + name + "', '" + description + "', '" + password + "', '" + creator + "')";
         try {
             stmt.executeUpdate(query);
         } catch (SQLException ex) {
@@ -140,5 +143,50 @@ public class DataBase {
             return false;
         }
         return true;
+    }
+
+    public boolean editChannel(String name, String newName, String description, String password, String username) {
+       String query = "select * from channels where creator = '" + username + "' AND name = '" + name + "'" ;
+       
+        try {
+            rs = stmt.executeQuery(query);
+            while(rs.next()){
+                if (name.equals(rs.getString("name"))){
+                query = "update channels SET name = '" + newName + "', description = '"
+                        + description + "', password =  '" + password + "' where id = '" + rs.getInt(1) +"'";
+                stmt.executeUpdate(query);
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println("ERRO EDIT CHANNEL: " + ex);
+            return false;
+        }
+        return true;
+    }
+
+    public String searchUserAndChannel(String text) {
+        String query = "select * from channels where name = '" + text + "'" ;
+        String channels = "", users = "";
+        try {
+            rs = stmt.executeQuery(query);
+            while(rs.next()){
+                if (text.equals(rs.getString("name"))){
+                    System.out.println(rs.getString("name"));
+                    channels +="[Channel:] " + rs.getString("name") + "\n";
+                }
+            }
+            query = "select * from users where username = '" + text + "'" ;
+             rs = stmt.executeQuery(query);
+            while(rs.next()){
+                if (text.equals(rs.getString("username"))){
+                    users += "[User:] " + rs.getString("username") + "\n";
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println("ERRO EDIT CHANNEL: " + ex);
+            return "Erro Pesquisa" + ex;
+        }
+        System.out.println("TEXT" + channels + users);
+        return channels + users;
     }
 }

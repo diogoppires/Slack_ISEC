@@ -161,7 +161,24 @@ public class UIText {
     }
 
     private void uiEditChannel() {
-        System.out.println("[CLIENT]: NOT IMPLEMENTED");
+         if (validation) {
+            Scanner sc = new Scanner(System.in);
+            String s = new String("");
+            s = "4+";
+            System.out.println("Please Insert Channel Name to Edit: ");
+            s += sc.nextLine() + "+";
+            System.out.println("Please Insert New Channel Name: ");
+            s += sc.nextLine() + "+";
+            System.out.println("Please Insert Description: ");
+            s += sc.nextLine() + "+";
+            System.out.println("Please Insert New Channel Password: ");
+            s += sc.next() + "+";
+            s += username;
+            cC.sendMessage(s);
+        } else {
+            System.out.println("Please Login!");
+        }
+        
     }
 
     private void uiDeleteChannel() {
@@ -177,7 +194,16 @@ public class UIText {
     }
 
     private void uiListAll() {
-        System.out.println("[CLIENT]: NOT IMPLEMENTED");
+         if (validation) {
+            Scanner sc = new Scanner(System.in);
+            String s = new String("");
+            s = "8+";
+            System.out.println("Please Insert Text to Search: ");
+            s += sc.next();
+            cC.sendMessage(s);
+        } else {
+            System.out.println("Please Login!");
+        }
     }
 
     private void uiListLastMsg() {
