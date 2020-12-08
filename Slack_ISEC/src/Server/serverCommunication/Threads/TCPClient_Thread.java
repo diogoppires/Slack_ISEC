@@ -1,6 +1,7 @@
 package Server.serverCommunication.Threads;
 
 import Server.Utils.Channels;
+import Server.Utils.Conversation;
 import Server.Utils.Register;
 import Server.serverCommunication.CommsTypes.DBCommuncation;
 import Server.serverCommunication.CommsTypes.MulticastCommunication;
@@ -126,15 +127,6 @@ public class TCPClient_Thread implements Runnable {
                                 else sendTCP("PLEASE VERIFY lOGIN AND PASSWORD");
                                 break;
                             }
-                            case 8:{
-                                System.out.println("Recebi uma Consulta");
-                                String text = tokenizer.nextToken();
-                                String teste = dbC.searchUserAndChannel(text);
-                                System.out.println(teste);
-                                sendTCP(teste);
-                                break;
-                            }
-                            
                             case 5: {
                                 System.out.println("Recebi um Pedido para Apagar Canal");
                                 String name = tokenizer.nextToken();
@@ -146,7 +138,32 @@ public class TCPClient_Thread implements Runnable {
                                 }
                             }
 
+                            case 6: {
+                                System.out.println("Recebi uma nova conversação.");
+                                String sender = tokenizer.nextToken();
+                                String receiver = tokenizer.nextToken();
+                                String msg = tokenizer.nextToken();
+                                System.out.println("Emissor: " + sender);    //[DEBUG]
+                                System.out.println("Recetor: " + receiver);  //[DEBUG]
+                                System.out.println("Msg: " + msg);           //[DEBUG]
+                                if(dbC.conversation(sender, receiver, msg)){
+                                    sendTCP("Message sent.");
+                                    Conversation conv = new Conversation(sender, msg, receiver);
+                                    mcC.spreadInfo(conv);
+                                }
+                                else{
+                                    sendTCP("An error has occurred and the message was not sent.");
+                                }
+                            }
 
+                            case 8:{
+                                System.out.println("Recebi uma Consulta");
+                                String text = tokenizer.nextToken();
+                                String teste = dbC.searchUserAndChannel(text);
+                                System.out.println(teste);
+                                sendTCP(teste);
+                                break;
+                            }
                         }
                     }
                 } catch (Exception e) {

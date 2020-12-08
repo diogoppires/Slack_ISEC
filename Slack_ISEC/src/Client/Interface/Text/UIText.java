@@ -184,7 +184,7 @@ public class UIText {
     private void uiDeleteChannel() {
         if (validation) {
             Scanner sc = new Scanner(System.in);
-            String s = new String("");
+            String s;
             s = "5+";
             System.out.println("Please Insert Channel Name: ");
             s += sc.nextLine() + "+";
@@ -196,7 +196,19 @@ public class UIText {
     }
 
     private void uiConversation() {
-        System.out.println("[CLIENT]: NOT IMPLEMENTED");
+        if (validation) {
+            Scanner sc = new Scanner(System.in);
+            StringBuilder sb = new StringBuilder();
+            sb.append("6+");
+            sb.append(username).append("+");
+            System.out.println("Insert the username: ");
+            sb.append(sc.nextLine()).append("+");
+            System.out.println("Write your message: ");
+            sb.append(sc.nextLine()).append("+");
+            cC.sendMessage(sb.toString());
+        } else {
+            System.out.println("Please Login!");
+        }
     }
 
     private void uiShareFiles() {
