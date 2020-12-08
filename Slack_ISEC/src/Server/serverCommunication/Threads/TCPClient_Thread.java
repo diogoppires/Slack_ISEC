@@ -1,5 +1,6 @@
 package Server.serverCommunication.Threads;
 
+import Server.Utils.Register;
 import Server.serverCommunication.CommsTypes.DBCommuncation;
 import Server.serverCommunication.CommsTypes.MulticastCommunication;
 import Server.serverCommunication.CommsTypes.TCPCommunication;
@@ -47,10 +48,12 @@ public class TCPClient_Thread implements Runnable {
                                 System.out.println(username);
                                 System.out.println(password);
                                 
-                                if(dbC.userRegister(name, username, password, photopath))
+                                if(dbC.userRegister(name, username, password, photopath)){
                                     tcpC.sendTCP("REGISTERED");
-                                else tcpC.sendTCP("UNREGISTERD");
-                                
+                                    Register r = new Register(name, username, password, photopath);
+                                    mcC.spreadInfo(r);
+                                }
+                                else tcpC.sendTCP("UNREGISTERED");
                                 break;
                             }
                             case 2:{
@@ -127,7 +130,7 @@ public class TCPClient_Thread implements Runnable {
                 //  case 1: System.out.println(tokenizer.nextElement().toString(), tokenizer.nextElement().toString());
                 // default: continue;
                 //}
-               // tcpC.sendTCP("CONNECTED_TCP");
+//                tcpC.sendTCP("CONNECTED_TCP");
             }
         } catch (SocketException ex) {
             System.out.println("[CLOSED]: TCPClient_Thread");

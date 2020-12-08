@@ -76,9 +76,8 @@ public class ClientCommunication {
                             serverTcpPort);
                     tcpC.initializeTCP();
                     tcpC.sendTCP("Sent by client");               //[DEBUG]
-                   // System.out.println("Received by server: " + tcpC.receiveTCP()); //[DEBUG]
+//                    System.out.println("Received by server: " + tcpC.receiveTCP()); //[DEBUG]
                     break;
-                    
                 } else {
                     handleFail();
                 }
