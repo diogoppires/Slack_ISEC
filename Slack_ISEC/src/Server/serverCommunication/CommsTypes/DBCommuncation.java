@@ -33,7 +33,11 @@ public class DBCommuncation {
     }
     public boolean editChannel(String name, String newName, String description, String password, String username) {
         return dataBase.editChannel(name, newName,  description, password, username); 
-        }
+    }
+
+    public boolean conversation(String sender, String receiver, String msg){
+        return dataBase.conversation(sender,receiver,msg);
+    }
 
     public String searchUserAndChannel(String text) {
         return dataBase.searchUserAndChannel(text);

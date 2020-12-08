@@ -182,6 +182,17 @@ public class DataBase {
         return true;
     }
 
+    public boolean conversation(String sender, String receiver, String msg) {
+        String query = "INSERT INTO messages (senduser, originuser, message)VALUES ('" + sender + "', '" + receiver + "', '" + msg + "')";
+        try{
+            stmt.executeUpdate(query);
+        } catch (SQLException ex){
+            System.out.println("ERROR ON CONVERSATION: " + ex);
+            return false;
+        }
+        return true;
+    }
+
     public String searchUserAndChannel(String text) {
         String query = "select * from channels where name = '" + text + "'" ;
         String channels = "", users = "";

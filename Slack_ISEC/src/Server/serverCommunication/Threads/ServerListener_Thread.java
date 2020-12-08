@@ -75,7 +75,6 @@ public class ServerListener_Thread extends Thread {
                         OutputStream out = clientsConnection.getSocket().getOutputStream();
 
                         if (cReceived.getChName().equals(clientsConnection.getUsername())) {
-
                             String str = "O user " + cReceived.getChUserAdmin() + " enviou uma mensagem";
                             out.write(str.getBytes());
                             out.flush();
@@ -87,6 +86,17 @@ public class ServerListener_Thread extends Thread {
                      //############################# DEBUG
 
                 } else if (receivedObj.getClass() == Conversation.class) {
+                    Conversation convReceived = (Conversation) receivedObj;
+                    for(ClientData clientsConnection : clientsConnections){
+                        OutputStream out = clientsConnection.getSocket().getOutputStream();
+                        if(convReceived.getUserReceiver().equals(clientsConnection.getUsername())){
+                            StringBuilder sb = new StringBuilder();
+                            sb.append("NEW - [").append(convReceived.getUserSender()).append("]:");
+                            sb.append(convReceived.getMessage());
+                            out.write(sb.toString().getBytes());
+                            out.flush();
+                        }
+                    }
 
                 } else if (receivedObj.getClass() == ShareFiles.class) {
 
