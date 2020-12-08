@@ -27,5 +27,9 @@ public class DBCommuncation {
     public boolean newChannel(String name, String description, String password, String username) {
         return dataBase.newChannel(name, description, password, username);
     }
+
+    public boolean deleteChannel(String name,String username){
+        return dataBase.deleteChannel(name,username);
+    }
 }
 

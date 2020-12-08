@@ -38,8 +38,7 @@ public class TCPClient_Thread implements Runnable {
                     if (count > 1) {
                         switch (Integer.parseInt(tokenizer.nextToken())) {
                             
-                            case 1:
-                            {
+                            case 1:{
                                 System.out.println("Recebi um registo");
                                 String name = tokenizer.nextToken();
                                 String username = tokenizer.nextToken();
@@ -54,8 +53,7 @@ public class TCPClient_Thread implements Runnable {
                                 
                                 break;
                             }
-                            case 2:
-                            {
+                            case 2:{
                                 System.out.println("Recebi um Login");
                                 String username = tokenizer.nextToken();
                                 String password = tokenizer.nextToken();
@@ -68,7 +66,7 @@ public class TCPClient_Thread implements Runnable {
                                 break;
                             }
                             
-                            case 3:
+                            case 3: {
                                 System.out.println("Recebi um Canal Novo");
                                 String name = tokenizer.nextToken();
                                 String description = tokenizer.nextToken();
@@ -76,11 +74,24 @@ public class TCPClient_Thread implements Runnable {
                                 String username = tokenizer.nextToken();
                                 System.out.println(username);
                                 System.out.println(password);
-                                
-                                if(dbC.newChannel(name, description, password, username))
+
+                                if (dbC.newChannel(name, description, password, username))
                                     tcpC.sendTCP("CREATED");
                                 else tcpC.sendTCP("UNCREATED");
                                 break;
+                            }
+                            case 5: {
+                                System.out.println("Recebi um Pedido para Apagar Canal");
+                                String name = tokenizer.nextToken();
+                                String username = tokenizer.nextToken();
+                                if(dbC.deleteChannel(name,username)){
+                                    tcpC.sendTCP("Channel Deleted");
+                                }else{
+                                    tcpC.sendTCP("Failure Deleting channel");
+                                }
+                            }
+
+
                         }
                     }
                 } catch (Exception e) {
