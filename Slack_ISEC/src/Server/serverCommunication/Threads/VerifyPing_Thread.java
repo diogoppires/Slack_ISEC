@@ -29,7 +29,7 @@ public class VerifyPing_Thread extends Thread {
     @Override
     public void run() {
         while(!end.get()) {
-            synchronized (iS.getAllServersData()) {
+            synchronized (iS) {
                 for (Map.Entry<Integer, ServerData> obj : iS.getAllServersData().entrySet()) {
 
                     if (obj.getValue().getPing()) {

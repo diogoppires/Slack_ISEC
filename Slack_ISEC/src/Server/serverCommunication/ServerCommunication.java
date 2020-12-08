@@ -50,7 +50,7 @@ public class ServerCommunication {
     }
     
     public void startThreads(){
-        svL = new ServerListener_Thread(mcC.getmSocket(), infoSv, "rc1");
+        svL = new ServerListener_Thread(mcC.getmSocket(), infoSv, dbC);
         udpT = new UDP_Thread(tcpC.getServerPort(), udpC, mcC, infoSv);
         tcpT = new TCP_Thread(tcpC,infoSv,mcC, dbC);
         pingVerify = new VerifyPing_Thread(infoSv, end);
@@ -79,7 +79,6 @@ public class ServerCommunication {
      * This method will initialize the sockets from UDP and Multicast communication.
      */
     public void initializeComms(){
-
         infoSv.getAllServersData().put(udpC.getServerPort(), new ServerData(new ServerDetails("localhost", udpC.getServerPort(), 0)));
         try {
             mcC.initializeMulticast();

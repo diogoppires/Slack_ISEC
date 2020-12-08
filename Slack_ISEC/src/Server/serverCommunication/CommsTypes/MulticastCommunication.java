@@ -22,6 +22,7 @@ public class MulticastCommunication {
     private int serverId;
     private InetAddress mGroup;
     private MulticastSocket mSocket;
+
     
     public MulticastCommunication(int multicastPort, String multicastIp,int serverId) {
         this.multicastPort = multicastPort;
@@ -43,7 +44,7 @@ public class MulticastCommunication {
     public MulticastSocket getmSocket() {
         return mSocket;
     }
-    
+
     /**
      * Method that will spread all the information that was recently updated to all
      * the servers on the network.
@@ -54,6 +55,16 @@ public class MulticastCommunication {
         ObjectOutputStream out = new ObjectOutputStream(bOut);
 
         out.writeUnshared(info.getServerInfo(serverId));
+        out.flush();
+        DatagramPacket dP = new DatagramPacket(bOut.toByteArray(), bOut.size(), mGroup, multicastPort);
+        mSocket.send(dP);
+    }
+
+    public void spreadInfo(Object info) throws SocketException, IOException{
+        ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+        ObjectOutputStream out = new ObjectOutputStream(bOut);
+
+        out.writeUnshared(info);
         out.flush();
         DatagramPacket dP = new DatagramPacket(bOut.toByteArray(), bOut.size(), mGroup, multicastPort);
         mSocket.send(dP);
