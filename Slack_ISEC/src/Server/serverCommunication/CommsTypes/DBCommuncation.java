@@ -31,5 +31,12 @@ public class DBCommuncation {
     public boolean deleteChannel(String name,String username){
         return dataBase.deleteChannel(name,username);
     }
+    public boolean editChannel(String name, String newName, String description, String password, String username) {
+        return dataBase.editChannel(name, newName,  description, password, username); 
+        }
+
+    public String searchUserAndChannel(String text) {
+        return dataBase.searchUserAndChannel(text);
+    }
 }
 

@@ -80,6 +80,30 @@ public class TCPClient_Thread implements Runnable {
                                 else tcpC.sendTCP("UNCREATED");
                                 break;
                             }
+                            case 4:{
+                                System.out.println("Recebi uma Ediçao de canal");
+                                String name = tokenizer.nextToken();
+                                String newName = tokenizer.nextToken();
+                                String description = tokenizer.nextToken();
+                                String password = tokenizer.nextToken();
+                                String username = tokenizer.nextToken();
+                                System.out.println(username);
+                                System.out.println(password);
+                                
+                                if(dbC.editChannel(name, newName, description, password, username))
+                                    tcpC.sendTCP("EDITED");
+                                else tcpC.sendTCP("PLEASE VERIFY lOGIN AND PASSWORD");
+                                break;
+                            }
+                            case 8:{
+                                System.out.println("Recebi uma Consulta");
+                                String text = tokenizer.nextToken();
+                                String teste = dbC.searchUserAndChannel(text);
+                                System.out.println(teste);
+                                tcpC.sendTCP(teste);
+                                break;
+                            }
+                            
                             case 5: {
                                 System.out.println("Recebi um Pedido para Apagar Canal");
                                 String name = tokenizer.nextToken();
@@ -103,7 +127,7 @@ public class TCPClient_Thread implements Runnable {
                 //  case 1: System.out.println(tokenizer.nextElement().toString(), tokenizer.nextElement().toString());
                 // default: continue;
                 //}
-                tcpC.sendTCP("CONNECTED_TCP");
+               // tcpC.sendTCP("CONNECTED_TCP");
             }
         } catch (SocketException ex) {
             System.out.println("[CLOSED]: TCPClient_Thread");
