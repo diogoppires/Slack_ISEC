@@ -71,4 +71,8 @@ public class TCPCommunication {
     
     //We probably have to develop a method that can send a serializable object
     //through a TCP connection.
+
+    public Socket getSocketClient() {
+        return s;
+    }
 }

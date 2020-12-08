@@ -5,7 +5,9 @@ import Server.serverCommunication.CommsTypes.*;
 import Server.serverCommunication.Data.*;
 import java.io.IOException;
 import java.net.BindException;
+import java.net.Socket;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,6 +26,7 @@ public class ServerCommunication {
     private MulticastCommunication mcC;
     private ServerInfo infoSv; 
     private DBCommuncation dbC;
+    private ArrayList<ClientData> clientsConnections;
     
     //Threads
     private ServerListener_Thread svL;
@@ -35,6 +38,7 @@ public class ServerCommunication {
     
 
     public ServerCommunication(int udpPort, int tcpPort, String ip) {
+        clientsConnections = new ArrayList<>();
         udpC = new UDPCommunication(udpPort);
         try {
             udpC.initializeUDP();
@@ -50,9 +54,9 @@ public class ServerCommunication {
     }
     
     public void startThreads(){
-        svL = new ServerListener_Thread(mcC.getmSocket(), infoSv, dbC);
+        svL = new ServerListener_Thread(mcC.getmSocket(), infoSv, dbC, clientsConnections);
         udpT = new UDP_Thread(tcpC.getServerPort(), udpC, mcC, infoSv);
-        tcpT = new TCP_Thread(tcpC,infoSv,mcC, dbC);
+        tcpT = new TCP_Thread(tcpC,infoSv,mcC, dbC, clientsConnections);
         pingVerify = new VerifyPing_Thread(infoSv, end);
         sendPing = new Ping_Thread(udpC, mcC, infoSv, end);
         

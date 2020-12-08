@@ -7,10 +7,12 @@ package Server.serverCommunication.Threads;
 import Server.serverCommunication.CommsTypes.DBCommuncation;
 import Server.serverCommunication.CommsTypes.MulticastCommunication;
 import Server.serverCommunication.CommsTypes.TCPCommunication;
+import Server.serverCommunication.Data.ClientData;
 import Server.serverCommunication.Data.ServerInfo;
 import jdk.swing.interop.SwingInterOpUtils;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -20,15 +22,15 @@ import java.util.logging.Logger;
 public class TCP_Thread extends Thread{
     private final int SIZE = 256; 
     private TCPCommunication tcpC;
-    private List<TCPClient_Thread> clientConnections;
     private ServerInfo iS;
     private MulticastCommunication mcC;
     private DBCommuncation dbC;
+    private ArrayList<ClientData> clientsConnections;
     
-    public TCP_Thread(TCPCommunication tcpC,ServerInfo iS,MulticastCommunication mcC, DBCommuncation dbC){
+    public TCP_Thread(TCPCommunication tcpC,ServerInfo iS,MulticastCommunication mcC, DBCommuncation dbC, ArrayList<ClientData> clientsConnections){
         this.tcpC = tcpC;
         this.dbC = dbC;
-        clientConnections = new ArrayList<>();
+        this.clientsConnections = clientsConnections;
         this.iS = iS;
         this.mcC = mcC;
     }
@@ -38,7 +40,9 @@ public class TCP_Thread extends Thread{
         try {
             while(true){              
                 tcpC.acceptConnection();
-                Thread t1 = new Thread(new TCPClient_Thread(tcpC,iS,mcC, dbC));
+                ClientData cD = new ClientData(tcpC.getSocketClient());
+                clientsConnections.add(cD);
+                Thread t1 = new Thread(new TCPClient_Thread(cD,iS,mcC, dbC));
                 t1.start();
             }
         } catch (IOException ex) {
