@@ -37,31 +37,52 @@ public class VerifyPing_Thread extends Thread {
     public void run() {
         while (!end.get()) {
             synchronized (iS) {
+                int serverToRemove = 0;
+                boolean remove = false;
+                ServerData backupServer = null;
                 for (Map.Entry<Integer, ServerData> obj : iS.getAllServersData().entrySet()) {
 
                     if (obj.getValue().getPing()) {
                         obj.getValue().setPing(false);
                     } else {
-                        iS.removeServer(obj.getKey());
+                        serverToRemove = obj.getKey();
+                        remove = true;
+
                     }
                 }
-                // ------- Send Backup Server To Clients -------
-                Set set = iS.getAllServersData().keySet();
-                Iterator it = set.iterator();
-                while (it.hasNext()) {
-                    int port = (int) it.next();
-                    ServerData sData = iS.getAllServersData().get(port);
-                    if (sData.getPortServer() != iS.getServerId()) {
-                        for (ClientData clientsConnection : clientsConnections) {
-                            String buffer = "100+" + sData.getIPServer() + "+" + sData.getPortServer();
-                            clientsConnection.sentTcpText(buffer);
+                // ------- Send Backup Server To Clients Connected -------
+                if (iS.getAllServersData().size() > 2) {
+                    if (remove || backupServer == null) {
+                        if (remove) {
+                            iS.removeServer(serverToRemove);
+                        }
+                        Set set = iS.getAllServersData().keySet();
+                        Iterator it = set.iterator();
+                        while (it.hasNext()) {
+                            int port = (int) it.next();
+                            ServerData sData = iS.getAllServersData().get(port);
+                            if (backupServer != sData) {
+                                if (sData.getPortServer() != iS.getServerId()) {
+                                    for (ClientData clientsConnection : clientsConnections) {
+                                        String buffer = "100+" + sData.getIPServer() + "+" + sData.getPortServer();
+                                        clientsConnection.sentTcpText(buffer);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
-                // ---------------------------------------------
+                for(ClientData client : clientsConnections){
+                    if(client.getServerBackup() == null && backupServer != null){
+                       String buffer = "100+" + backupServer.getIPServer() + "+" + backupServer.getPortServer();
+                       client.sentTcpText(buffer);
+                    }
+                }
+                 // ---------------------------------------------
+
             }
             try {
-                Thread.sleep(15000);
+                Thread.sleep(1000);
             } catch (InterruptedException ex) {
                 // REtirar cliente que saiu
                 Logger.getLogger(VerifyPing_Thread.class.getName()).log(Level.SEVERE, null, ex);

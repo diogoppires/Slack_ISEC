@@ -20,6 +20,7 @@ public class ClientData {
     private Socket socket;
     private String username;
     private OutputStream outS;
+    private ServerData sDataClient;
 
     public ClientData(Socket socket) {
         this.socket = socket;
@@ -34,6 +35,7 @@ public class ClientData {
     public ClientData(Socket socket, String username) {
         this.socket = socket;
         this.username = username;
+        sDataClient = null;
     }
 
     public Socket getSocket() {
@@ -60,6 +62,10 @@ public class ClientData {
             Logger.getLogger(ClientData.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+    }
+
+    public ServerData getServerBackup() {
+        return sDataClient;
     }
     
     
