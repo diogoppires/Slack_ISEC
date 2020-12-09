@@ -53,7 +53,7 @@ public class ServerListener_Thread extends Thread {
                             + sdReceived.getIPServer() + " Port: " + sdReceived.getPortServer()
                             + " Clients: " + sdReceived.getNClientsServer() + "\n");
 
-                    synchronized (infoServer.getAllServersData()) {
+                    synchronized (infoServer) {
                         infoServer.getAllServersData().put(sdReceived.getPortServer(), sdReceived);
                     }
                 } else if (receivedObj.getClass() == Register.class) {
