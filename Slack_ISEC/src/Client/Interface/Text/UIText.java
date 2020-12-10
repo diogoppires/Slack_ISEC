@@ -130,14 +130,14 @@ public class UIText {
 
     private void uiAuthentication() {
         Scanner sc = new Scanner(System.in);
-        String s = new String("");
-        s = "2+";
+        StringBuilder sb = new StringBuilder();
+        sb.append("2+");
         System.out.println("Please Insert Username: ");
         username = sc.next();
-        s += username + "+";
+        sb.append(username).append("+");
         System.out.println("Please Insert Password: ");
-        s += sc.next();
-        cC.sendMessage(s);
+        sb.append(sc.next());
+        cC.sendMessage(sb.toString());
         cC.awaitResponse();
 
     }
@@ -145,16 +145,16 @@ public class UIText {
     private void uiCreateChannel() {
         if (validation) {
             Scanner sc = new Scanner(System.in);
-            String s = new String("");
-            s = "3+";
+            StringBuilder sb = new StringBuilder();
+            sb.append("3+");
             System.out.println("Please Insert Channel Name: ");
-            s += sc.nextLine() + "+";
+            sb.append(sc.nextLine()).append("+");
             System.out.println("Please Insert Description: ");
-            s += sc.nextLine() + "+";
+            sb.append(sc.nextLine()).append("+");
             System.out.println("Please Insert Channel Password: ");
-            s += sc.next() + "+";
-            s += username;
-            cC.sendMessage(s);
+
+            sb.append(username);
+            cC.sendMessage(sb.toString());
         } else {
             System.out.println("Please Login!");
         }
@@ -163,33 +163,31 @@ public class UIText {
     private void uiEditChannel() {
          if (validation) {
             Scanner sc = new Scanner(System.in);
-            String s = new String("");
-            s = "4+";
+            StringBuilder sb = new StringBuilder();
+            sb.append("4+");
             System.out.println("Please Insert Channel Name to Edit: ");
-            s += sc.nextLine() + "+";
+            sb.append(sc.next()).append("+");
             System.out.println("Please Insert New Channel Name: ");
-            s += sc.nextLine() + "+";
+            sb.append(sc.next()).append("+");
             System.out.println("Please Insert Description: ");
-            s += sc.nextLine() + "+";
+            sb.append(sc.next()).append("+");
             System.out.println("Please Insert New Channel Password: ");
-            s += sc.next() + "+";
-            s += username;
-            cC.sendMessage(s);
+            sb.append(username);
+            cC.sendMessage(sb.toString());
         } else {
             System.out.println("Please Login!");
         }
-        
     }
 
     private void uiDeleteChannel() {
         if (validation) {
             Scanner sc = new Scanner(System.in);
-            String s;
-            s = "5+";
+            StringBuilder sb = new StringBuilder();
+            sb.append("5+");
             System.out.println("Please Insert Channel Name: ");
-            s += sc.nextLine() + "+";
-            s += username;
-            cC.sendMessage(s);
+            sb.append(sc.next()).append("+");
+            sb.append(username);
+            cC.sendMessage(sb.toString());
         } else {
             System.out.println("Please Login!");
         }
@@ -218,18 +216,31 @@ public class UIText {
     private void uiListAll() {
          if (validation) {
             Scanner sc = new Scanner(System.in);
-            String s = new String("");
-            s = "8+";
+            StringBuilder sb = new StringBuilder();
+            sb.append("8+");
             System.out.println("Please Insert Text to Search: ");
-            s += sc.next();
-            cC.sendMessage(s);
+            sb.append(sc.next());
+            cC.sendMessage(sb.toString());
         } else {
             System.out.println("Please Login!");
         }
     }
 
     private void uiListLastMsg() {
-        System.out.println("[CLIENT]: NOT IMPLEMENTED");
+        if (validation) {
+            Scanner sc = new Scanner(System.in);
+            StringBuilder sb = new StringBuilder();
+            sb.append("9+");
+            System.out.print("Insert name1 : ");
+            sb.append(sc.next()).append("+");
+            System.out.print("Insert name2 : ");
+            sb.append(sc.next()).append("+");
+            System.out.print("Insert the number of messages to display: ");
+            sb.append(sc.next());
+            cC.sendMessage(sb.toString());
+        } else {
+            System.out.println("Please Login!");
+        }
     }
 
     private void uiShowStats() {

@@ -52,13 +52,24 @@ public class DataBase {
                     + "idchannel INT, "
                     + "senduser VARCHAR (20) , "
                     + "originuser VARCHAR (20)  ,"
-                    + " message TEXT NOT NULL, "
+                    + "message TEXT NOT NULL, "
+                    + "dateMsg DATETIME DEFAULT NOW(),"
                     + "FOREIGN KEY(senduser) REFERENCES users(username), "
                     + "FOREIGN KEY (idchannel) REFERENCES channels(id), "
                     + "FOREIGN KEY(originuser) REFERENCES users(username))");
+            // Files Table
+           /* stmt.executeUpdate("CREATE TABLE IF NOT EXISTS files ("
+                    + "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
+                    + "idChannel INT,"
+                    + "sendUser VARCHAR (20),"
+                    + "originUser VARCHAR (20),"
+                    + "pathDirectory VARCHAR (50))"
+                    + "FOREIGN KEY(senduser) REFERENCES users(username), "
+                    + "FOREIGN KEY (idchannel) REFERENCES channels(id), "
+                    + "FOREIGN KEY(originuser) REFERENCES users(username))");*/
 
         } catch (ClassNotFoundException | SQLException sqlEx) {
-            System.out.println(sqlEx);
+            System.out.println("Create DB: " + sqlEx);
             closeConnections();
         }
         return true;
@@ -124,8 +135,7 @@ public class DataBase {
                 }
                 System.out.print(" User: " + rs.getString("username"));
                 System.out.print(" pass: " + rs.getString("password"));
-                //.out.print(" photo: "+rs.getString("photopath"));
-                // System.out.println("");
+                //System.out.print(" photo: "+rs.getString("photopath"));
             }
         } catch (SQLException ex) {
             System.out.println("ERRO LOGIN: " + ex);
@@ -135,8 +145,8 @@ public class DataBase {
     }
 
     public boolean newChannel(String name, String description, String password, String creator) {
-        String query = "INSERT INTO channels (name, description, password, creator )VALUES ('" + name + "', '" + description + "', '" + password + "', '" + creator + "')";
         try {
+            String query = "INSERT INTO channels (name, description, password, creator )VALUES ('" + name + "', '" + description + "', '" + password + "', '" + creator + "')";
             stmt.executeUpdate(query);
         } catch (SQLException ex) {
             System.out.println("ERRO CHANNEL: " + ex);
@@ -146,8 +156,8 @@ public class DataBase {
     }
 
     public boolean deleteChannel(String name,String username){
-        String query = "SELECT creator FROM channels where name='" + name + "'";
         try {
+            String query = "SELECT creator FROM channels where name='" + name + "'";
             rs = stmt.executeQuery(query);
             rs.next();
             if(username.equals(rs.getString(1))) {
@@ -164,9 +174,8 @@ public class DataBase {
     }
 
     public boolean editChannel(String name, String newName, String description, String password, String username) {
-       String query = "select * from channels where creator = '" + username + "' AND name = '" + name + "'" ;
-       
         try {
+            String query = "select * from channels where creator = '" + username + "' AND name = '" + name + "'" ;
             rs = stmt.executeQuery(query);
             while(rs.next()){
                 if (name.equals(rs.getString("name"))){
@@ -183,8 +192,9 @@ public class DataBase {
     }
 
     public boolean conversation(String sender, String receiver, String msg) {
-        String query = "INSERT INTO messages (senduser, originuser, message)VALUES ('" + sender + "', '" + receiver + "', '" + msg + "')";
         try{
+            String query = "INSERT INTO messages (senduser, originuser, message)" +
+                    "VALUES ('" + sender + "', '" + receiver + "', '" + msg + "')";
             stmt.executeUpdate(query);
         } catch (SQLException ex){
             System.out.println("ERROR ON CONVERSATION: " + ex);
@@ -194,28 +204,50 @@ public class DataBase {
     }
 
     public String searchUserAndChannel(String text) {
-        String query = "select * from channels where name = '" + text + "'" ;
-        String channels = "", users = "";
+        StringBuilder channels = new StringBuilder();
+        StringBuilder users = new StringBuilder();
         try {
+            String query = "select * from channels where name = '" + text + "'" ;
             rs = stmt.executeQuery(query);
             while(rs.next()){
-                if (text.equals(rs.getString("name"))){
-                    System.out.println(rs.getString("name"));
-                    channels +="[Channel:] " + rs.getString("name") + "\n";
-                }
+                channels.append("[Channel:] " + rs.getString("name") + "\n");
             }
+
             query = "select * from users where username = '" + text + "'" ;
-             rs = stmt.executeQuery(query);
+            rs = stmt.executeQuery(query);
             while(rs.next()){
-                if (text.equals(rs.getString("username"))){
-                    users += "[User:] " + rs.getString("username") + "\n";
-                }
+                users.append("[User:] " + rs.getString("username") + "\n");
             }
         } catch (SQLException ex) {
             System.out.println("ERRO EDIT CHANNEL: " + ex);
             return "Erro Pesquisa" + ex;
         }
         System.out.println("TEXT" + channels + users);
-        return channels + users;
+        return channels.toString() + users.toString();
+    }
+
+    public String searchMessages(String nameOrg, String nameDest,String n){
+        StringBuilder output = new StringBuilder();
+        try {
+            int valor = Integer.parseInt(n);
+            String query = "select * from messages where (senduser = '" + nameOrg
+                    + "' OR senduser = '" + nameDest + "') AND (originUser = '" + nameOrg
+                    + "' OR originUser = '" + nameDest + "') order by dateMsg asc limit " + valor;
+            rs = stmt.executeQuery(query);
+            while(rs.next()){
+                output
+                        .append("["+rs.getString("sendUser") +"] ")
+                        .append(rs.getString("message"))
+                        .append("\n");
+            }
+
+        }catch (NumberFormatException ex){
+            System.out.println("Error Parse value" + ex);
+            return "ERROR" + ex ;
+        }catch (SQLException ex){
+            System.out.println("ERRO EDIT CHANNEL: " + ex);
+            return "Erro Pesquisa" + ex;
+        }
+        return output.toString();
     }
 }
