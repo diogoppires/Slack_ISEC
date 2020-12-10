@@ -19,6 +19,11 @@ public class ServerInfo {
         this.allServersData = new HashMap<>();
     }
 
+    public int getServerId() {
+        return serverId;
+    }
+    
+
     public Map<Integer, ServerData> getAllServersData() {
         return allServersData;
     }

@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,13 +49,11 @@ public class TCP_Communication {
         }
     }
     
-    public void sendTCP(String msg){
-        try {
+    public void sendTCP(String msg) throws IOException {
+      
             oS.write(msg.getBytes());
             oS.flush();
-        } catch (IOException ex) {
-            Logger.getLogger(TCP_Communication.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    
     }
     
     public String receiveTCP() throws IOException{

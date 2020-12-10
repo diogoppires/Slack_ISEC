@@ -1,4 +1,4 @@
-package Server.serverCommunication.CommsTypes;
+ package Server.serverCommunication.CommsTypes;
 
 import java.io.IOException;
 import java.net.BindException;

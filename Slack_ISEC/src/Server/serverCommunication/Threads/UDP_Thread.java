@@ -20,17 +20,17 @@ import java.util.logging.Logger;
  *
  */
 public class UDP_Thread extends Thread {
+
     private static final String TCP_CONNECTION = "TCP_CONNECTION?";
     private static boolean exit;
     private Integer tcpPort;
     private UDPCommunication udpC;
     private MulticastCommunication mcC;
     private ServerInfo iS;
-    
 
     public UDP_Thread(int tcpC,
             UDPCommunication udpC,
-            MulticastCommunication mcC, 
+            MulticastCommunication mcC,
             ServerInfo infoS) {
         this.udpC = udpC;
         this.tcpPort = tcpC;
@@ -43,16 +43,20 @@ public class UDP_Thread extends Thread {
     public void run() {
         try {
             while (exit) {
+
                 String msg = udpC.receiveUDP();
                 if (msg.equals(TCP_CONNECTION)) {
-                    if (verifyCap(iS, udpC)) {
-                        iS.addClient();
-                        udpC.sendUDP(tcpPort.toString());
-                    } else {
-                        udpC.sendUDP("FAIL");
-                        udpC.sendUDP(getServersList(iS, udpC));
+                    synchronized (iS) {
+                        if (verifyCap(udpC)) {
+
+                            iS.addClient();
+
+                            udpC.sendUDP(tcpPort.toString());
+                        } else {
+                            udpC.sendUDP("FAIL");
+                            udpC.sendUDP(getServersList(iS, udpC));
+                        }
                     }
-                    
                     synchronized (iS) {
                         iS.getAllServersData().get(udpC.getServerPort()).setPing(true);
                         mcC.spreadInfo(iS);
@@ -67,18 +71,18 @@ public class UDP_Thread extends Thread {
         }
     }
 
-    private boolean verifyCap(ServerInfo sI, UDPCommunication updC) {
+    private boolean verifyCap( UDPCommunication updC) {
 
         for (Map.Entry<Integer, ServerData> obj : iS.getAllServersData().entrySet()) {
-            synchronized (iS.getAllServersData()) {
-                double count = (double)sI.getServerInfo(udpC.getServerPort()).getNClientsServer() / 2;
+           // synchronized (iS) {
+                double count = (double) iS.getServerInfo(udpC.getServerPort()).getNClientsServer() / 2;
                 //System.out.println("DOUBLE: " +  count); 
                 if (obj.getValue().getServerDetails().getnClients() < count) {
-                   //System.out.println("Este Servidor tem: " + sI.getServerInfo(udpC.getServerPort()).getNClientsServer() + " Clientes.");
-                   //System.out.println("O Servidor: " + obj.getValue().getServerDetails().getPortServer() + " tem " + obj.getValue().getServerDetails().getnClients() + " Clientes");
+                    //System.out.println("Este Servidor tem: " + sI.getServerInfo(udpC.getServerPort()).getNClientsServer() + " Clientes.");
+                    //System.out.println("O Servidor: " + obj.getValue().getServerDetails().getPortServer() + " tem " + obj.getValue().getServerDetails().getnClients() + " Clientes");
                     return false;
                 }
-            }
+           // }
         }
         return true;
     }
@@ -88,7 +92,7 @@ public class UDP_Thread extends Thread {
         ArrayList<ServerDetails> serversList = new ArrayList<>();
 
         for (Map.Entry<Integer, ServerData> obj : iS.getAllServersData().entrySet()) {
-            synchronized (iS.getAllServersData()) {
+            synchronized (iS) {
                 //System.out.println("TESTE NULL: " + obj.getValue().getServerDetails().getIpServer());
                 serversList.add(new ServerDetails(obj.getValue().getServerDetails().getIpServer(),
                         obj.getValue().getServerDetails().getPortServer(),

@@ -10,6 +10,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -89,19 +90,19 @@ public class ClientCommunication {
         }
         return false;
     }
-    
-    public void restoreConnection (){
+
+    public void restoreConnection() {
         int attempt = 0;
-    while (attempt < 5) {
+        while (attempt < 5) {
             try {
                 udpC.sendUDP(TCP_CONNECTION, InetAddress.getByName(serverIp), 9998);
             } catch (IOException ex) {
                 System.out.println("restore" + ex);
             }
-                String ans;
+            String ans;
             try {
                 ans = udpC.receiveUDP();
-            
+
                 if (!ans.equals(ANS_FAIL)) {
                     int serverTcpPort = Integer.parseInt(ans);
                     //
@@ -109,21 +110,31 @@ public class ClientCommunication {
                     tcpC = new TCP_Communication(serverIp,
                             serverTcpPort);
                     tcpC.initializeTCP();
-                    tcpC.sendTCP("Sent by client");               //[DEBUG]
+                    //tcpC.sendTCP("Sent by client");               //[DEBUG]
 //                    System.out.println("Received by server: " + tcpC.receiveTCP()); //[DEBUG]
                     break;
                 } else {
                     handleFail();
                 }
                 attempt++;
-                } catch (IOException ex) {
+            } catch (IOException ex) {
                 System.out.println("RESTORE : " + ex);
             }
-            }
+        }
     }
 
     public void sendMessage(String s) {
-        tcpC.sendTCP(s);
+        
+        try {
+            tcpC.sendTCP(s);
+        } catch (IOException ex) {
+            try {
+                restoreConnection();
+                tcpC.sendTCP(s);
+            } catch (IOException ex1) {
+                System.out.println("SEM SERVIDORES DISPONIVEIS");
+            }
+        }
     }
 
     public TCP_Communication getTCP() {
@@ -136,36 +147,58 @@ public class ClientCommunication {
             System.out.println("[BEFORE] SOCKET PORT :" + tcpC.getSocketPort());
             while (true) {
                 try {
-                    
-                String receiveTCP = tcpC.receiveTCP();
-                System.out.println(receiveTCP);
-                } catch (SocketException ex){
+                    String receiveTCP = tcpC.receiveTCP();
+                    System.out.println(receiveTCP);
+                } catch (SocketException ex) {
                     System.out.println("[AFTER] SOCKET PORT :" + tcpC.getSocketPort());
                     System.out.println("O SERVIDOR TERMINOU INESPERADAMENTE");
                     restoreConnection();
-                }catch (IOException ex){
+                } catch (IOException ex) {
                     System.out.println("O SERVIDOR TERMINOU IO");
                 }
-                
+
             }
         };
         Thread t = new Thread(runnable);
         t.start();
     }
 
-    public String awaitResponse () {
+    public String awaitResponse(){
         String receiveTCP = "";
-        try {
-            receiveTCP = tcpC.receiveTCP();
-        } catch (IOException ex) {
-            Logger.getLogger(ClientCommunication.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        System.out.println(receiveTCP);
-        if (receiveTCP.equals("Logged")) {
-            UIText.setValidation(true);
-            createThreadTCP();
+
+        while (true) {
+            try {
+                receiveTCP = tcpC.receiveTCP();
+            } catch (SocketException ex) {
+                    System.out.println("[AFTER] SOCKET PORT :" + tcpC.getSocketPort());
+                    System.out.println("O SERVIDOR TERMINOU INESPERADAMENTE");
+                    restoreConnection();
+                } catch (IOException ex) {
+                    System.out.println("O SERVIDOR TERMINOU IO");
+                }
+            System.out.println(receiveTCP);
+            
+            
+
+            if (receiveTCP.startsWith("100")) {
+                StringTokenizer tokenizer = new StringTokenizer(receiveTCP, "+");
+                Integer.parseInt(tokenizer.nextToken());
+                serverIp = tokenizer.nextToken();
+                serverUdpPort = Integer.parseInt(tokenizer.nextToken());
+                if (tokenizer.hasMoreTokens()) {
+                    String buffer = tokenizer.nextToken();
+                    if (buffer.contains("Logged")) {
+                        UIText.setValidation(true);
+                        createThreadTCP();
+                    }
+                }
+            } else if (receiveTCP.contains("Logged")) {
+                UIText.setValidation(true);
+                createThreadTCP();
+                break;
+            } else 
+                return "";
         }
         return receiveTCP;
-
     }
 }

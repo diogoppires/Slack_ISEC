@@ -33,7 +33,7 @@ public class Ping_Thread extends Thread{
                         iS.getAllServersData().get(udpC.getServerPort()).setPing(true);
                         mcC.spreadInfo(iS);
                     }
-                    Thread.sleep(10000);
+                    Thread.sleep(500);
             }
         } catch (SocketException ex){
             System.out.println("[PING THREAD]: Closed.");

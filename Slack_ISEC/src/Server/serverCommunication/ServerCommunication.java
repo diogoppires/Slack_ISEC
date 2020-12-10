@@ -57,7 +57,7 @@ public class ServerCommunication {
         svL = new ServerListener_Thread(mcC.getmSocket(), infoSv, dbC, clientsConnections);
         udpT = new UDP_Thread(tcpC.getServerPort(), udpC, mcC, infoSv);
         tcpT = new TCP_Thread(tcpC,infoSv,mcC, dbC, clientsConnections);
-        pingVerify = new VerifyPing_Thread(infoSv, end);
+        pingVerify = new VerifyPing_Thread(infoSv, end, clientsConnections);
         sendPing = new Ping_Thread(udpC, mcC, infoSv, end);
         
         svL.start();
