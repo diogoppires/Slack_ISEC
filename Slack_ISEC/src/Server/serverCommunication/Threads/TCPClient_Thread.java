@@ -50,7 +50,6 @@ public class TCPClient_Thread implements Runnable {
     @Override
     public void run() {
         try {
-            
             inS = cD.getSocket().getInputStream();
             outS = cD.getSocket().getOutputStream();
             
@@ -62,7 +61,6 @@ public class TCPClient_Thread implements Runnable {
                 try {
                     if (count > 1) {
                         switch (Integer.parseInt(tokenizer.nextToken())) {
-                            
                             case 1:{
                                 System.out.println("Recebi um registo");
                                 String name = tokenizer.nextToken();
@@ -159,9 +157,20 @@ public class TCPClient_Thread implements Runnable {
                             case 8:{
                                 System.out.println("Recebi uma Consulta");
                                 String text = tokenizer.nextToken();
-                                String teste = dbC.searchUserAndChannel(text);
-                                System.out.println(teste);
-                                sendTCP(teste);
+                                String test = dbC.searchUserAndChannel(text);
+                                System.out.println(test); /*DEBUG*/
+                                sendTCP(test);
+                                break;
+                            }
+
+                            case 9:{
+                                System.out.println("Recebi uma Consulta de Mensagens");
+                                String nameOrg = tokenizer.nextToken();
+                                String nameDest = tokenizer.nextToken();
+                                String n = tokenizer.nextToken();
+                                String test = dbC.searchMessages(nameOrg,nameDest,n);
+                                System.out.println(test); /*DEBUG*/
+                                sendTCP(test);
                                 break;
                             }
                         }
@@ -170,12 +179,6 @@ public class TCPClient_Thread implements Runnable {
                     System.out.println("Invalid! " + e);
                     continue;
                 }
-
-                //switch((int) tokenizer.nextToken()){
-                //  case 1: System.out.println(tokenizer.nextElement().toString(), tokenizer.nextElement().toString());
-                // default: continue;
-                //}
-//                tcpC.sendTCP("CONNECTED_TCP");
             }
         } catch (SocketException ex) {
             System.out.println("[CLOSED]: TCPClient_Thread");
