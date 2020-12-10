@@ -35,11 +35,11 @@ public class VerifyPing_Thread extends Thread {
 
     @Override
     public void run() {
+        ServerData backupServer = null;
         while (!end.get()) {
             synchronized (iS) {
                 int serverToRemove = 0;
                 boolean remove = false;
-                ServerData backupServer = null;
                 for (Map.Entry<Integer, ServerData> obj : iS.getAllServersData().entrySet()) {
 
                     if (obj.getValue().getPing()) {
@@ -51,7 +51,8 @@ public class VerifyPing_Thread extends Thread {
                     }
                 }
                 // ------- Send Backup Server To Clients Connected -------
-                if (iS.getAllServersData().size() > 2) {
+
+                if (iS.getAllServersData().size() > 1) {
                     if (remove || backupServer == null) {
                         if (remove) {
                             iS.removeServer(serverToRemove);
@@ -62,24 +63,29 @@ public class VerifyPing_Thread extends Thread {
                             int port = (int) it.next();
                             ServerData sData = iS.getAllServersData().get(port);
                             if (backupServer != sData) {
+                                backupServer = sData;
                                 if (sData.getPortServer() != iS.getServerId()) {
                                     for (ClientData clientsConnection : clientsConnections) {
                                         String buffer = "100+" + sData.getIPServer() + "+" + sData.getPortServer();
                                         clientsConnection.sentTcpText(buffer);
+                                        clientsConnection.setServerBackup(backupServer);
                                     }
+                                    break;
                                 }
                             }
                         }
                     }
                 }
-                for(ClientData client : clientsConnections){
-                    if(client.getServerBackup() == null && backupServer != null){
-                       String buffer = "100+" + backupServer.getIPServer() + "+" + backupServer.getPortServer();
-                       client.sentTcpText(buffer);
+                // Send First Bakcup Server
+                for (ClientData client : clientsConnections) {
+                    if (client.getServerBackup() == null && backupServer != null) {
+                        client.setServerBackup(backupServer);
+                        String buffer = "100+" + backupServer.getIPServer() + "+" + backupServer.getPortServer() + "+";
+                        client.sentTcpText(buffer);
                     }
                 }
-                 // ---------------------------------------------
 
+                // ---------------------------------------------
             }
             try {
                 Thread.sleep(1000);

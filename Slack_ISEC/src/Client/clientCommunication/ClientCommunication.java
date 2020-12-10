@@ -10,6 +10,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -109,7 +110,7 @@ public class ClientCommunication {
                     tcpC = new TCP_Communication(serverIp,
                             serverTcpPort);
                     tcpC.initializeTCP();
-                    tcpC.sendTCP("Sent by client");               //[DEBUG]
+                    //tcpC.sendTCP("Sent by client");               //[DEBUG]
 //                    System.out.println("Received by server: " + tcpC.receiveTCP()); //[DEBUG]
                     break;
                 } else {
@@ -123,7 +124,17 @@ public class ClientCommunication {
     }
 
     public void sendMessage(String s) {
-        tcpC.sendTCP(s);
+        
+        try {
+            tcpC.sendTCP(s);
+        } catch (IOException ex) {
+            try {
+                restoreConnection();
+                tcpC.sendTCP(s);
+            } catch (IOException ex1) {
+                System.out.println("SEM SERVIDORES DISPONIVEIS");
+            }
+        }
     }
 
     public TCP_Communication getTCP() {
@@ -152,22 +163,41 @@ public class ClientCommunication {
         t.start();
     }
 
-    public String awaitResponse() {
+    public String awaitResponse(){
         String receiveTCP = "";
 
         while (true) {
             try {
                 receiveTCP = tcpC.receiveTCP();
-            } catch (IOException ex) {
-                Logger.getLogger(ClientCommunication.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            } catch (SocketException ex) {
+                    System.out.println("[AFTER] SOCKET PORT :" + tcpC.getSocketPort());
+                    System.out.println("O SERVIDOR TERMINOU INESPERADAMENTE");
+                    restoreConnection();
+                } catch (IOException ex) {
+                    System.out.println("O SERVIDOR TERMINOU IO");
+                }
             System.out.println(receiveTCP);
+            
+            
 
-            if (receiveTCP.contains("Logged")) {
+            if (receiveTCP.startsWith("100")) {
+                StringTokenizer tokenizer = new StringTokenizer(receiveTCP, "+");
+                Integer.parseInt(tokenizer.nextToken());
+                serverIp = tokenizer.nextToken();
+                serverUdpPort = Integer.parseInt(tokenizer.nextToken());
+                if (tokenizer.hasMoreTokens()) {
+                    String buffer = tokenizer.nextToken();
+                    if (buffer.contains("Logged")) {
+                        UIText.setValidation(true);
+                        createThreadTCP();
+                    }
+                }
+            } else if (receiveTCP.contains("Logged")) {
                 UIText.setValidation(true);
                 createThreadTCP();
                 break;
-            }
+            } else 
+                return "";
         }
         return receiveTCP;
     }
