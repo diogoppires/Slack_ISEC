@@ -250,4 +250,41 @@ public class DataBase {
         }
         return output.toString();
     }
+
+    public String showAllUsersAndChannels() {
+        StringBuilder output =  new StringBuilder();
+         try {
+            String query = "select * from users";
+            rs = stmt.executeQuery(query);
+            output.append("[Users:]\n");
+            while(rs.next()){
+                output
+                        .append("["+rs.getString("username") +"] ")
+                        .append("Name: ")
+                        .append(rs.getString("name"))
+                        .append(" Photopath: ")
+                        .append(rs.getString("photopath"))
+                        .append("\n");
+            }
+            query = "select * from channels";
+            rs = stmt.executeQuery(query);
+            output.append("[Channels:]\n");
+            while(rs.next()){
+                output
+                        .append("["+rs.getString("name") +"] ")
+                        .append("Creator: ")
+                        .append(rs.getString("creator"))
+                        .append(" Description: ")
+                        .append(rs.getString("description"))
+                        .append("\n");
+            }
+        }catch (NumberFormatException ex){
+            System.out.println("Error Parse value" + ex);
+            return "ERROR" + ex ;
+        }catch (SQLException ex){
+            System.out.println("ERRO EDIT CHANNEL: " + ex);
+            return "Erro Pesquisa" + ex;
+        }
+        return output.toString();
+    }
 }
