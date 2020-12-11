@@ -33,7 +33,8 @@ public class UIText {
         this.cC = cC;
         validation = false;
         end = false;
-        cC.askForConnection();
+        if (!cC.askForConnection())
+             System.out.println("O Servidor indicado não está Disponivel.");
     }
 
     private String getOptions() {
@@ -121,7 +122,8 @@ public class UIText {
         s += sc.next() + "+";
         System.out.println("Please Insert PhotoPath: ");
         s += sc.next();
-        cC.sendMessage(s);
+        if(! cC.sendMessage(s))
+            System.out.println("Não existem Servidores Disponiveis");
         cC.awaitResponse();
         
         //.out.println("[CLIENT]: NOT IMPLEMENTED");
@@ -137,7 +139,8 @@ public class UIText {
         sb.append(username).append("+");
         System.out.println("Please Insert Password: ");
         sb.append(sc.next());
-        cC.sendMessage(sb.toString());
+        if(! cC.sendMessage(sb.toString()))
+            System.out.println("Não existem Servidores Disponiveis");
         cC.awaitResponse();
 
     }
@@ -152,7 +155,7 @@ public class UIText {
             System.out.println("Please Insert Description: ");
             sb.append(sc.nextLine()).append("+");
             System.out.println("Please Insert Channel Password: ");
-
+            sb.append(sc.nextLine()).append("+");
             sb.append(username);
             cC.sendMessage(sb.toString());
         } else {

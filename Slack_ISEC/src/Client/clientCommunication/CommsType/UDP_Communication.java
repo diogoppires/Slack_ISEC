@@ -10,6 +10,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -59,4 +61,9 @@ public class UDP_Communication {
         DatagramPacket dP = new DatagramPacket(bufStr, bufStr.length, serverIp, serverPort);
         dS.send(dP);
     }
+    
+    public void setTimeout(int timeout) throws SocketException{
+            dS.setSoTimeout(timeout);
+    }
+    
 }
