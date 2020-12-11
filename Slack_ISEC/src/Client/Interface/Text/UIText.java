@@ -33,7 +33,9 @@ public class UIText {
         this.cC = cC;
         validation = false;
         end = false;
-        cC.askForConnection();
+        if (!cC.askForConnection()) {
+            System.out.println("O Servidor indicado não está Disponivel.");
+        }
     }
 
     private String getOptions() {
@@ -48,11 +50,12 @@ public class UIText {
         } else {
             sb.append("\t\t>> SLACK ISEC <<\n");
             sb.append("________________________________________________________\n");
-            sb.append("[1] - Create a channel           [6] - List all channels and users\n");
-            sb.append("[2] - Edit a channel.            [7] - List last messages.\n");
-            sb.append("[3] - Delete a channel.          [8] - Show statics from all channels.\n");
-            sb.append("[4] - Talk with other user.      [9] - Log Out.\n");
-            sb.append("[5] - Share files.               [10] - Exit.\n");
+            sb.append("[1] - Create a channel           [7] - List Search\n");
+            sb.append("[2] - Edit a channel.            [8] - List last messages.\n");
+            sb.append("[3] - Delete a channel.          [9] - Show statics from all channels.\n");
+            sb.append("[4] - Talk with other user.      [10] - Log Out.\n");
+            sb.append("[5] - Share files.               [11] - Exit.\n");
+            sb.append("[6] - List all channels and users\n");
             sb.append(">> ");
         }
         return sb.toString();
@@ -85,13 +88,15 @@ public class UIText {
                     return Options.shareFiles;
                 case 6:
                     return Options.listAll;
-                case 7:
-                    return Options.listLastMsg;
+                case 7 :
+                    return Options.list;
                 case 8:
-                    return Options.showStats;
+                    return Options.listLastMsg;
                 case 9:
-                    return Options.logOut;
+                    return Options.showStats;
                 case 10:
+                    return Options.logOut;
+                case 11:
                     return Options.exit;
             }
         }
@@ -121,9 +126,11 @@ public class UIText {
         s += sc.next() + "+";
         System.out.println("Please Insert PhotoPath: ");
         s += sc.next();
-        cC.sendMessage(s);
+        if (!cC.sendMessage(s)) {
+            System.out.println("Não existem Servidores Disponiveis");
+        }
         cC.awaitResponse();
-        
+
         //.out.println("[CLIENT]: NOT IMPLEMENTED");
         //cC.sendMessage(sc.next());
     }
@@ -137,7 +144,9 @@ public class UIText {
         sb.append(username).append("+");
         System.out.println("Please Insert Password: ");
         sb.append(sc.next());
-        cC.sendMessage(sb.toString());
+        if (!cC.sendMessage(sb.toString())) {
+            System.out.println("Não existem Servidores Disponiveis");
+        }
         cC.awaitResponse();
 
     }
@@ -152,7 +161,7 @@ public class UIText {
             System.out.println("Please Insert Description: ");
             sb.append(sc.nextLine()).append("+");
             System.out.println("Please Insert Channel Password: ");
-
+            sb.append(sc.nextLine()).append("+");
             sb.append(username);
             cC.sendMessage(sb.toString());
         } else {
@@ -161,7 +170,7 @@ public class UIText {
     }
 
     private void uiEditChannel() {
-         if (validation) {
+        if (validation) {
             Scanner sc = new Scanner(System.in);
             StringBuilder sb = new StringBuilder();
             sb.append("4+");
@@ -214,10 +223,21 @@ public class UIText {
     }
 
     private void uiListAll() {
-         if (validation) {
+        if (validation) {
             Scanner sc = new Scanner(System.in);
             StringBuilder sb = new StringBuilder();
-            sb.append("8+");
+            sb.append("8+text");
+            cC.sendMessage(sb.toString());
+        } else {
+            System.out.println("Please Login!");
+        }
+    }
+
+    private void uiList() {
+        if (validation) {
+            Scanner sc = new Scanner(System.in);
+            StringBuilder sb = new StringBuilder();
+            sb.append("9+");
             System.out.println("Please Insert Text to Search: ");
             sb.append(sc.next());
             cC.sendMessage(sb.toString());
@@ -230,7 +250,7 @@ public class UIText {
         if (validation) {
             Scanner sc = new Scanner(System.in);
             StringBuilder sb = new StringBuilder();
-            sb.append("9+");
+            sb.append("10+");
             System.out.print("Insert name1 : ");
             sb.append(sc.next()).append("+");
             System.out.print("Insert name2 : ");
@@ -277,6 +297,9 @@ public class UIText {
                 case shareFiles:
                     uiShareFiles();
                     break;
+                case list:
+                    uiList();
+                    break;
                 case listAll:
                     uiListAll();
                     break;
@@ -307,6 +330,7 @@ public class UIText {
         deleteChannel,
         talkWithUser,
         shareFiles,
+        list,
         listAll,
         listLastMsg,
         showStats,

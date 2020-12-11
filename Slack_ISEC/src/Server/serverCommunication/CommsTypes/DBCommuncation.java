@@ -46,5 +46,9 @@ public class DBCommuncation {
     public String searchMessages(String nameOrg, String nameDest,String n){
         return dataBase.searchMessages(nameOrg,nameDest,n);
     }
+
+    public String showAllUsersAndChannels() {
+        return dataBase.showAllUsersAndChannels();
+    }
 }
 

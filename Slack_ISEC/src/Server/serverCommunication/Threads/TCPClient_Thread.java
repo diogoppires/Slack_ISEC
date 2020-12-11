@@ -163,17 +163,24 @@ public class TCPClient_Thread implements Runnable {
                                     sendTCP("101+An error has occurred and the message was not sent.");
                                 }
                             }
-
                             case 8: {
-                                System.out.println("Recebi uma Consulta");
-                                String text = tokenizer.nextToken();
-                                String test = dbC.searchUserAndChannel(text);
-                                System.out.println(test); /*DEBUG*/
-                                sendTCP(test);
+                                System.out.println("Recebi uma Consulta de Lista");
+                                String response = dbC.showAllUsersAndChannels();
+                                System.err.println(response); /*DEBUG*/
+                                sendTCP(response);
                                 break;
                             }
 
-                            case 9:{
+                            case 9: {
+                                System.out.println("Recebi uma Consulta de Procura");
+                                String text = tokenizer.nextToken();
+                                String response = dbC.searchUserAndChannel(text);
+                                System.err.println(response); /*DEBUG*/
+                                sendTCP(response);
+                                break;
+                            }
+
+                            case 10:{
                                 System.out.println("Recebi uma Consulta de Mensagens");
                                 String nameOrg = tokenizer.nextToken();
                                 String nameDest = tokenizer.nextToken();
