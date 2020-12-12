@@ -305,12 +305,16 @@ public class ClientCommunication {
     }
 
     public void sendRegister(String s, String localDirectory, String fileName) {
-        sendMessage(s);
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("1+");
+        sb.append(s);
+
+        sendMessage(sb.toString());
         if (awaitResponse().equals("REGISTERED")) {
             sendFile(localDirectory, fileName, "profile");
             awaitResponse();
         }
-
     }
 
     private void sendFileThread(int port) {

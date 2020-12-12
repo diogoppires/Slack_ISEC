@@ -119,7 +119,6 @@ public class UIText {
     private void uiRegister() {
         Scanner sc = new Scanner(System.in);
         StringBuilder sb = new StringBuilder();
-        sb.append("1+");
         System.out.println("Please Insert Name: ");
         sb.append(sc.next()).append("+");
         System.out.println("Please Insert Username: ");
