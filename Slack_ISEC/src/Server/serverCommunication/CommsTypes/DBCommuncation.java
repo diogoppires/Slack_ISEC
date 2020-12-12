@@ -1,6 +1,7 @@
 package Server.serverCommunication.CommsTypes;
 
 import Server.DataBase.DataBase;
+import java.io.File;
 
 public class DBCommuncation {
 
@@ -13,7 +14,7 @@ public class DBCommuncation {
         this.udpPort = udpPort;
         dataBase = new DataBase();
         // Create DB Connection and DB if not exists
-        dataBase.connectDB(ip, ip + udpPort);
+        dataBase.connectDB(ip, udpPort);
     }
 
     public boolean userRegister(String name, String username, String password, String photopath){
@@ -49,6 +50,14 @@ public class DBCommuncation {
 
     public String showAllUsersAndChannels() {
         return dataBase.showAllUsersAndChannels();
+    }
+
+    public int insertFile(String destination, String username, String localFilePath) {
+        return dataBase.insertFile(destination, username, localFilePath);
+    }
+
+    public String getFilePath(String fileCode) {
+        return dataBase.getFilePath(fileCode);
     }
 }
 

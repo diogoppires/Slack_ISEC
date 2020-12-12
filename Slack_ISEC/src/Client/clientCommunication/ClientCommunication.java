@@ -4,6 +4,9 @@ import Client.Interface.Text.UIText;
 import Client.clientCommunication.CommsType.TCP_Communication;
 import Client.clientCommunication.CommsType.UDP_Communication;
 import Server.serverCommunication.Data.ServerDetails;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -20,10 +23,13 @@ public class ClientCommunication {
     private static final String TCP_CONNECTION = "TCP_CONNECTION?";
     private static final String ANS_SUCCESS = "SUCCESS";
     private static final String ANS_FAIL = "FAIL";
+    private static final int MAX_DATA = 5000;
     private UDP_Communication udpC;
     private TCP_Communication tcpC;
     private String serverIp;
     private int serverUdpPort;
+    private int serverTcpPort;
+    FileInputStream fileIS;
 
     public ClientCommunication(int serverUdpPort, String serverIp) {
         this.serverIp = serverIp;
@@ -73,13 +79,13 @@ public class ClientCommunication {
                 udpC.sendUDP(TCP_CONNECTION, InetAddress.getByName(serverIp), serverUdpPort);
                 String ans = udpC.receiveUDP();
                 if (!ans.equals(ANS_FAIL)) {
-                    int serverTcpPort = Integer.parseInt(ans);
+                    serverTcpPort = Integer.parseInt(ans);
                     //
                     System.out.println("TCP PORT: " + serverTcpPort); //DEBUG
                     tcpC = new TCP_Communication(serverIp,
                             serverTcpPort);
                     tcpC.initializeTCP();
-                      //tcpC.sendTCP("Sent by client");               //[DEBUG]
+                    //tcpC.sendTCP("Sent by client");               //[DEBUG]
 //                    System.out.println("Received by server: " + tcpC.receiveTCP()); //[DEBUG]
                     break;
                 } else {
@@ -127,10 +133,95 @@ public class ClientCommunication {
                 try {
                     String receiveTCP = tcpC.receiveTCP();
                     System.out.println(receiveTCP);
+                    StringTokenizer tokenizer = new StringTokenizer(receiveTCP, "+");
+                    switch (Integer.parseInt(tokenizer.nextToken())) {
+                        case 201: {
+                            int port = Integer.parseInt(tokenizer.nextToken());
+
+                            System.out.println("Criar Thread com : " + port);
+                            TCP_Communication sendFile = new TCP_Communication(serverIp, port);
+                            sendFile.initializeTCP();
+                            // Envia nome do Ficheiro;
+                            Runnable sendFileRun = () -> {
+                                try {
+                                    System.err.println("Thread criada para enviar Ficheiro.");
+                                    byte[] bufStr = new byte[MAX_DATA];
+                                    while (fileIS.available() != 0) {
+                                        bufStr = fileIS.readNBytes(MAX_DATA);
+                                        sendFile.sendTCP(bufStr);
+                                    }
+                                    fileIS.close();
+                                    sendFile.closeTCP();
+                                } catch (IOException ex) {
+                                    System.err.println("[Thread Upload] - Erro a enviar o ficheiro.");
+                                    sendFile.closeTCP();
+                                } finally {
+                                    try {
+                                        fileIS.close();
+                                        sendFile.closeTCP();
+                                    } catch (IOException ex) {
+                                        Logger.getLogger(ClientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+                                }
+                            };
+                            Thread t2 = new Thread(sendFileRun);
+                            t2.start();
+                            break;
+                        }
+                        case 202: {
+                            int port = Integer.parseInt(tokenizer.nextToken());
+                            System.out.println("Criar Thread com : " + port);
+                            TCP_Communication receiveFile = new TCP_Communication(serverIp, port);
+                            receiveFile.initializeTCP();
+                            // Envia nome do Ficheiro;
+                            Runnable receiveFileRun = () -> {
+                                try {
+                                    String fileName = receiveFile.receiveTCP();
+                                    String home = System.getProperty("user.home");
+                                    File localFilePath = new File(home + "/Downloads/" + fileName);
+                                    if (localFilePath.exists()) {
+                                        System.err.println("[ThreadDownloadFromServer] -> O Ficheiro já existe.");
+                                        StringTokenizer nameTokenizer = new StringTokenizer(fileName, ".");
+                                        String name = nameTokenizer.nextToken();
+                                        String extension = nameTokenizer.nextToken();
+                                        int i = 0;
+                                        while (localFilePath.exists()) {
+                                            String aux = name + "(" + ++i + ")";
+                                            localFilePath = new File(home + "/Downloads/" + aux + "." + extension);
+                                        }
+                                    }
+                                    FileOutputStream fileOS = new FileOutputStream(localFilePath.getCanonicalPath());
+                                    receiveFile.receiveFileTCP(fileOS, MAX_DATA);
+                                    
+                                    System.err.println("[ThreadReceiveFile] -> Download Complete");
+                                    System.out.println("Download Complete : "+ localFilePath.getName());
+                                    fileOS.close();
+                                    receiveFile.closeTCP();
+                                   
+                                } catch (IOException ex) {
+                                    System.err.println("[ThreadReceiveFile] -> Erro:" + ex);
+                                     
+                                } 
+                            };
+                            Thread t1 = new Thread(receiveFileRun);
+                            t1.start();
+                            break;
+                        }
+                        case 203: {
+                            // O Ficheiro Solicitado não existe.
+                            System.out.println(tokenizer.nextToken());
+                            break;
+                        }
+                        default:
+                            System.out.println(receiveTCP);
+
+                    }
+
                 } catch (SocketException ex) {
                     System.err.println("O Servidor terminou inesperadamente");
-                    if(!askForConnection())
+                    if (!askForConnection()) {
                         return;
+                    }
                 } catch (IOException ex) {
                     System.err.println("Erro: " + ex);
                     return;
@@ -155,10 +246,10 @@ public class ClientCommunication {
             } catch (IOException ex) {
                 System.err.println("O SERVIDOR TERMINOU IO");
             }
-            
+
             StringTokenizer tokenizer = new StringTokenizer(receiveTCP, "+");
             if (receiveTCP.startsWith("100")) {
-                
+
                 Integer.parseInt(tokenizer.nextToken());
                 serverIp = tokenizer.nextToken();
                 serverUdpPort = Integer.parseInt(tokenizer.nextToken());
@@ -169,7 +260,7 @@ public class ClientCommunication {
                         UIText.setValidation(true);
                         createThreadTCP();
                     }
-                }*/ 
+                }*/
                 continue;
             } else if (receiveTCP.contains("Logged")) {
                 UIText.setValidation(true);
@@ -181,5 +272,44 @@ public class ClientCommunication {
         }
         return receiveTCP;
     }
+
+    public void sendFile(String localDirectory, String fileName, String destination) {
+
+        File directory = new File(localDirectory);
+        File file = new File(localDirectory + File.separator + fileName);
+
+        System.out.println("file: " + file.toString());
+
+        if (!file.exists()) {
+            System.out.println("o Ficheiro nao existe");
+            return;
+        }
+        if (!directory.exists()) {
+            System.out.println("A diretoria \"" + file + "\" nao existe)");
+            return;
+        }
+        if (!directory.isDirectory()) {
+            System.out.println("O caminho \"" + file + "\" não se refere a uma diretoria!");
+            return;
+        }
+        if (!directory.canRead()) {
+            System.out.println("Sem permissoes de leitura na diretoria \"" + file + "\"");
+            return;
+        }
+        try {
+            fileIS = new FileInputStream(file);
+            tcpC.sendTCP("201+" + fileName + "+" + destination);
+        } catch (IOException ex) {
+            System.err.println("Enviar pedido para upload Ficheiro");
+        }
+
+    }
+
+    public void receiveFile(int fileCode) {
+        try {
+            tcpC.sendTCP("202+" + fileCode);
+        } catch (IOException ex) {
+            System.err.println("Enviar pedido para download Ficheiro");
+        }
+    }
 }
- 

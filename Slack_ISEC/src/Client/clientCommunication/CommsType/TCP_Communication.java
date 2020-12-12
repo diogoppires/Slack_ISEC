@@ -5,6 +5,7 @@
  */
 package Client.clientCommunication.CommsType;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -55,6 +56,11 @@ public class TCP_Communication {
             oS.flush();
     
     }
+     public void sendTCP(byte [] msg) throws IOException {
+            oS.write(msg);
+            oS.flush();
+    
+    }
     
     public String receiveTCP() throws IOException{
          byte[] bufStr = new byte[SIZE];
@@ -79,5 +85,18 @@ public class TCP_Communication {
 
     public int getSocketPort() {
         return s.getLocalPort();
+    }
+
+
+    public void receiveFileTCP(FileOutputStream fileOS, int MAX_DATA) {
+        byte[] bufStr = new byte[MAX_DATA];
+        try {
+            while(iS.read(bufStr) != -1){
+                fileOS.write(bufStr);
+            }
+        } catch (IOException ex) {
+            System.err.println("ERRO: ReceiveFIleTCP" + ex);
+            Logger.getLogger(TCP_Communication.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

@@ -88,7 +88,7 @@ public class UIText {
                     return Options.shareFiles;
                 case 6:
                     return Options.listAll;
-                case 7 :
+                case 7:
                     return Options.list;
                 case 8:
                     return Options.listLastMsg;
@@ -219,7 +219,31 @@ public class UIText {
     }
 
     private void uiShareFiles() {
-        System.out.println("[CLIENT]: NOT IMPLEMENTED");
+
+        System.out.println("[1] - Enviar Ficheiro");
+        System.out.println("[2] - Receber Ficheiro");
+        System.out.println(">>");
+        Scanner sc = new Scanner(System.in);
+        switch (sc.nextInt()){
+            case 1: {
+                System.out.println("Indique a Diretoria.");
+                String localDirectory = "C:\\Temp"; //= sc.next(); 
+                System.out.println("Indique o Caminho do ficheiro.");
+                String fileName = "img.png"; //sc.next
+                System.out.println("Indique o destino.");
+                String destination = "Destino"; // sc.next();
+                cC.sendFile(localDirectory, fileName, destination);
+
+                break;
+            }
+            case 2: {
+                System.out.println("Indique o Código do Ficheiro.");
+                int fileCode = sc.nextInt();
+                cC.receiveFile(fileCode);
+                break;
+            }
+        }
+
     }
 
     private void uiListAll() {
