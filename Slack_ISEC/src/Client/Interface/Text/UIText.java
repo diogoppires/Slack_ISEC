@@ -119,17 +119,19 @@ public class UIText {
         String s = new String("");
         s = "1+";
         System.out.println("Please Insert Name: ");
-        s += sc.next() + "+";
+        s += sc.nextLine() + "+";
         System.out.println("Please Insert Username: ");
         s += sc.next() + "+";
         System.out.println("Please Insert Password: ");
         s += sc.next() + "+";
         System.out.println("Please Insert PhotoPath: ");
-        s += sc.next();
-        if (!cC.sendMessage(s)) {
+        s += "\\r.png";//sc.next();
+        
+        cC.sendRegister(s, "C:\\Temp" , "r.png");
+       /* if (!cC.sendMessage(s)) {
             System.out.println("Não existem Servidores Disponiveis");
-        }
-        cC.awaitResponse();
+        }*/
+        //cC.awaitResponse();
 
         //.out.println("[CLIENT]: NOT IMPLEMENTED");
         //cC.sendMessage(sc.next());
@@ -211,7 +213,7 @@ public class UIText {
             System.out.println("Insert the username: ");
             sb.append(sc.nextLine()).append("+");
             System.out.println("Write your message: ");
-            sb.append(sc.nextLine()).append("+");
+            sb.append(sc.nextLine());
             cC.sendMessage(sb.toString());
         } else {
             System.out.println("Please Login!");

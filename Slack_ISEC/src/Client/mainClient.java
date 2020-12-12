@@ -8,7 +8,7 @@ public class mainClient {
     public static void main(String[] args) throws InterruptedException {
         ClientCommunication cC;
         if(args.length == 0)
-            cC = new ClientCommunication(9999, "localhost");
+            cC = new ClientCommunication(9998, "localhost");
         else
             cC = new ClientCommunication(Integer.parseInt(args[0]), args[1]);
         

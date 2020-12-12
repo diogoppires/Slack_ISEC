@@ -47,7 +47,7 @@ public class ServerCommunication {
         }
         tcpC = new TCPCommunication(tcpPort);
         mcC = new MulticastCommunication(MULTICAST_PORT, MULTICAST_IP,udpC.getServerPort());
-        dbC =  new DBCommuncation(ip, udpC.getServerPort());
+        dbC =  new DBCommuncation(ip, udpC.getServerPort(), mcC);
         infoSv = new ServerInfo(udpC.getServerPort());
         end = new AtomicBoolean();
         
@@ -87,6 +87,7 @@ public class ServerCommunication {
         try {
             mcC.initializeMulticast();
             tcpC.initializeTCP();
+            dbC.initializeDBComms();
         } catch (IOException ex) {
             Logger.getLogger(ServerCommunication.class.getName()).log(Level.SEVERE, null, ex);
         }

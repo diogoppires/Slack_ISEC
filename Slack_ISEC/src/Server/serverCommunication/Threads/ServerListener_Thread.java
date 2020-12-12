@@ -91,7 +91,7 @@ public class ServerListener_Thread extends Thread {
                         OutputStream out = clientsConnection.getSocket().getOutputStream();
                         if(convReceived.getUserReceiver().equals(clientsConnection.getUsername())){
                             StringBuilder sb = new StringBuilder();
-                            sb.append("NEW - [").append(convReceived.getUserSender()).append("]:");
+                            sb.append("0+NEW - [").append(convReceived.getUserSender()).append("]:");
                             sb.append(convReceived.getMessage());
                             out.write(sb.toString().getBytes());
                             out.flush();
@@ -99,6 +99,11 @@ public class ServerListener_Thread extends Thread {
                     }
 
                 } else if (receivedObj.getClass() == ShareFiles.class) {
+
+                }
+                else if (receivedObj.getClass() == DataRequest.class) {
+                    DataRequest datarequest = (DataRequest)receivedObj;
+                    dbC.getDatatoUpdate(datarequest.getTime(), datarequest.dbName());
 
                 }
 
