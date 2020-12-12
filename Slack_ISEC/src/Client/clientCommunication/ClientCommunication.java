@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ClientCommunication {
+
     private final static String EXIT_SUCCESSFULLY = "exitByClient";
     private static final String TCP_CONNECTION = "TCP_CONNECTION?";
     private static final String ANS_FAIL = "FAIL";
@@ -100,7 +101,6 @@ public class ClientCommunication {
         return true;
     }
 
-
     public boolean sendMessage(String s) {
 
         try {
@@ -126,8 +126,9 @@ public class ClientCommunication {
     public boolean createThreadTCP() {
         Runnable runnable = () -> {
             String receiveTCP = "";
-            while (true) {
-                try {
+            try {
+
+                while (true) {
                     receiveTCP = tcpC.receiveTCP();
                     System.out.println(receiveTCP);
                     StringTokenizer tokenizer = new StringTokenizer(receiveTCP, "+");
@@ -189,25 +190,27 @@ public class ClientCommunication {
                             break;
 
                     }
-
-                } catch (SocketException ex) {
-                    System.err.println("O Servidor terminou inesperadamente");
-                    if (!askForConnection()) {
-                        return;
-                    }
-                } catch (IOException ex) {
-                    System.err.println("Erro: " + ex);
+                } // end of while
+            } catch (SocketException ex) {
+                System.err.println("O Servidor terminou inesperadamente");
+                if (!askForConnection()) {
                     return;
                 }
-            }
-            udpC.closeUDP();
-            try {
-                tcpC.closeTCP();
-                tcpC.receiveTCP();
-            } catch (IOException e) {
-                System.exit(1);
-            }
-        };
+            } catch (IOException ex) {
+                System.err.println("Erro: " + ex);
+                return;
+            } finally {
+                try {
+                    tcpC.closeTCP();
+                    tcpC.receiveTCP();
+
+                } catch (IOException e) {
+                    System.exit(1);
+                }
+            } //end of try
+
+        }; // end of runnable
+
         Thread t = new Thread(runnable);
         t.start();
         return true;
@@ -248,15 +251,14 @@ public class ClientCommunication {
                 int port = Integer.parseInt(tokenizer.nextToken());
                 sendFileThread(port);
                 break;
-                
+
             } else if (receiveTCP.contains("Logged")) {
                 UIText.setValidation(true);
                 createThreadTCP();
                 break;
-            } else if(receiveTCP.contains("REGISTERED") && !receiveTCP.contains("UNREGISTERED") ){
+            } else if (receiveTCP.contains("REGISTERED") && !receiveTCP.contains("UNREGISTERED")) {
                 return "REGISTERED";
-            } 
-            else {
+            } else {
                 return "";
             }
         }
@@ -304,12 +306,10 @@ public class ClientCommunication {
 
     public void sendRegister(String s, String localDirectory, String fileName) {
         sendMessage(s);
-        if(awaitResponse().equals("REGISTERED")){
+        if (awaitResponse().equals("REGISTERED")) {
             sendFile(localDirectory, fileName, "profile");
             awaitResponse();
         }
-        
-        
 
     }
 
@@ -330,7 +330,6 @@ public class ClientCommunication {
                 sendFile.closeTCP();
             } catch (IOException ex) {
                 System.err.println("[Thread Upload] - Erro a enviar o ficheiro.");
-                sendFile.closeTCP();
             } finally {
                 try {
                     fileIS.close();

@@ -61,11 +61,8 @@ public class TCPClient_Thread implements Runnable {
             TCPCommunication receiveFileTCP = new TCPCommunication(0);
             receiveFileTCP.initializeTCP();
             sendTCP("201+" + receiveFileTCP.getServerPort());
-            System.out.println("CRIE THREAD com: " + receiveFileTCP.getServerPort());
-            
             receiveFileTCP.acceptConnection();
             // Thread Receive File
-            System.out.println("CRIE THREAD com: " + receiveFileTCP.getServerPort());
             Runnable runnable = () -> {
                 FileOutputStream fileOS = null;
                 try {

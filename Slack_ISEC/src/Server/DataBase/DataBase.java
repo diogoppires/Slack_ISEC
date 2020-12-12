@@ -83,16 +83,7 @@ public class DataBase {
         try {                                       // ( 'name', 'username' , 'password' , 'photopath')    
             String query = "INSERT INTO users (name, username, password, photopath) VALUES ('" + name + "', '" + username + "', '" + password + "', '" + photopath + "')";
             stmt.executeUpdate(query);
-            /*
-            System.out.println(query);
-            rs = stmt.executeQuery("SELECT * FROM users");
-            
-            while (rs.next()){
-                System.out.print(" Pass: "+rs.getString("username"));
-                System.out.print(" Pass: "+rs.getString("password"));
-               System.out.println("");
-            }
-             */
+          
 
             //Enviar Registo com Sucesso
         } catch (SQLIntegrityConstraintViolationException ex) {
@@ -150,7 +141,26 @@ public class DataBase {
 
     public boolean newChannel(String name, String description, String password, String creator) {
         try {
-            String query = "INSERT INTO channels (name, description, password, creator )VALUES ('" + name + "', '" + description + "', '" + password + "', '" + creator + "')";
+            String query = "select count(id) as total from channels";
+            
+            rs = stmt.executeQuery(query);
+            if (rs != null) {
+                rs.next();
+            }
+            StringBuilder s = new StringBuilder();
+            s.append(serverID).append(rs.getInt("total"));
+            int id = Integer.parseInt(s.toString());
+            /*
+            query = "select name from channels where name = '" + name + "'"; 
+            rs = stmt.executeQuery(query);
+             rs = stmt.executeQuery(query);
+            if (rs != null) {
+                rs.next();
+            }
+            if (rs.getInt("name") > 0)
+                return false;
+            */
+            query = "INSERT INTO channels (id, name, description, password, creator )VALUES ('" + 2 + "', '" + name + "', '" + description + "', '" + password + "', '" + creator + "')";
             stmt.executeUpdate(query);
         } catch (SQLException ex) {
             System.out.println("ERRO CHANNEL: " + ex);
@@ -197,8 +207,17 @@ public class DataBase {
 
     public boolean conversation(String sender, String receiver, String msg) {
         try {
-            String query = "INSERT INTO messages (senduser, originuser, message)"
-                    + "VALUES ('" + sender + "', '" + receiver + "', '" + msg + "')";
+            String query = "select count(id) as total from messages";
+            rs = stmt.executeQuery(query);
+            if (rs != null) {
+                rs.next();
+            }
+            StringBuilder s = new StringBuilder();
+            s.append(serverID).append(rs.getInt("total"));
+            int id = Integer.parseInt(s.toString());
+            
+            query = "INSERT INTO messages (id, senduser, originuser, message)"
+                    + "VALUES ('" + id + "', '" + sender + "', '" + receiver + "', '" + msg + "')";
             stmt.executeUpdate(query);
         } catch (SQLException ex) {
             System.out.println("ERROR ON CONVERSATION: " + ex);
@@ -300,6 +319,7 @@ public class DataBase {
             StringBuilder s = new StringBuilder();
             s.append(serverID).append(rs.getInt("total"));
             int id = Integer.parseInt(s.toString());
+            
             localFilePath = localFilePath.replace("\\", "\\\\");
             query = "INSERT INTO files (id, destination, originUser, pathDirectory)"
                     + "VALUES ('" + id + "', '" + destination + "', '" + username + "', '" + localFilePath + "')";
@@ -355,26 +375,20 @@ public class DataBase {
                             "union\n" +
                             "select created from files\n" +
                             "union\n" +
-                            "select created from messages order by created DESC";
+                            "select created from messages order by created DESC limit 1";
             LocalDateTime lastDate = null;
             rs = stmt.executeQuery(query);
-             System.out.println("1");
             while (rs.next()) {
-                System.out.println("2");
                 System.out.println(rs.getTimestamp("created"));
                 LocalDateTime date = rs.getTimestamp("created").toLocalDateTime();
                 if (lastDate == null) {
-                     System.out.println("3");
                     lastDate = date;
                 } else if (date.isAfter(lastDate)) {
-                     System.out.println("4");
                     lastDate = date;
                 }
             }
             System.err.println("[DB LastTimeStamp] -> " + lastDate);
-             System.out.println("5");
             if (lastDate == null){
-                 System.out.println("6");
                  return Timestamp.valueOf("1970-01-01 00:00:00");
                 
             }
@@ -397,13 +411,13 @@ public class DataBase {
             }
             if(!dbNameToSend.equals(dbName)){
             System.out.println(timestamp);
-            String query = "INSERT INTO " + dbNameToSend + ".users SELECT * FROM " + dbName + ".users where created > '" + timestamp + "'";
+            String query = "INSERT IGNORE INTO " + dbNameToSend + ".users SELECT * FROM " + dbName + ".users where created > '" + timestamp + "'";
             stmt.executeUpdate(query);
-            query = "INSERT INTO " + dbNameToSend + ".channels SELECT * FROM " + dbName + ".channels where created > '" + timestamp+ "'";
+            query = "INSERT IGNORE INTO " + dbNameToSend + ".channels SELECT * FROM " + dbName + ".channels where created > '" + timestamp+ "'";
             stmt.executeUpdate(query);
-            query = "INSERT INTO " + dbNameToSend + ".files SELECT * FROM " + dbName + ".files where created > '" + timestamp+ "'";
+            query = "INSERT IGNORE INTO " + dbNameToSend + ".files SELECT * FROM " + dbName + ".files where created > '" + timestamp+ "'";
             stmt.executeUpdate(query);
-            query = "INSERT INTO " + dbNameToSend + ".messages SELECT * FROM " + dbName + ".messages where created > '" + timestamp+ "'";
+            query = "INSERT IGNORE INTO " + dbNameToSend + ".messages SELECT * FROM " + dbName + ".messages where created > '" + timestamp+ "'";
             stmt.executeUpdate(query);
             }
         } catch (SQLException ex) {

@@ -163,7 +163,7 @@ public class UIText {
             System.out.println("Please Insert Description: ");
             sb.append(sc.nextLine()).append("+");
             System.out.println("Please Insert Channel Password: ");
-            sb.append(sc.nextLine()).append("+");
+            sb.append(sc.next()).append("+");
             sb.append(username);
             cC.sendMessage(sb.toString());
         } else {

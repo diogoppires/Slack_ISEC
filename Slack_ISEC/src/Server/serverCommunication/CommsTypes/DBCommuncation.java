@@ -29,7 +29,7 @@ public class DBCommuncation {
     public boolean initializeDBComms(){
         Timestamp time = dataBase.getLastTimeStamp();
         try {
-            mcC.spreadInfo(new DataRequest(time,ip + this.udpPort));
+            mcC.spreadInfo(new DataRequest(time ,ip + this.udpPort));
         } catch (IOException ex) {
             Logger.getLogger(DBCommuncation.class.getName()).log(Level.SEVERE, null, ex);
             return false;
