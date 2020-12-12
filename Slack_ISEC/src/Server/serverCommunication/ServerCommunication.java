@@ -21,6 +21,8 @@ import java.util.logging.Logger;
 public class ServerCommunication {
     private final static int MULTICAST_PORT = 5432;
     private final static String MULTICAST_IP = "239.3.2.1";
+    private final static String EXIT_SUCCESSFULLY = "exitByClient";
+
     private UDPCommunication udpC;
     private TCPCommunication tcpC;
     private MulticastCommunication mcC;
@@ -67,11 +69,17 @@ public class ServerCommunication {
         sendPing.start();      
     }
     
-    
+    private void closeClients(){
+        for(ClientData cD : clientsConnections){
+            cD.sentTcpText(EXIT_SUCCESSFULLY);
+        }
+    }
+
     public void finishThreads(){
         end.set(true);
         try {
             mcC.closeMulticast();
+            closeClients();
             tcpC.closeTCP();
         } catch (IOException ex) {
             Logger.getLogger(ServerCommunication.class.getName()).log(Level.SEVERE, null, ex);

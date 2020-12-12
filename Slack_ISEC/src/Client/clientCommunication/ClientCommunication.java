@@ -5,10 +5,7 @@ import Client.clientCommunication.CommsType.TCP_Communication;
 import Client.clientCommunication.CommsType.UDP_Communication;
 import Server.serverCommunication.Data.ServerDetails;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -16,10 +13,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ClientCommunication {
-
+    private final static String EXIT_SUCCESSFULLY = "exitByClient";
     private static final String TCP_CONNECTION = "TCP_CONNECTION?";
-    private static final String ANS_SUCCESS = "SUCCESS";
     private static final String ANS_FAIL = "FAIL";
+
     private UDP_Communication udpC;
     private TCP_Communication tcpC;
     private String serverIp;
@@ -98,6 +95,7 @@ public class ClientCommunication {
         return true;
     }
 
+
     public boolean sendMessage(String s) {
 
         try {
@@ -121,12 +119,15 @@ public class ClientCommunication {
     }
 
     public boolean createThreadTCP() {
-
         Runnable runnable = () -> {
+            String receiveTCP = "";
             while (true) {
                 try {
-                    String receiveTCP = tcpC.receiveTCP();
+                    receiveTCP = tcpC.receiveTCP();
                     System.out.println(receiveTCP);
+                    if(receiveTCP.equals(EXIT_SUCCESSFULLY)){
+                        break;
+                    }
                 } catch (SocketException ex) {
                     System.err.println("O Servidor terminou inesperadamente");
                     if(!askForConnection())
@@ -135,6 +136,13 @@ public class ClientCommunication {
                     System.err.println("Erro: " + ex);
                     return;
                 }
+            }
+            udpC.closeUDP();
+            try {
+                tcpC.closeTCP();
+                tcpC.receiveTCP();
+            } catch (IOException e) {
+                System.exit(1);
             }
         };
         Thread t = new Thread(runnable);
@@ -155,22 +163,13 @@ public class ClientCommunication {
             } catch (IOException ex) {
                 System.err.println("O SERVIDOR TERMINOU IO");
             }
-            
+
             StringTokenizer tokenizer = new StringTokenizer(receiveTCP, "+");
             if (receiveTCP.startsWith("100")) {
-                
                 Integer.parseInt(tokenizer.nextToken());
                 serverIp = tokenizer.nextToken();
                 serverUdpPort = Integer.parseInt(tokenizer.nextToken());
                 System.out.println("Ip: " + serverIp + " Port: " + serverUdpPort);
-                /*if (tokenizer.hasMoreTokens()) {
-                    String buffer = tokenizer.nextToken();
-                    if (buffer.contains("Logged")) {
-                        UIText.setValidation(true);
-                        createThreadTCP();
-                    }
-                }*/ 
-                continue;
             } else if (receiveTCP.contains("Logged")) {
                 UIText.setValidation(true);
                 createThreadTCP();

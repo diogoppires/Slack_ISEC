@@ -49,9 +49,9 @@ public class ServerListener_Thread extends Thread {
 
                 if (receivedObj.getClass() == ServerData.class) {
                     ServerData sdReceived = (ServerData) receivedObj;
-                    System.out.println("(server" + sdReceived.getPortServer() + ") IP: "
-                            + sdReceived.getIPServer() + " Port: " + sdReceived.getPortServer()
-                            + " Clients: " + sdReceived.getNClientsServer() + "\n");
+//                    System.out.println("(server" + sdReceived.getPortServer() + ") IP: "
+//                            + sdReceived.getIPServer() + " Port: " + sdReceived.getPortServer()
+//                            + " Clients: " + sdReceived.getNClientsServer() + "\n");
 
                     synchronized (infoServer) {
                         infoServer.getAllServersData().put(sdReceived.getPortServer(), sdReceived);
