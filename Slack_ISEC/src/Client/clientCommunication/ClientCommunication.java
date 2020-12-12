@@ -8,10 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -19,9 +16,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ClientCommunication {
-
+    private final static String EXIT_SUCCESSFULLY = "exitByClient";
     private static final String TCP_CONNECTION = "TCP_CONNECTION?";
-    private static final String ANS_SUCCESS = "SUCCESS";
     private static final String ANS_FAIL = "FAIL";
     private static final int MAX_DATA = 5000;
     private UDP_Communication udpC;
@@ -104,6 +100,7 @@ public class ClientCommunication {
         return true;
     }
 
+
     public boolean sendMessage(String s) {
 
         try {
@@ -127,11 +124,11 @@ public class ClientCommunication {
     }
 
     public boolean createThreadTCP() {
-
         Runnable runnable = () -> {
+            String receiveTCP = "";
             while (true) {
                 try {
-                    String receiveTCP = tcpC.receiveTCP();
+                    receiveTCP = tcpC.receiveTCP();
                     System.out.println(receiveTCP);
                     StringTokenizer tokenizer = new StringTokenizer(receiveTCP, "+");
                     switch (Integer.parseInt(tokenizer.nextToken())) {
@@ -202,6 +199,13 @@ public class ClientCommunication {
                     System.err.println("Erro: " + ex);
                     return;
                 }
+            }
+            udpC.closeUDP();
+            try {
+                tcpC.closeTCP();
+                tcpC.receiveTCP();
+            } catch (IOException e) {
+                System.exit(1);
             }
         };
         Thread t = new Thread(runnable);

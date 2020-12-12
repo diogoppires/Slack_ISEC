@@ -235,8 +235,8 @@ public class DataBase {
         try {
             int valor = Integer.parseInt(n);
             String query = "select * from messages where (senduser = '" + nameOrg
-                    + "' OR senduser = '" + nameDest + "') AND (originUser = '" + nameOrg
-                    + "' OR originUser = '" + nameDest + "') order by dateMsg asc limit " + valor;
+                    + "' AND originUser = '" + nameDest + "') OR ( originUser = '" + nameOrg
+                    + "' AND sendUser = '" + nameDest + "') order by dateMsg asc limit " + valor;
             rs = stmt.executeQuery(query);
             while (rs.next()) {
                 output

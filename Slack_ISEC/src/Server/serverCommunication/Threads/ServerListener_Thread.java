@@ -2,22 +2,17 @@ package Server.serverCommunication.Threads;
 
 import Server.Utils.*;
 import Server.serverCommunication.CommsTypes.DBCommuncation;
-import Server.serverCommunication.CommsTypes.TCPCommunication;
 import Server.serverCommunication.Data.ClientData;
 import Server.serverCommunication.Data.ServerInfo;
 import Server.serverCommunication.Data.ServerData;
-import java.awt.Toolkit;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.MulticastSocket;
-import java.net.Socket;
-import java.text.BreakIterator;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -98,7 +93,7 @@ public class ServerListener_Thread extends Thread {
                         }
                     }
 
-                } else if (receivedObj.getClass() == ShareFiles.class) {
+                } else if (receivedObj.getClass() == InfoFiles.class) {
 
                 }
                 else if (receivedObj.getClass() == DataRequest.class) {

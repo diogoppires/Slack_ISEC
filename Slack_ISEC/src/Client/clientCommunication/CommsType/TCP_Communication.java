@@ -40,14 +40,10 @@ public class TCP_Communication {
         }
     }
     
-    public void closeTCP(){
-        try {
-            iS.close();
-            oS.close();
-            s.close();
-        } catch (IOException ex) {
-            Logger.getLogger(TCP_Communication.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void closeTCP() throws SocketException, IOException{
+        iS.close();
+        oS.close();
+        s.close();
     }
     
     public void sendTCP(String msg) throws IOException {

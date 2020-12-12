@@ -323,14 +323,16 @@ public class TCPClient_Thread implements Runnable {
         } catch (SocketException ex) {
             System.out.println("[CLOSED]: TCPClient_Thread");
         } catch (IOException ex) {
-            Logger.getLogger(TCP_Thread.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
+        }
         synchronized (iS) {
             iS.subClient();
             try {
                 mcC.spreadInfo(iS);
-            } catch (IOException e) {
+            } catch (SocketException e) {
+                System.out.println("[TCPClient_Thread]Multicast closed before finishing thread.");
+            }
+            catch (IOException e) {
                 e.printStackTrace();
             }
         }
