@@ -8,12 +8,17 @@ import Server.serverCommunication.CommsTypes.MulticastCommunication;
 import Server.serverCommunication.CommsTypes.TCPCommunication;
 import Server.serverCommunication.Data.ClientData;
 import Server.serverCommunication.Data.ServerInfo;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.file.Files;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,12 +32,15 @@ public class TCPClient_Thread implements Runnable {
     private DBCommuncation dbC;
     private InputStream inS;
     private OutputStream outS;
+    private TCPCommunication tcpC;
+    private String username;
 
-    public TCPClient_Thread(ClientData cD, ServerInfo iS, MulticastCommunication mcC, DBCommuncation dbC) {
+    public TCPClient_Thread(ClientData cD, ServerInfo iS, MulticastCommunication mcC, DBCommuncation dbC, TCPCommunication tcpC) {
         this.iS = iS;
         this.cD = cD;
         this.mcC = mcC;
         this.dbC = dbC;
+        this.tcpC = tcpC;
     }
 
     public void sendTCP(String msg) throws IOException {
@@ -61,7 +69,7 @@ public class TCPClient_Thread implements Runnable {
                 try {
                     if (count > 1) {
                         switch (Integer.parseInt(tokenizer.nextToken())) {
-                            case 1:{
+                            case 1: {
                                 System.out.println("Recebi um registo");
                                 String name = tokenizer.nextToken();
                                 String username = tokenizer.nextToken();
@@ -83,7 +91,7 @@ public class TCPClient_Thread implements Runnable {
                             }
                             case 2: {
                                 System.out.println("Recebi um Login");
-                                String username = tokenizer.nextToken();
+                                username = tokenizer.nextToken();
                                 String password = tokenizer.nextToken();
                                 System.out.println(username);
                                 System.out.println(password);
@@ -166,7 +174,8 @@ public class TCPClient_Thread implements Runnable {
                             case 8: {
                                 System.out.println("Recebi uma Consulta de Lista");
                                 String response = dbC.showAllUsersAndChannels();
-                                System.err.println(response); /*DEBUG*/
+                                System.err.println(response);
+                                /*DEBUG*/
                                 sendTCP(response);
                                 break;
                             }
@@ -175,21 +184,118 @@ public class TCPClient_Thread implements Runnable {
                                 System.out.println("Recebi uma Consulta de Procura");
                                 String text = tokenizer.nextToken();
                                 String response = dbC.searchUserAndChannel(text);
-                                System.err.println(response); /*DEBUG*/
+                                System.err.println(response);
+                                /*DEBUG*/
                                 sendTCP(response);
                                 break;
                             }
 
-                            case 10:{
+                            case 10: {
                                 System.out.println("Recebi uma Consulta de Mensagens");
                                 String nameOrg = tokenizer.nextToken();
                                 String nameDest = tokenizer.nextToken();
                                 String n = tokenizer.nextToken();
-                                String test = dbC.searchMessages(nameOrg,nameDest,n);
-                                System.out.println(test); /*DEBUG*/
+                                String test = dbC.searchMessages(nameOrg, nameDest, n);
+                                System.out.println(test);
+                                /*DEBUG*/
                                 sendTCP(test);
                                 break;
                             }
+
+                            case 201: {
+                                try {
+                                    // Cria Novo Server Socket
+                                    String fileName = tokenizer.nextToken();
+                                    String destination = tokenizer.nextToken();
+                                    TCPCommunication receiveFileTCP = new TCPCommunication(0);
+                                    receiveFileTCP.initializeTCP();
+                                    sendTCP("201+" + receiveFileTCP.getServerPort());
+                                    receiveFileTCP.acceptConnection();
+                                    Runnable runnable = () -> {
+                                        FileOutputStream fileOS = null;
+                                        try {
+                                            String directoryName = "";
+                                            directoryName += "C:\\" + iS.getServerId();
+                                            File localdirectory = new File(directoryName);
+                                            System.out.println(localdirectory.toPath());
+                                            if (!localdirectory.exists()) {
+                                                Files.createDirectories(localdirectory.toPath());
+                                            }
+                                            File localFilePath = new File("C:\\" + iS.getServerId() + File.separator + fileName);
+                                            if (localFilePath.exists()) {
+                                                System.err.println("[ThreadDownloadFromClient] -> O Ficheiro já existe.");
+                                                StringTokenizer nameTokenizer = new StringTokenizer(fileName, ".");
+                                                String name = nameTokenizer.nextToken();
+                                                String extension = nameTokenizer.nextToken();
+                                                int i = 0;
+                                                while (localFilePath.exists()) {
+                                                    String aux = name + "(" + ++i +")";
+                                                    localFilePath = new File("C:\\" + iS.getServerId() + File.separator + aux + "." + extension);
+                                                }
+                                            }
+                                            System.out.println(localFilePath.getCanonicalPath());
+                                            fileOS = new FileOutputStream(localFilePath.getCanonicalPath());
+                                            receiveFileTCP.receiveTcpFile(fileOS, SIZE);
+                                            System.err.println("[ThreadDownloadFromClient] -> Download from Client Complete");
+
+                                            int fileID = dbC.insertFile(destination, username, localFilePath.getCanonicalPath());
+                                            
+                                        } catch (IOException ex) {
+                                            Logger.getLogger(TCPClient_Thread.class.getName()).log(Level.SEVERE, null, ex);
+                                            try {
+                                                fileOS.close();
+                                                receiveFileTCP.closeTCP();
+                                            } catch (IOException ex1) {
+                                                Logger.getLogger(TCPClient_Thread.class.getName()).log(Level.SEVERE, null, ex1);
+                                            }
+                                        }
+                                        System.err.println("[ThreadDownloadFromClient] -> Finish");
+
+                                    };
+                                    Thread t1 = new Thread(runnable);
+                                    t1.start();
+
+                                } catch (IOException ex) {
+                                    System.err.println("[TCPClient_Thread]-Erro a Criar a Thread para Receber Ficheiro");
+                                }
+
+                            }
+                            case 202: {
+                                try {
+                                    String fileCode = tokenizer.nextToken();
+                                    String filePath = dbC.getFilePath(fileCode);
+                                    File fileToSend = new File(filePath);
+
+                                    if (filePath.equals("0") || !fileToSend.exists()) {
+                                        sendTCP("203+O Ficheiro Indicado não Existe!");
+                                        break;
+                                    }
+                                    TCPCommunication sendFileTCP = new TCPCommunication(0);
+                                    sendFileTCP.initializeTCP();
+                                    sendTCP("202+" + sendFileTCP.getServerPort());
+                                    sendFileTCP.acceptConnection();
+                                    Runnable runnable = () -> {
+                                        try {
+                                            sendFileTCP.sendTCP(fileToSend.getName());
+                                            FileInputStream fileIS = new FileInputStream(filePath);
+                                            sendFileTCP.sendFile(fileIS, SIZE);
+                                            fileIS.close();
+                                            sendFileTCP.closeTCP();
+                                            System.err.println("[TCPClient_Thread] -> Ficheiro Enviado com sucesso.");
+                                        } catch (IOException ex) {
+                                            System.err.println("[TCPClient_Thread]-Erro a Criar a Thread para Enviar Ficheiro");
+                                        }
+
+                                    };
+                                    Thread t1 = new Thread(runnable);
+                                    t1.start();
+
+                                } catch (IOException ex) {
+                                    Logger.getLogger(TCPClient_Thread.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                break;
+                            }
+
                         }
                     }
                 } catch (Exception e) {

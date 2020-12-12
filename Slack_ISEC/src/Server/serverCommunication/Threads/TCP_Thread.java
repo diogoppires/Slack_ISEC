@@ -42,7 +42,7 @@ public class TCP_Thread extends Thread{
                 tcpC.acceptConnection();
                 ClientData cD = new ClientData(tcpC.getSocketClient());
                 clientsConnections.add(cD);
-                Thread t1 = new Thread(new TCPClient_Thread(cD,iS,mcC, dbC));
+                Thread t1 = new Thread(new TCPClient_Thread(cD,iS,mcC, dbC, tcpC));
                 t1.start();
             }
         } catch (IOException ex) {
