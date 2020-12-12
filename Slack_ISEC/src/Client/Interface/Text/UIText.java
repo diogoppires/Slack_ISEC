@@ -119,7 +119,6 @@ public class UIText {
     private void uiRegister() {
         Scanner sc = new Scanner(System.in);
         StringBuilder sb = new StringBuilder();
-        sb.append("1+");
         System.out.println("Please Insert Name: ");
         sb.append(sc.next()).append("+");
         System.out.println("Please Insert Username: ");
@@ -129,15 +128,7 @@ public class UIText {
         System.out.println("Please Insert PhotoPath: ");
         sb.append("\\r.png"); //sc.next();
         
-        cC.sendRegister(s, "C:\\Temp" , "r.png");
-       /* if (!cC.sendMessage(s)) {
-        sb.append(sc.next());
-            System.out.println("Não existem Servidores Disponiveis");
-        }*/
-        //cC.awaitResponse();
-
-        //.out.println("[CLIENT]: NOT IMPLEMENTED");
-        //cC.sendMessage(sc.next());
+        cC.sendRegister(sb.toString(), "C:\\Temp" , "r.png");
     }
 
     private void uiAuthentication() {
