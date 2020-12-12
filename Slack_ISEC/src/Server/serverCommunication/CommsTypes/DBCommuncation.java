@@ -1,20 +1,40 @@
 package Server.serverCommunication.CommsTypes;
 
 import Server.DataBase.DataBase;
+import Server.Utils.DataRequest;
 import java.io.File;
-
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 public class DBCommuncation {
 
     private String ip;
     private int udpPort;
     private DataBase dataBase;
+    private MulticastCommunication mcC;
 
-    public DBCommuncation(String ip, int udpPort) {
+    public DBCommuncation(String ip, int udpPort, MulticastCommunication mcC) {
         this.ip = ip;
         this.udpPort = udpPort;
+        this.mcC = mcC;
         dataBase = new DataBase();
         // Create DB Connection and DB if not exists
         dataBase.connectDB(ip, udpPort);
+        
+        
+        
+    }
+    
+    public boolean initializeDBComms(){
+        Timestamp time = dataBase.getLastTimeStamp();
+        try {
+            mcC.spreadInfo(new DataRequest(time ,ip + this.udpPort));
+        } catch (IOException ex) {
+            Logger.getLogger(DBCommuncation.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        return true;
     }
 
     public boolean userRegister(String name, String username, String password, String photopath){
@@ -60,6 +80,14 @@ public class DBCommuncation {
 
     public String getFilePath(String fileCode) {
         return dataBase.getFilePath(fileCode);
+    }
+
+    public void setUserPhotoID(String username, int fileID) {
+        dataBase.setUserPhotoID(username, fileID);
+    }
+
+    public void getDatatoUpdate(Timestamp time, String dbNameToSend) {
+        dataBase.getDatatoUpdate(time, dbNameToSend);
     }
 
     public String getChannelInfo(String name) {

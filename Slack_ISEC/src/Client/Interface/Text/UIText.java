@@ -127,12 +127,14 @@ public class UIText {
         System.out.println("Please Insert Password: ");
         sb.append(sc.next()).append("+");
         System.out.println("Please Insert PhotoPath: ");
+        sb.append("\\r.png"); //sc.next();
+        
+        cC.sendRegister(s, "C:\\Temp" , "r.png");
+       /* if (!cC.sendMessage(s)) {
         sb.append(sc.next());
-
-        if (!cC.sendMessage(sb.toString())) {
             System.out.println("Não existem Servidores Disponiveis");
-        }
-        cC.awaitResponse();
+        }*/
+        //cC.awaitResponse();
 
         //.out.println("[CLIENT]: NOT IMPLEMENTED");
         //cC.sendMessage(sc.next());
@@ -164,7 +166,7 @@ public class UIText {
             System.out.println("Please Insert Description: ");
             sb.append(sc.nextLine()).append("+");
             System.out.println("Please Insert Channel Password: ");
-            sb.append(sc.nextLine()).append("+");
+            sb.append(sc.next()).append("+");
             sb.append(username);
             cC.sendMessage(sb.toString());
         } else {
@@ -230,7 +232,7 @@ public class UIText {
             System.out.println("Insert the username: ");
             sb.append(sc.nextLine()).append("+");
             System.out.println("Write your message: ");
-            sb.append(sc.nextLine()).append("+");
+            sb.append(sc.nextLine());
             cC.sendMessage(sb.toString());
         } else {
             System.out.println("Please Login!");

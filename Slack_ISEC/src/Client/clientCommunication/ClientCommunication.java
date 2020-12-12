@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ClientCommunication {
+
     private final static String EXIT_SUCCESSFULLY = "exitByClient";
     private static final String TCP_CONNECTION = "TCP_CONNECTION?";
     private static final String ANS_FAIL = "FAIL";
@@ -100,7 +101,6 @@ public class ClientCommunication {
         return true;
     }
 
-
     public boolean sendMessage(String s) {
 
         try {
@@ -126,48 +126,21 @@ public class ClientCommunication {
     public boolean createThreadTCP() {
         Runnable runnable = () -> {
             String receiveTCP = "";
-            while (true) {
-                try {
+            try {
+
+                while (true) {
                     receiveTCP = tcpC.receiveTCP();
                     System.out.println(receiveTCP);
                     StringTokenizer tokenizer = new StringTokenizer(receiveTCP, "+");
                     switch (Integer.parseInt(tokenizer.nextToken())) {
                         case 201: {
                             int port = Integer.parseInt(tokenizer.nextToken());
-
-                            System.out.println("Criar Thread com : " + port);
-                            TCP_Communication sendFile = new TCP_Communication(serverIp, port);
-                            sendFile.initializeTCP();
-                            // Envia nome do Ficheiro;
-                            Runnable sendFileRun = () -> {
-                                try {
-                                    System.err.println("Thread criada para enviar Ficheiro.");
-                                    byte[] bufStr = new byte[MAX_DATA];
-                                    while (fileIS.available() != 0) {
-                                        bufStr = fileIS.readNBytes(MAX_DATA);
-                                        sendFile.sendTCP(bufStr);
-                                    }
-                                    fileIS.close();
-                                    sendFile.closeTCP();
-                                } catch (IOException ex) {
-                                    System.err.println("[Thread Upload] - Erro a enviar o ficheiro.");
-                                    sendFile.closeTCP();
-                                } finally {
-                                    try {
-                                        fileIS.close();
-                                        sendFile.closeTCP();
-                                    } catch (IOException ex) {
-                                        Logger.getLogger(ClientCommunication.class.getName()).log(Level.SEVERE, null, ex);
-                                    }
-                                }
-                            };
-                            Thread t2 = new Thread(sendFileRun);
-                            t2.start();
+                            sendFileThread(port);
                             break;
                         }
                         case 202: {
                             int port = Integer.parseInt(tokenizer.nextToken());
-                            System.out.println("Criar Thread com : " + port);
+
                             TCP_Communication receiveFile = new TCP_Communication(serverIp, port);
                             receiveFile.initializeTCP();
                             // Envia nome do Ficheiro;
@@ -189,16 +162,16 @@ public class ClientCommunication {
                                     }
                                     FileOutputStream fileOS = new FileOutputStream(localFilePath.getCanonicalPath());
                                     receiveFile.receiveFileTCP(fileOS, MAX_DATA);
-                                    
+
                                     System.err.println("[ThreadReceiveFile] -> Download Complete");
-                                    System.out.println("Download Complete : "+ localFilePath.getName());
+                                    System.out.println("Download Complete : " + localFilePath.getName());
                                     fileOS.close();
                                     receiveFile.closeTCP();
-                                   
+
                                 } catch (IOException ex) {
                                     System.err.println("[ThreadReceiveFile] -> Erro:" + ex);
-                                     
-                                } 
+
+                                }
                             };
                             Thread t1 = new Thread(receiveFileRun);
                             t1.start();
@@ -209,29 +182,35 @@ public class ClientCommunication {
                             System.out.println(tokenizer.nextToken());
                             break;
                         }
+                        case 0:
+                            System.out.println(tokenizer.nextToken());
+                            break;
                         default:
                             System.out.println(receiveTCP);
+                            break;
 
                     }
-
-                } catch (SocketException ex) {
-                    System.err.println("O Servidor terminou inesperadamente");
-                    if (!askForConnection()) {
-                        return;
-                    }
-                } catch (IOException ex) {
-                    System.err.println("Erro: " + ex);
+                } // end of while
+            } catch (SocketException ex) {
+                System.err.println("O Servidor terminou inesperadamente");
+                if (!askForConnection()) {
                     return;
                 }
-            }
-            udpC.closeUDP();
-            try {
-                tcpC.closeTCP();
-                tcpC.receiveTCP();
-            } catch (IOException e) {
-                System.exit(1);
-            }
-        };
+            } catch (IOException ex) {
+                System.err.println("Erro: " + ex);
+                return;
+            } finally {
+                try {
+                    tcpC.closeTCP();
+                    tcpC.receiveTCP();
+
+                } catch (IOException e) {
+                    System.exit(1);
+                }
+            } //end of try
+
+        }; // end of runnable
+
         Thread t = new Thread(runnable);
         t.start();
         return true;
@@ -266,10 +245,19 @@ public class ClientCommunication {
                     }
                 }*/
                 continue;
+            } else if (receiveTCP.startsWith("201")) {
+                // Consome 201;
+                tokenizer.nextToken();
+                int port = Integer.parseInt(tokenizer.nextToken());
+                sendFileThread(port);
+                break;
+
             } else if (receiveTCP.contains("Logged")) {
                 UIText.setValidation(true);
                 createThreadTCP();
                 break;
+            } else if (receiveTCP.contains("REGISTERED") && !receiveTCP.contains("UNREGISTERED")) {
+                return "REGISTERED";
             } else {
                 return "";
             }
@@ -306,7 +294,6 @@ public class ClientCommunication {
         } catch (IOException ex) {
             System.err.println("Enviar pedido para upload Ficheiro");
         }
-
     }
 
     public void receiveFile(int fileCode) {
@@ -315,5 +302,44 @@ public class ClientCommunication {
         } catch (IOException ex) {
             System.err.println("Enviar pedido para download Ficheiro");
         }
+    }
+
+    public void sendRegister(String s, String localDirectory, String fileName) {
+        sendMessage(s);
+        if (awaitResponse().equals("REGISTERED")) {
+            sendFile(localDirectory, fileName, "profile");
+            awaitResponse();
+        }
+
+    }
+
+    private void sendFileThread(int port) {
+        System.out.println("envia ficheiro: " + port);
+        TCP_Communication sendFile = new TCP_Communication(serverIp, port);
+        sendFile.initializeTCP();
+        // Envia nome do Ficheiro;
+        Runnable sendFileRun = () -> {
+            try {
+                System.err.println("Thread criada para enviar Ficheiro.");
+                byte[] bufStr = new byte[MAX_DATA];
+                while (fileIS.available() != 0) {
+                    bufStr = fileIS.readNBytes(MAX_DATA);
+                    sendFile.sendTCP(bufStr);
+                }
+                fileIS.close();
+                sendFile.closeTCP();
+            } catch (IOException ex) {
+                System.err.println("[Thread Upload] - Erro a enviar o ficheiro.");
+            } finally {
+                try {
+                    fileIS.close();
+                    sendFile.closeTCP();
+                } catch (IOException ex) {
+                    Logger.getLogger(ClientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        };
+        Thread t2 = new Thread(sendFileRun);
+        t2.start();
     }
 }
