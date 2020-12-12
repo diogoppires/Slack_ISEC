@@ -50,6 +50,13 @@ public class DataBase {
                     + "description VARCHAR(100) , "
                     + "password TEXT NOT NULL, "
                     + "creator VARCHAR(20) NOT NULL)");
+            // Channels_Users Table
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS channels_users("
+                    + "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
+                    + "idChannel INT, "
+                    + "idUsername VARCHAR(20),"
+                    + "FOREIGN KEY (idChannel) REFERENCES channels(id),"
+                    + "FOREIGN KEY (idUsername) REFERENCES users(username))");
             // Messages Table
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS messages ("
                     + "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
@@ -152,6 +159,12 @@ public class DataBase {
         try {
             String query = "INSERT INTO channels (name, description, password, creator )VALUES ('" + name + "', '" + description + "', '" + password + "', '" + creator + "')";
             stmt.executeUpdate(query);
+            query = "select LAST_INSERT_ID()";
+            rs = stmt.executeQuery(query);
+            rs.next();
+            int idChannel = rs.getInt(1);
+            query = "INSERT INTO channels_users(idChannel,idUsername) VALUES (" + idChannel + ",'" + creator + "')";
+            stmt.executeUpdate(query);
         } catch (SQLException ex) {
             System.out.println("ERRO CHANNEL: " + ex);
             return false;
@@ -193,6 +206,30 @@ public class DataBase {
             return false;
         }
         return true;
+    }
+
+    public boolean joinChannel(String nameC,String password,String name){
+        try{
+            String query = "select * from channels where name = '" + nameC + "' AND password = '" + password + "'";
+            rs = stmt.executeQuery(query);
+            if(rs != null){
+                rs.next();
+                int idChannel = rs.getInt("id");
+                query = "select count(id) total from channels_users where idChannel = " + idChannel + " AND idUsername = '" + name + "'";
+                rs = stmt.executeQuery(query);
+                if(rs != null) {
+                    rs.next();
+                    if (rs.getInt("total") == 0) {
+                        query = "INSERT INTO channels_users(idChannel,idUsername) VALUES (" + idChannel + ",'" + name + "')";
+                        stmt.executeUpdate(query);
+                        return true;
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println("ERRO JOIN CHANNEL: " + ex);
+        }
+        return false;
     }
 
     public boolean conversation(String sender, String receiver, String msg) {
@@ -260,25 +297,26 @@ public class DataBase {
         try {
             String query = "select * from users";
             rs = stmt.executeQuery(query);
-            output.append("[Users:]\n");
-            while (rs.next()) {
+            output.append("[Users]\n");
+            while(rs.next()){
                 output
-                        .append("[" + rs.getString("username") + "] ")
+                        .append("\t["+rs.getString("username") +"] ")
                         .append("Name: ")
                         .append(rs.getString("name"))
-                        .append(" Photopath: ")
+                        .append("\tPhotopath: ")
                         .append(rs.getString("photopath"))
                         .append("\n");
             }
             query = "select * from channels";
             rs = stmt.executeQuery(query);
-            output.append("[Channels:]\n");
-            while (rs.next()) {
+            output.append("[Channels]\n");
+            while(rs.next()){
                 output
-                        .append("[" + rs.getString("name") + "] ")
-                        .append("Creator: ")
+                        .append("\t["+rs.getInt("id")+"]")
+                        .append("Name: "+rs.getString("name"))
+                        .append("\tCreator: ")
                         .append(rs.getString("creator"))
-                        .append(" Description: ")
+                        .append("\tDescription: ")
                         .append(rs.getString("description"))
                         .append("\n");
             }
@@ -334,5 +372,39 @@ public class DataBase {
             System.err.println("[DB GetFilePath] -> Erro: " + ex);
             return "0";
         }
+    }
+
+    public String getChannelInfo(String id) {
+        StringBuilder output = new StringBuilder();
+        try{
+            int valor = Integer.parseInt(id);
+            String query = "select * from channels where id =" + valor;
+            rs = stmt.executeQuery(query);
+            if(rs != null) {
+                output.append("[Channel (id: " + valor + ")]\n");
+                query = "select count(id) total from channels_users where idchannel = " + valor;
+                rs = stmt.executeQuery(query);
+                rs.next();
+                output.append("\tNo. users: " + rs.getInt("total") + "\n");
+                query = "select count(id) total from messages where idchannel = " + valor;
+                rs = stmt.executeQuery(query);
+                rs.next();
+                output.append("\tNo. messages: " + rs.getInt("total") + "\n");
+                //Adicionar após o merge
+                /*
+                query = "select count(id) total from files where destination = " + id;
+                rs = stmt.executeQuery(query);
+                output.append("\tNo. files: " + rs.getInt("total") + "\n");
+                */
+
+            }
+        }catch (NumberFormatException ex){
+            System.out.println("ERROR PARSE VALUE" + ex);
+            return "ERROR" + ex ;
+        }catch(SQLException ex){
+            System.out.println("ERROR INFO CHANNEL SEARCH:" + ex);
+            return "ERROR SEARCHING" + ex;
+        }
+        return output.toString();
     }
 }
