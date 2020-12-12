@@ -129,7 +129,7 @@ public class UIText {
         System.out.println("Please Insert PhotoPath: ");
         sb.append("\\r.png"); //sc.next();
         
-        cC.sendRegister(s, "C:\\Temp" , "r.png");
+        cC.sendRegister(sb.toString(), "C:\\Temp" , "r.png");
        /* if (!cC.sendMessage(s)) {
         sb.append(sc.next());
             System.out.println("Não existem Servidores Disponiveis");
@@ -149,6 +149,8 @@ public class UIText {
         sb.append(username).append("+");
         System.out.println("Please Insert Password: ");
         sb.append(sc.next());
+        
+        
         if (!cC.sendMessage(sb.toString())) {
             System.out.println("Não existem Servidores Disponiveis");
         }
