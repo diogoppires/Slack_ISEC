@@ -34,7 +34,9 @@ public class DBCommuncation {
     public boolean editChannel(String name, String newName, String description, String password, String username) {
         return dataBase.editChannel(name, newName,  description, password, username); 
     }
-
+    public boolean joinChannel(String nameC,String password,String username){
+        return dataBase.joinChannel(nameC,password,username);
+    }
     public boolean conversation(String sender, String receiver, String msg){
         return dataBase.conversation(sender,receiver,msg);
     }
@@ -49,6 +51,10 @@ public class DBCommuncation {
 
     public String showAllUsersAndChannels() {
         return dataBase.showAllUsersAndChannels();
+    }
+
+    public String getChannelInfo(String name) {
+        return dataBase.getChannelInfo(name);
     }
 }
 

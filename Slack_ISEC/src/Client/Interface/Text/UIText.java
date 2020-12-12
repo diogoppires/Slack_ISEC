@@ -50,12 +50,12 @@ public class UIText {
         } else {
             sb.append("\t\t>> SLACK ISEC <<\n");
             sb.append("________________________________________________________\n");
-            sb.append("[1] - Create a channel           [7] - List Search\n");
-            sb.append("[2] - Edit a channel.            [8] - List last messages.\n");
-            sb.append("[3] - Delete a channel.          [9] - Show statics from all channels.\n");
-            sb.append("[4] - Talk with other user.      [10] - Log Out.\n");
-            sb.append("[5] - Share files.               [11] - Exit.\n");
-            sb.append("[6] - List all channels and users\n");
+            sb.append("[1] - Create a channel               [7] - List Search\n");
+            sb.append("[2] - Edit a channel.                [8] - List last messages.\n");
+            sb.append("[3] - Delete a channel.              [9] - Show statics from all channels.\n");
+            sb.append("[4] - Talk with other user.          [10] - Join a channel.\n");
+            sb.append("[5] - Share files.                   [11] - Log Out.\n");
+            sb.append("[6] - List all channels and users    [12] - Exit.\n");
             sb.append(">> ");
         }
         return sb.toString();
@@ -95,8 +95,10 @@ public class UIText {
                 case 9:
                     return Options.showStats;
                 case 10:
-                    return Options.logOut;
+                    return Options.joinChannel;
                 case 11:
+                    return Options.logOut;
+                case 12:
                     return Options.exit;
             }
         }
@@ -116,17 +118,18 @@ public class UIText {
 
     private void uiRegister() {
         Scanner sc = new Scanner(System.in);
-        String s = new String("");
-        s = "1+";
+        StringBuilder sb = new StringBuilder();
+        sb.append("1+");
         System.out.println("Please Insert Name: ");
-        s += sc.next() + "+";
+        sb.append(sc.next()).append("+");
         System.out.println("Please Insert Username: ");
-        s += sc.next() + "+";
+        sb.append(sc.next()).append("+");
         System.out.println("Please Insert Password: ");
-        s += sc.next() + "+";
+        sb.append(sc.next()).append("+");
         System.out.println("Please Insert PhotoPath: ");
-        s += sc.next();
-        if (!cC.sendMessage(s)) {
+        sb.append(sc.next());
+
+        if (!cC.sendMessage(sb.toString())) {
             System.out.println("Não existem Servidores Disponiveis");
         }
         cC.awaitResponse();
@@ -202,6 +205,22 @@ public class UIText {
         }
     }
 
+    private void uiJoinChannel(){
+        if (validation) {
+            Scanner sc = new Scanner(System.in);
+            StringBuilder sb = new StringBuilder();
+            sb.append("12+");
+            System.out.print("Insert Channel Name: ");
+            sb.append(sc.next()).append("+");
+            System.out.print("Insert Password:");
+            sb.append(sc.next()).append("+");
+            sb.append(username);
+            cC.sendMessage(sb.toString());
+        } else {
+            System.out.println("Please Login!");
+        }
+    }
+
     private void uiConversation() {
         if (validation) {
             Scanner sc = new Scanner(System.in);
@@ -264,7 +283,16 @@ public class UIText {
     }
 
     private void uiShowStats() {
-        System.out.println("[CLIENT]: NOT IMPLEMENTED");
+        if (validation) {
+            Scanner sc = new Scanner(System.in);
+            StringBuilder sb = new StringBuilder();
+            sb.append("11+");
+            System.out.print("Insert channel id: ");
+            sb.append(sc.next()).append("+");
+            cC.sendMessage(sb.toString());
+        } else {
+            System.out.println("Please Login!");
+        }
     }
 
     private void uiLogOut() {
@@ -290,6 +318,9 @@ public class UIText {
                     break;
                 case deleteChannel:
                     uiDeleteChannel();
+                    break;
+                case joinChannel:
+                    uiJoinChannel();
                     break;
                 case talkWithUser:
                     uiConversation();
@@ -328,6 +359,7 @@ public class UIText {
         createChannel,
         editChannel,
         deleteChannel,
+        joinChannel,
         talkWithUser,
         shareFiles,
         list,
