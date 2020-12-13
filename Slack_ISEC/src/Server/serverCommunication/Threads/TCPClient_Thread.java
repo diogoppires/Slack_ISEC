@@ -127,7 +127,7 @@ public class TCPClient_Thread implements Runnable {
 
             while (true) {
                 String ansClient = receiveTCP();
-                System.out.println("[TCP] Received: " + ansClient); // [DEBUG
+                System.out.println("[TCP] Received: " + ansClient); // [DEBUG]
                 StringTokenizer tokenizer = new StringTokenizer(ansClient, "+");
                 int count = tokenizer.countTokens();
                 try {
@@ -156,8 +156,8 @@ public class TCPClient_Thread implements Runnable {
                                 System.out.println("Recebi um Login");
                                 username = tokenizer.nextToken();
                                 String password = tokenizer.nextToken();
-                                System.out.println(username);
-                                System.out.println(password);
+                                //System.out.println(username);
+                                //System.out.println(password);
 
                                 if (dbC.userLogin(username, password)) {
                                     cD.setUsername(username);
@@ -194,7 +194,6 @@ public class TCPClient_Thread implements Runnable {
                                 String newName = tokenizer.nextToken();
                                 String description = tokenizer.nextToken();
                                 String password = tokenizer.nextToken();
-                                String username = tokenizer.nextToken();
                                 System.out.println(username);
                                 System.out.println(password);
 
@@ -208,14 +207,13 @@ public class TCPClient_Thread implements Runnable {
                             case 5: {
                                 System.out.println("Recebi um Pedido para Apagar Canal");
                                 String name = tokenizer.nextToken();
-                                String username = tokenizer.nextToken();
                                 if (dbC.deleteChannel(name, username)) {
                                     sendTCP("101+Channel Deleted");
                                 } else {
                                     sendTCP("101+Failure Deleting channel");
                                 }
+                                break;
                             }
-
                             case 6: {
                                 System.out.println("Recebi uma nova conversação.");
                                 String sender = tokenizer.nextToken();
@@ -237,9 +235,10 @@ public class TCPClient_Thread implements Runnable {
                             }
                             case 8: {
                                 System.out.println("Recebi uma Consulta de Lista");
+                                tokenizer.nextToken();
                                 String response = dbC.showAllUsersAndChannels();
                                 //System.err.println(response); /*DEBUG*/
-                                sendTCP(response);
+                                sendTCP("0+" + response);
                                 break;
                             }
                             case 9: {
@@ -248,7 +247,7 @@ public class TCPClient_Thread implements Runnable {
                                 String response = dbC.searchUserAndChannel(text);
                                 System.err.println(response);
                                 /*DEBUG*/
-                                sendTCP(response);
+                                sendTCP("0+" + response);
                                 break;
                             }
                             case 10:{
@@ -256,20 +255,19 @@ public class TCPClient_Thread implements Runnable {
                                 String nameOrg = tokenizer.nextToken();
                                 String nameDest = tokenizer.nextToken();
                                 String n = tokenizer.nextToken();
-                                String test = dbC.searchMessages(nameOrg, nameDest, n);
-                                System.out.println(test);
+                                String response = dbC.searchMessages(nameOrg, nameDest, n);
+                                System.out.println(response);
                                 /*DEBUG*/
-                                sendTCP(test);
+                                sendTCP("0+" + response);
                                 break;
                             }
 
                             case 201: {
-
                                 String fileName = tokenizer.nextToken();
                                 String destination = tokenizer.nextToken();
 
                                 receiveFile(fileName, destination);
-
+                                break;
                             }
                             case 202: {
                                 try {
@@ -308,24 +306,22 @@ public class TCPClient_Thread implements Runnable {
                             }
 
                             case 11:{
-                                System.out.println("Recebi uma Consulta de Dados de Canal");
-                                String id = tokenizer.nextToken();
-                                String test = dbC.getChannelInfo(id);
-                                //System.err.println(test);
-                                sendTCP(test);
+                                System.out.println("Recebi uma Consulta de Dados dos Canais");
+                                tokenizer.nextToken();
+                                String response = dbC.getChannelInfo();
+                                //System.err.println(response);
+                                sendTCP("0+" + response);
                                 break;
                             }
                             case 12:{
                                 System.out.println("Recebi um pedido para se juntar ao channel");
                                 String nameChannel = tokenizer.nextToken();
                                 String password = tokenizer.nextToken();
-                                String username = tokenizer.nextToken();
                                 if(dbC.joinChannel(nameChannel,password,username)){
                                     sendTCP("101+Username added to channel");
                                 }else
                                     sendTCP("101+Failed to add Username");
                                 break;
-
                             }
                         }
                     }

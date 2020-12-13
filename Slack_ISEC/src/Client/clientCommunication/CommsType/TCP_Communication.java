@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 
 
 public class TCP_Communication {
-    private final static int SIZE = 256;
+    private final static int SIZE = 1024;
     private final static String ERROR_RECEIVE = "ERROR";
     private final String serverIP;
     private final int serverPort;

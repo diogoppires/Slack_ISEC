@@ -102,7 +102,6 @@ public class ClientCommunication {
     }
 
     public boolean sendMessage(String s) {
-
         try {
             tcpC.sendTCP(s);
         } catch (IOException ex) {
@@ -130,7 +129,7 @@ public class ClientCommunication {
 
                 while (true) {
                     receiveTCP = tcpC.receiveTCP();
-                    System.out.println(receiveTCP);
+                    //System.out.println(receiveTCP); /*DEBUG*/
                     StringTokenizer tokenizer = new StringTokenizer(receiveTCP, "+");
                     switch (Integer.parseInt(tokenizer.nextToken())) {
                         case 201: {
@@ -265,7 +264,7 @@ public class ClientCommunication {
         return receiveTCP;
     }
 
-    public void sendFile(String localDirectory, String fileName, String destination) {
+    public boolean sendFile(String localDirectory, String fileName, String destination) {
 
         File directory = new File(localDirectory);
         File file = new File(localDirectory + File.separator + fileName);
@@ -274,19 +273,19 @@ public class ClientCommunication {
 
         if (!file.exists()) {
             System.out.println("o Ficheiro nao existe");
-            return;
+            return false;
         }
         if (!directory.exists()) {
             System.out.println("A diretoria \"" + file + "\" nao existe)");
-            return;
+            return false;
         }
         if (!directory.isDirectory()) {
             System.out.println("O caminho \"" + file + "\" não se refere a uma diretoria!");
-            return;
+            return false;
         }
         if (!directory.canRead()) {
             System.out.println("Sem permissoes de leitura na diretoria \"" + file + "\"");
-            return;
+            return false;
         }
         try {
             fileIS = new FileInputStream(file);
@@ -294,6 +293,7 @@ public class ClientCommunication {
         } catch (IOException ex) {
             System.err.println("Enviar pedido para upload Ficheiro");
         }
+        return true;
     }
 
     public void receiveFile(int fileCode) {
@@ -306,16 +306,88 @@ public class ClientCommunication {
 
     public void sendRegister(String s, String localDirectory, String fileName) {
         StringBuilder sb = new StringBuilder();
-
         sb.append("1+");
         sb.append(s);
-
         sendMessage(sb.toString());
         if (awaitResponse().equals("REGISTERED")) {
-            sendFile(localDirectory, fileName, "profile");
-            awaitResponse();
+           if(sendFile(localDirectory, fileName, "profile"))
+               awaitResponse();
         }
     }
+
+    public void sendLogin(String s){
+        StringBuilder sb = new StringBuilder();
+        sb.append("2+");
+        sb.append(s);
+        if (!sendMessage(sb.toString())) {
+            System.out.println("Não existem Servidores Disponiveis");
+        }
+        awaitResponse();
+    }
+
+    public void sendCreateChannel(String s){
+        StringBuilder sb = new StringBuilder();
+        sb.append("3+");
+        sb.append(s);
+        sendMessage(sb.toString());
+    }
+
+    public void sendEditChannel(String s){
+        StringBuilder sb = new StringBuilder();
+        sb.append("4+");
+        sb.append(s);
+        sendMessage(sb.toString());
+    }
+
+    public void sendDeleteChannel(String s){
+        StringBuilder sb = new StringBuilder();
+        sb.append("5+");
+        sb.append(s);
+        sendMessage(sb.toString());
+    }
+
+    public void sendJoinChannel(String s){
+        StringBuilder sb = new StringBuilder();
+        sb.append("12+");
+        sb.append(s);
+        sendMessage(sb.toString());
+    }
+
+    public void sendConversation(String s){
+        StringBuilder sb = new StringBuilder();
+        sb.append("6+");
+        sb.append(s);
+        sendMessage(sb.toString());
+    }
+
+    public void sendListAll(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("8+");
+        sb.append("getList");
+        sendMessage(sb.toString());
+    }
+
+    public void sendList(String s){
+        StringBuilder sb = new StringBuilder();
+        sb.append("9+");
+        sb.append(s);
+        sendMessage(sb.toString());
+    }
+
+    public void sendListLastMsg(String s){
+        StringBuilder sb = new StringBuilder();
+        sb.append("10+");
+        sb.append(s);
+        sendMessage(sb.toString());
+    }
+
+    public void sendShowStats(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("11+");
+        sb.append("getChanStats");
+        sendMessage(sb.toString());
+    }
+
 
     private void sendFileThread(int port) {
         System.out.println("envia ficheiro: " + port);

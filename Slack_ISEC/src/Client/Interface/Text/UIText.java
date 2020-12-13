@@ -142,26 +142,19 @@ public class UIText {
     private void uiAuthentication() {
         Scanner sc = new Scanner(System.in);
         StringBuilder sb = new StringBuilder();
-        sb.append("2+");
         System.out.println("Please Insert Username: ");
         username = sc.next();
         sb.append(username).append("+");
         System.out.println("Please Insert Password: ");
         sb.append(sc.next());
-        
-        
-        if (!cC.sendMessage(sb.toString())) {
-            System.out.println("Não existem Servidores Disponiveis");
-        }
-        cC.awaitResponse();
 
+        cC.sendLogin(sb.toString());
     }
 
     private void uiCreateChannel() {
         if (validation) {
             Scanner sc = new Scanner(System.in);
             StringBuilder sb = new StringBuilder();
-            sb.append("3+");
             System.out.println("Please Insert Channel Name: ");
             sb.append(sc.nextLine()).append("+");
             System.out.println("Please Insert Description: ");
@@ -169,7 +162,8 @@ public class UIText {
             System.out.println("Please Insert Channel Password: ");
             sb.append(sc.next()).append("+");
             sb.append(username);
-            cC.sendMessage(sb.toString());
+
+            cC.sendCreateChannel(sb.toString());
         } else {
             System.out.println("Please Login!");
         }
@@ -179,7 +173,6 @@ public class UIText {
         if (validation) {
             Scanner sc = new Scanner(System.in);
             StringBuilder sb = new StringBuilder();
-            sb.append("4+");
             System.out.println("Please Insert Channel Name to Edit: ");
             sb.append(sc.next()).append("+");
             System.out.println("Please Insert New Channel Name: ");
@@ -187,8 +180,9 @@ public class UIText {
             System.out.println("Please Insert Description: ");
             sb.append(sc.next()).append("+");
             System.out.println("Please Insert New Channel Password: ");
-            sb.append(username);
-            cC.sendMessage(sb.toString());
+            sb.append(sc.next());
+
+            cC.sendEditChannel(sb.toString());
         } else {
             System.out.println("Please Login!");
         }
@@ -197,12 +191,10 @@ public class UIText {
     private void uiDeleteChannel() {
         if (validation) {
             Scanner sc = new Scanner(System.in);
-            StringBuilder sb = new StringBuilder();
-            sb.append("5+");
             System.out.println("Please Insert Channel Name: ");
-            sb.append(sc.next()).append("+");
-            sb.append(username);
-            cC.sendMessage(sb.toString());
+            String s = sc.next();
+
+            cC.sendDeleteChannel(s);
         } else {
             System.out.println("Please Login!");
         }
@@ -212,13 +204,12 @@ public class UIText {
         if (validation) {
             Scanner sc = new Scanner(System.in);
             StringBuilder sb = new StringBuilder();
-            sb.append("12+");
             System.out.print("Insert Channel Name: ");
             sb.append(sc.next()).append("+");
             System.out.print("Insert Password:");
-            sb.append(sc.next()).append("+");
-            sb.append(username);
-            cC.sendMessage(sb.toString());
+            sb.append(sc.next());
+
+            cC.sendJoinChannel(sb.toString());
         } else {
             System.out.println("Please Login!");
         }
@@ -228,13 +219,13 @@ public class UIText {
         if (validation) {
             Scanner sc = new Scanner(System.in);
             StringBuilder sb = new StringBuilder();
-            sb.append("6+");
             sb.append(username).append("+");
             System.out.println("Insert the username: ");
             sb.append(sc.nextLine()).append("+");
             System.out.println("Write your message: ");
             sb.append(sc.nextLine());
-            cC.sendMessage(sb.toString());
+
+            cC.sendConversation(sb.toString());
         } else {
             System.out.println("Please Login!");
         }
@@ -265,15 +256,12 @@ public class UIText {
                 break;
             }
         }
-
     }
 
     private void uiListAll() {
         if (validation) {
             Scanner sc = new Scanner(System.in);
-            StringBuilder sb = new StringBuilder();
-            sb.append("8+text");
-            cC.sendMessage(sb.toString());
+            cC.sendListAll();
         } else {
             System.out.println("Please Login!");
         }
@@ -282,11 +270,9 @@ public class UIText {
     private void uiList() {
         if (validation) {
             Scanner sc = new Scanner(System.in);
-            StringBuilder sb = new StringBuilder();
-            sb.append("9+");
             System.out.println("Please Insert Text to Search: ");
-            sb.append(sc.next());
-            cC.sendMessage(sb.toString());
+            String s = sc.next();
+            cC.sendList(s);
         } else {
             System.out.println("Please Login!");
         }
@@ -296,14 +282,14 @@ public class UIText {
         if (validation) {
             Scanner sc = new Scanner(System.in);
             StringBuilder sb = new StringBuilder();
-            sb.append("10+");
             System.out.print("Insert name1 : ");
             sb.append(sc.next()).append("+");
             System.out.print("Insert name2 : ");
             sb.append(sc.next()).append("+");
             System.out.print("Insert the number of messages to display: ");
             sb.append(sc.next());
-            cC.sendMessage(sb.toString());
+
+            cC.sendListLastMsg(sb.toString());
         } else {
             System.out.println("Please Login!");
         }
@@ -311,12 +297,7 @@ public class UIText {
 
     private void uiShowStats() {
         if (validation) {
-            Scanner sc = new Scanner(System.in);
-            StringBuilder sb = new StringBuilder();
-            sb.append("11+");
-            System.out.print("Insert channel id: ");
-            sb.append(sc.next()).append("+");
-            cC.sendMessage(sb.toString());
+            cC.sendShowStats();
         } else {
             System.out.println("Please Login!");
         }
