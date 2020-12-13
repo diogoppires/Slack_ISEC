@@ -4,6 +4,7 @@ import java.io.File;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,7 +40,7 @@ public class DataBase {
                     + "name VARCHAR(100), "
                     + "username VARCHAR(20) NOT NULL PRIMARY KEY, "
                     + "password TEXT NOT NULL, "
-                    + "photopath VARCHAR(250),"
+                    + "photofilecode VARCHAR(250),"
                     + "created DATETIME NOT NULL DEFAULT NOW())");
             // Channels Table
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS channels ("
@@ -74,8 +75,8 @@ public class DataBase {
                     + "destination VARCHAR (20),"
                     + "originUser VARCHAR (20),"
                     + "pathDirectory VARCHAR (50),"
-                    + "created DATETIME NOT NULL DEFAULT NOW(),"
-                    + "FOREIGN KEY(originuser) REFERENCES users(username))");
+                    + "created DATETIME NOT NULL DEFAULT NOW())"
+                   /* + "FOREIGN KEY(originuser) REFERENCES users(username))"*/);
 
         } catch (ClassNotFoundException | SQLException sqlEx) {
             System.out.println("Create DB: " + sqlEx);
@@ -84,9 +85,9 @@ public class DataBase {
         return true;
     }
 
-    public boolean newUser(String name, String username, String password, String photopath) {
-        try {                                       // ( 'name', 'username' , 'password' , 'photopath')    
-            String query = "INSERT INTO users (name, username, password, photopath) VALUES ('" + name + "', '" + username + "', '" + password + "', '" + photopath + "')";
+    public boolean newUser(String name, String username, String password, String photofilecode) {
+        try {                                       // ( 'name', 'username' , 'password' , 'photofilecode')
+            String query = "INSERT INTO users (name, username, password, photofilecode) VALUES ('" + name + "', '" + username + "', '" + password + "', '" + photofilecode + "')";
             stmt.executeUpdate(query);
 
             //Enviar Registo com Sucesso
@@ -132,9 +133,8 @@ public class DataBase {
                 if (username.equals(rs.getString("username"))) {
                     confirm = true;
                 }
-                System.out.print(" User: " + rs.getString("username"));
-                System.out.print(" pass: " + rs.getString("password"));
-                //System.out.print(" photo: "+rs.getString("photopath"));
+                System.out.print("User: " + rs.getString("username"));
+                System.out.println(" Pass: " + rs.getString("password"));
             }
         } catch (SQLException ex) {
             System.out.println("ERRO LOGIN: " + ex);
@@ -145,36 +145,36 @@ public class DataBase {
 
     public boolean newChannel(String name, String description, String password, String creator) {
         try {
-            String query = "select count(id) as total from channels";
+            StringBuilder sb = new StringBuilder();
+            int id = serverID,i;
+            String query;
 
-            rs = stmt.executeQuery(query);
-            if (rs != null) {
-                rs.next();
+            for (i = 0; i < 10000; i++) {
+                sb.append(serverID).append(i);
+                id = Integer.parseInt(sb.toString());
+                query = "select id from channels where id =" + id;
+                rs = stmt.executeQuery(query);
+                if(!rs.next())
+                    break;
+                sb.setLength(0);
             }
-            StringBuilder s = new StringBuilder();
-            s.append(serverID).append(rs.getInt("total"));
-            int id = Integer.parseInt(s.toString());
 
             query = "select name from channels where name = '" + name + "'";
             rs = stmt.executeQuery(query);
             boolean confirmation = false;
-            while (rs.next()) {
-                if (name.equals(rs.getString("name"))) {
-                    return false;
-                } else {
-                    confirmation = true;
-                }
-            }
+
+            if(rs.next() && name.equals(rs.getString("name")))
+                return false;
+            else
+                confirmation = true;
+
             if (confirmation) {
                 query = "INSERT INTO channels (id, name, description, password, creator )VALUES ('" + id + "', '" + name + "', '" + description + "', '" + password + "', '" + creator + "')";
                 stmt.executeUpdate(query);
-                query = "select LAST_INSERT_ID()";
-                rs = stmt.executeQuery(query);
-                rs.next();
-                int idChannel = rs.getInt(1);
-                query = "INSERT INTO channels_users(idChannel,idUsername) VALUES (" + idChannel + ",'" + creator + "')";
+                query = "INSERT INTO channels_users(idChannel,idUsername) VALUES (" + id + ",'" + creator + "')";
                 stmt.executeUpdate(query);
             }
+
         } catch (SQLException ex) {
             System.out.println("ERRO CHANNEL: " + ex);
             return false;
@@ -184,38 +184,43 @@ public class DataBase {
 
     public boolean deleteChannel(String name, String username) {
         try {
-            String query = "SELECT creator FROM channels where name='" + name + "'";
+            String query = "SELECT creator FROM channels where name ='" + name + "'";
             rs = stmt.executeQuery(query);
-            rs.next();
-            if (username.equals(rs.getString(1))) {
-                query = "DELETE FROM channels WHERE name='" + name + "'";
-                stmt.executeUpdate(query);
-            } else {
-                return false;
+            if (rs.next() && username.equals(rs.getString(1))) {
+                query = "SELECT id FROM channels where name ='" + name + "'";
+                rs = stmt.executeQuery(query);
+                if (rs.next()) {
+                    int id = rs.getInt(1);
+                    query = "DELETE FROM channels_users WHERE idChannel = " + id;
+                    stmt.executeUpdate(query);
+                    query = "DELETE FROM channels WHERE id = " + id;
+                    stmt.executeUpdate(query);
+                    return true;
+                }
             }
+
         } catch (SQLException ex) {
             System.out.println("ERROR CHANNEL: " + ex);
-            return false;
         }
-        return true;
+        return false;
     }
 
     public boolean editChannel(String name, String newName, String description, String password, String username) {
         try {
             String query = "select * from channels where creator = '" + username + "' AND name = '" + name + "'";
             rs = stmt.executeQuery(query);
-            while (rs.next()) {
+            while(rs.next()) {
                 if (name.equals(rs.getString("name"))) {
                     query = "update channels SET name = '" + newName + "', description = '"
                             + description + "', password =  '" + password + "' where id = '" + rs.getInt(1) + "'";
                     stmt.executeUpdate(query);
+                    return true;
                 }
             }
         } catch (SQLException ex) {
             System.out.println("ERRO EDIT CHANNEL: " + ex);
-            return false;
         }
-        return true;
+        return false;
     }
 
     public boolean joinChannel(String nameC, String password, String name) {
@@ -292,7 +297,7 @@ public class DataBase {
             int valor = Integer.parseInt(n);
             String query = "select * from messages where (senduser = '" + nameOrg
                     + "' AND originUser = '" + nameDest + "') OR ( originUser = '" + nameOrg
-                    + "' AND sendUser = '" + nameDest + "') order by dateMsg asc limit " + valor;
+                    + "' AND sendUser = '" + nameDest + "') order by created asc limit " + valor;
             rs = stmt.executeQuery(query);
             while (rs.next()) {
                 output
@@ -302,11 +307,9 @@ public class DataBase {
             }
 
         } catch (NumberFormatException ex) {
-            System.out.println("Error Parse value" + ex);
             return "ERROR" + ex;
         } catch (SQLException ex) {
-            System.out.println("ERRO EDIT CHANNEL: " + ex);
-            return "Erro Pesquisa" + ex;
+            return "ERROR" + ex;
         }
         return output.toString();
     }
@@ -322,8 +325,6 @@ public class DataBase {
                         .append("\t[" + rs.getString("username") + "] ")
                         .append("Name: ")
                         .append(rs.getString("name"))
-                        .append("\tPhotopath: ")
-                        .append(rs.getString("photopath"))
                         .append("\n");
             }
             query = "select * from channels";
@@ -340,7 +341,6 @@ public class DataBase {
                         .append("\n");
             }
         } catch (SQLException ex) {
-            System.out.println("ERRO EDIT CHANNEL: " + ex);
             return "Erro Pesquisa" + ex;
         }
         return output.toString();
@@ -393,30 +393,40 @@ public class DataBase {
         }
     }
 
-    public String getChannelInfo(String id) {
+    public String getChannelInfo() {
         StringBuilder output = new StringBuilder();
+        List<Integer> ids = new ArrayList<>();
         try {
-            int valor = Integer.parseInt(id);
-            String query = "select * from channels where id =" + valor;
+            String query = "select id from channels";
             rs = stmt.executeQuery(query);
-            if (rs != null) {
-                output.append("[Channel (id: " + valor + ")]\n");
-                query = "select count(id) total from channels_users where idchannel = " + valor;
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                ids.add(id);
+            }
+            for (int i = 0; i < ids.size(); i++) {
+                output.append("[Channel (id: " + ids.get(i) + ")]\n");
+
+                query = "select count(id) total from channels_users where idchannel = " + ids.get(i);
                 rs = stmt.executeQuery(query);
                 rs.next();
                 output.append("\tNo. users: " + rs.getInt("total") + "\n");
-                query = "select count(id) total from messages where idchannel = " + valor;
+
+                query = "select count(id) total from messages where idchannel = " + ids.get(i);
                 rs = stmt.executeQuery(query);
                 rs.next();
                 output.append("\tNo. messages: " + rs.getInt("total") + "\n");
+            }
+
+                /*
+
+                */
                 //Adicionar após o merge
                 /*
-                query = "select count(id) total from files where destination = " + id;
+                query = "select count(id) total from files where destination = '" + id + "'";
                 rs = stmt.executeQuery(query);
                 output.append("\tNo. files: " + rs.getInt("total") + "\n");
                  */
 
-            }
         } catch (NumberFormatException ex) {
             System.out.println("ERROR PARSE VALUE" + ex);
             return "ERROR" + ex;
@@ -428,7 +438,7 @@ public class DataBase {
     }
 
     public void setUserPhotoID(String username, int fileID) {
-        String query = "update users SET photopath ='" + fileID + "' where username ='" + username + "'";
+        String query = "update users SET photofilecode ='" + fileID + "' where username ='" + username + "'";
         try {
             stmt.executeUpdate(query);
         } catch (SQLException ex) {

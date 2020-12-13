@@ -90,8 +90,8 @@ public class DBCommuncation {
         dataBase.getDatatoUpdate(time, dbNameToSend);
     }
 
-    public String getChannelInfo(String name) {
-        return dataBase.getChannelInfo(name);
+    public String getChannelInfo() {
+        return dataBase.getChannelInfo();
     }
 }
 
