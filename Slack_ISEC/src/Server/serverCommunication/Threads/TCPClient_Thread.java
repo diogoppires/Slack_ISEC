@@ -1,20 +1,15 @@
 package Server.serverCommunication.Threads;
 
-import Server.Utils.Channels;
-import Server.Utils.Conversation;
-import Server.Utils.Register;
+import Server.Utils.*;
 import Server.serverCommunication.CommsTypes.DBCommuncation;
 import Server.serverCommunication.CommsTypes.MulticastCommunication;
 import Server.serverCommunication.CommsTypes.TCPCommunication;
 import Server.serverCommunication.Data.ClientData;
 import Server.serverCommunication.Data.ServerInfo;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+
+import java.lang.instrument.Instrumentation;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -98,6 +93,12 @@ public class TCPClient_Thread implements Runnable {
                         dbC.setUserPhotoID(username, fileID);
                     }
 
+                    System.err.println("[ThreadDownloadFromClient] -> Finish");
+
+
+                    //NEW --> Spreading file
+                    System.out.println("[Spreading]Beginning spreading...");
+                    spreadFile(localFilePath, destination, fileName, iS.getServerId(), fileID);
                 } catch (IOException ex) {
                     Logger.getLogger(TCPClient_Thread.class.getName()).log(Level.SEVERE, null, ex);
                     try {
@@ -107,8 +108,6 @@ public class TCPClient_Thread implements Runnable {
                         Logger.getLogger(TCPClient_Thread.class.getName()).log(Level.SEVERE, null, ex1);
                     }
                 }
-                System.err.println("[ThreadDownloadFromClient] -> Finish");
-
             };
             Thread t1 = new Thread(runnable);
             t1.start();
@@ -117,6 +116,19 @@ public class TCPClient_Thread implements Runnable {
         }
         
         return 0;
+    }
+
+    private void spreadFile(File localFilePath, String fileName, String destination, int serverId, int fileId) throws IOException {
+        FileInputStream fIn = new FileInputStream(localFilePath);
+        byte[] bufStr;
+        int nTimes = 0;
+        while(fIn.available() != 0){
+            bufStr = fIn.readNBytes(SIZE);
+            Chunk ck = new Chunk(fileName, destination, serverId, nTimes, bufStr);
+            mcC.spreadInfo(ck);
+            nTimes++;
+        }
+        fIn.close();
     }
 
     @Override
@@ -262,6 +274,7 @@ public class TCPClient_Thread implements Runnable {
                                 sendTCP(test);
                                 break;
                             }
+
 
                             case 201: {
 

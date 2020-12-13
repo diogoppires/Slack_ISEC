@@ -25,12 +25,14 @@ public class ServerListener_Thread extends Thread {
     private ServerInfo infoServer;
     private DBCommuncation dbC;
     private ArrayList<ClientData> clientsConnections;
+    private ArrayList<ReceiveFiles> rFiles;
 
     public ServerListener_Thread(MulticastSocket mSocket, ServerInfo infoServer, DBCommuncation dbC, ArrayList<ClientData> clientsConnections) {
         this.mSocket = mSocket;
         this.infoServer = infoServer;
         this.dbC = dbC;
         this.clientsConnections = clientsConnections;
+        rFiles = new ArrayList<>();
     }
 
     @Override
@@ -93,13 +95,32 @@ public class ServerListener_Thread extends Thread {
                         }
                     }
 
-                } else if (receivedObj.getClass() == InfoFiles.class) {
+                } else if (receivedObj.getClass() == Chunk.class) {
+                    boolean foundFile = false;
+                    Chunk ck = (Chunk) receivedObj;
 
+                    for(ReceiveFiles rF: rFiles){
+                        if(rF.getServerId() == ck.getServerId() &&
+                        rF.getFileName().equals(ck.getFileName())){
+                            foundFile = true;
+                            rF.addChunk(ck);
+                        }
+                    }
+
+
+                    if(!foundFile && ck.getPos() == 1){
+                        ReceiveFiles rf = new ReceiveFiles(ck.getFileName(),
+                                ck.getServerId(),
+                                infoServer.getServerId(),
+                                ck.getDestination());
+                        rf.createDirectory();
+
+                        rFiles.add(rf);
+                    }
                 }
                 else if (receivedObj.getClass() == DataRequest.class) {
                     DataRequest datarequest = (DataRequest)receivedObj;
                     dbC.getDatatoUpdate(datarequest.getTime(), datarequest.dbName());
-
                 }
 
             }

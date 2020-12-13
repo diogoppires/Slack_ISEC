@@ -103,7 +103,6 @@ public class TCPCommunication {
             while (fileIS.available() != 0) {
                 buffStr = fileIS.readNBytes(MAX_DATA);
                 sendTCP(buffStr);
-
             }
         } catch (IOException ex) {
             Logger.getLogger(TCPCommunication.class.getName()).log(Level.SEVERE, null, ex);

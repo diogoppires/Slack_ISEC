@@ -1,5 +1,6 @@
 package Server.serverCommunication.CommsTypes;
 
+import Server.Utils.Chunk;
 import Server.serverCommunication.Data.ServerInfo;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
