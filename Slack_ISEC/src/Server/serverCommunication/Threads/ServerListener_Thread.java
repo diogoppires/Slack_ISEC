@@ -45,6 +45,7 @@ int i = 0;
                 ObjectInputStream oIN = new ObjectInputStream(new ByteArrayInputStream(dP.getData()));
                 Object receivedObj = oIN.readObject();
 
+
                 if (receivedObj.getClass() == ServerData.class) {
                     ServerData sdReceived = (ServerData) receivedObj;
                     /*System.out.println("(server" + sdReceived.getPortServer() + ") IP: "
@@ -56,33 +57,30 @@ int i = 0;
                     }
                 } else if (receivedObj.getClass() == Register.class) {
                     Register rReceived = (Register) receivedObj;
-                    dbC.userRegister(rReceived.getName(),
-                            rReceived.getUsername(),
-                            rReceived.getPassword(),
-                            rReceived.getPhotoPath());
+                    if(rReceived.getServerId() != infoServer.getServerId()) {
+                        dbC.userRegister(rReceived.getName(),
+                                rReceived.getUsername(),
+                                rReceived.getPassword(),
+                                rReceived.getPhotoPath());
+                    }
                 } else if (receivedObj.getClass() == Authentication.class) {
                     Authentication aReceived = (Authentication) receivedObj;
                     dbC.userLogin(aReceived.getUsername(),
                             aReceived.getPassword());
 
                 } else if (receivedObj.getClass() == Channels.class) {
-                    
-                    //############################# DEBUG
                     Channels cReceived = (Channels) receivedObj;
-                    for (ClientData clientsConnection : clientsConnections) {
-                        OutputStream out = clientsConnection.getSocket().getOutputStream();
-
-                        if (cReceived.getChName().equals(clientsConnection.getUsername())) {
-                            String str = "O user " + cReceived.getChUserAdmin() + " enviou uma mensagem";
-                            out.write(str.getBytes());
-                            out.flush();
-                            System.out.println(clientsConnection.getSocket().getPort());
-
+                    if(cReceived.getServerId() == infoServer.getServerId()) {
+                        for (ClientData clientsConnection : clientsConnections) {
+                            OutputStream out = clientsConnection.getSocket().getOutputStream();
+                            if (cReceived.getChName().equals(clientsConnection.getUsername())) {
+                                String str = "O user " + cReceived.getChUserAdmin() + " enviou uma mensagem";
+                                out.write(str.getBytes());
+                                out.flush();
+                                System.out.println(clientsConnection.getSocket().getPort());
+                            }
                         }
-
                     }
-                     //############################# DEBUG
-
                 } else if (receivedObj.getClass() == Conversation.class) {
                     Conversation convReceived = (Conversation) receivedObj;
                     for(ClientData clientsConnection : clientsConnections){
@@ -98,23 +96,35 @@ int i = 0;
 
                 } else if (receivedObj.getClass() == Chunk.class) {
                     Chunk ck = (Chunk) receivedObj;
-                    for(ReceiveFiles rF: rFiles){
-                        if(rF.getServerId() == ck.getServerId() &&
-                        rF.getFileName().equals(ck.getFileName())){
-                            System.out.println(i + " - aqui - " + ck.getPos());
-                            ++i;
-                            rF.addChunk(ck);
+                    if (infoServer.getServerId() != ck.getServerId()) {
+                        for (ReceiveFiles rF : rFiles) {
+                            if (rF.getServerId() == ck.getServerId() &&
+                                    rF.getFileName().equals(ck.getFileName())) {
+                                rF.addChunk(ck, dbC);
+                                if (ck.isEnd()) {
+                                    for (ClientData clientsConnection : clientsConnections) {
+                                        OutputStream out = clientsConnection.getSocket().getOutputStream();
+                                        if (ck.getDestination().equals(clientsConnection.getUsername())) {
+                                            StringBuilder sb = new StringBuilder();
+                                            sb.append("0+NEW FILE AVAILABLE - [").append(ck.getSender()).append("] - CODE ");
+                                            sb.append(ck.getFileId());
+                                            out.write(sb.toString().getBytes());
+                                            out.flush();
+                                        }
+                                    }
+                                }
+                            }
                         }
-                    }
 
-                    if(ck.getPos() == 0){
-                        ReceiveFiles rf = new ReceiveFiles(ck.getFileName(),
-                                ck.getServerId(),
-                                infoServer.getServerId(),
-                                ck.getDestination());
-                        rf.buildFile();
-                        rf.addChunk(ck);
-                        rFiles.add(rf);
+                        if (ck.getPos() == 0) {
+                            ReceiveFiles rf = new ReceiveFiles(ck.getFileName(),
+                                    ck.getServerId(),
+                                    infoServer.getServerId(),
+                                    ck.getDestination());
+                            rf.buildFile();
+                            rf.addChunk(ck, dbC);
+                            rFiles.add(rf);
+                        }
                     }
                 }
                 else if (receivedObj.getClass() == DataRequest.class) {
@@ -124,8 +134,7 @@ int i = 0;
 
             }
         } catch (IOException | ClassNotFoundException ex) {
-            ex.printStackTrace();
-//            System.out.println("[LISTENER THREAD]: Closed.");
+            System.out.println("[LISTENER THREAD]: Closed.");
         }
     }
 }

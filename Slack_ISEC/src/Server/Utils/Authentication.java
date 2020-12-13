@@ -3,8 +3,9 @@ package Server.Utils;
 import java.io.Serializable;
 
 public class Authentication implements Serializable {
-    String username;
-    String password;
+    private int serverId;
+    private String username;
+    private String password;
 
     public Authentication(String username, String password) {
         this.username = username;
@@ -17,5 +18,9 @@ public class Authentication implements Serializable {
 
     public String getPassword() {
         return password;
+    }
+
+    public int getServerId() {
+        return serverId;
     }
 }

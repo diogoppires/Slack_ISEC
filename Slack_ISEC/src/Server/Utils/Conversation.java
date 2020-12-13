@@ -3,11 +3,13 @@ package Server.Utils;
 import java.io.Serializable;
 
 public class Conversation implements Serializable {
-    String userSender;
-    String message;
-    String userReceiver;
+   private int serverId;
+   private String userSender;
+   private String message;
+   private String userReceiver;
 
-    public Conversation(String userSender, String message, String userReceiver) {
+    public Conversation(String userSender, String message, String userReceiver, int serverId) {
+        this.serverId = serverId;
         this.userSender = userSender;
         this.message = message;
         this.userReceiver = userReceiver;
@@ -23,5 +25,9 @@ public class Conversation implements Serializable {
 
     public String getUserReceiver() {
         return userReceiver;
+    }
+
+    public int getServerId() {
+        return serverId;
     }
 }

@@ -1,20 +1,21 @@
 package Server.Utils;
 
+import Server.serverCommunication.CommsTypes.DBCommuncation;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 public class ReceiveFiles implements Serializable {
-    private static int MAX_DATA = 10000;
     private FileOutputStream foS;
-    private String fileName;
+    private final String fileName;
     private final String destination;
 
     private final int serverIdFile;   //Server where the file is from.
-    private int serverId;       //the actual server ID.
+    private final int serverId;       //the actual server ID.
 
-
+    private String actualPath;
     public ReceiveFiles(String fileName, int serverId, int serverIdFile, String destination) {
         this.fileName = fileName;
         this.serverIdFile = serverIdFile;
@@ -37,11 +38,16 @@ public class ReceiveFiles implements Serializable {
     }
 
 
-    public void addChunk(Chunk rCk){
-        try {
-            foS.write(rCk.getChunk());
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void addChunk(Chunk rCk, DBCommuncation dbc){
+        if(!rCk.isEnd()){
+            try {
+                foS.write(rCk.getChunk());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else{
+            dbc.insertFile(rCk.getDestination(), rCk.getSender(), actualPath, rCk.getFileId());
         }
     }
 
@@ -70,6 +76,7 @@ public class ReceiveFiles implements Serializable {
                 }
             }
             System.out.println(localFilePath.getCanonicalPath());
+            actualPath = localFilePath.getCanonicalPath();
             foS = new FileOutputStream(localFilePath.getCanonicalPath());
         }catch(IOException ex){
             ex.getStackTrace();
