@@ -77,9 +77,12 @@ public class TCPCommunication {
 
     public void receiveTcpFile(FileOutputStream fo, int MAX_DATA) {
         byte[] buffStr = new byte[MAX_DATA];
+        int nTimes = 0;
         try {
             while (iS.read(buffStr) != -1) {
+                System.out.println("TCP= "+ nTimes);
                 fo.write(buffStr);
+                nTimes++;
             }
         } catch (IOException ex) {
             Logger.getLogger(TCPCommunication.class.getName()).log(Level.SEVERE, null, ex);

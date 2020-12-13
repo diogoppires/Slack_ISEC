@@ -1,19 +1,29 @@
 package Server.Utils;
 
-public class Chunk {
-    private static final int SIZE = 5000;
+import java.io.Serializable;
+
+public class Chunk implements Serializable {
     private String fileName;
     private String destination;
     private int serverId;
     private int pos;
     private byte[] chunk;
 
-    public Chunk(String fileName, String destination, int serverId, int pos, byte[] chunk) {
+    private boolean end;
+
+
+
+    public Chunk(String fileName, String destination, int serverId, int pos, byte[] chunk, boolean end) {
         this.fileName = fileName;
         this.destination = destination;
         this.serverId = serverId;
         this.pos = pos;
         this.chunk = chunk;
+        this.end = end;
+    }
+
+    public boolean isEnd() {
+        return end;
     }
 
     public String getFileName() {

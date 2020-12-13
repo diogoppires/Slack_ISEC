@@ -20,7 +20,7 @@ import java.util.ArrayList;
  * multicast group.
  */
 public class ServerListener_Thread extends Thread {
-
+    private static int MAX_DATA = 10000;
     private MulticastSocket mSocket;
     private ServerInfo infoServer;
     private DBCommuncation dbC;
@@ -35,11 +35,12 @@ public class ServerListener_Thread extends Thread {
         rFiles = new ArrayList<>();
     }
 
+int i = 0;
     @Override
     public void run() {
         try {
             while (true) {
-                DatagramPacket dP = new DatagramPacket(new byte[512], 512);
+                DatagramPacket dP = new DatagramPacket(new byte[MAX_DATA], MAX_DATA);
                 mSocket.receive(dP);
                 ObjectInputStream oIN = new ObjectInputStream(new ByteArrayInputStream(dP.getData()));
                 Object receivedObj = oIN.readObject();
@@ -96,25 +97,23 @@ public class ServerListener_Thread extends Thread {
                     }
 
                 } else if (receivedObj.getClass() == Chunk.class) {
-                    boolean foundFile = false;
                     Chunk ck = (Chunk) receivedObj;
-
                     for(ReceiveFiles rF: rFiles){
                         if(rF.getServerId() == ck.getServerId() &&
                         rF.getFileName().equals(ck.getFileName())){
-                            foundFile = true;
+                            System.out.println(i + " - aqui - " + ck.getPos());
+                            ++i;
                             rF.addChunk(ck);
                         }
                     }
 
-
-                    if(!foundFile && ck.getPos() == 1){
+                    if(ck.getPos() == 0){
                         ReceiveFiles rf = new ReceiveFiles(ck.getFileName(),
                                 ck.getServerId(),
                                 infoServer.getServerId(),
                                 ck.getDestination());
-                        rf.createDirectory();
-
+                        rf.buildFile();
+                        rf.addChunk(ck);
                         rFiles.add(rf);
                     }
                 }
@@ -125,7 +124,8 @@ public class ServerListener_Thread extends Thread {
 
             }
         } catch (IOException | ClassNotFoundException ex) {
-            System.out.println("[LISTENER THREAD]: Closed.");
+            ex.printStackTrace();
+//            System.out.println("[LISTENER THREAD]: Closed.");
         }
     }
 }

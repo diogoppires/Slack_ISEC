@@ -98,7 +98,7 @@ public class TCPClient_Thread implements Runnable {
 
                     //NEW --> Spreading file
                     System.out.println("[Spreading]Beginning spreading...");
-                    spreadFile(localFilePath, destination, fileName, iS.getServerId(), fileID);
+                    spreadFile(localFilePath, fileName, destination, iS.getServerId(), fileID);
                 } catch (IOException ex) {
                     Logger.getLogger(TCPClient_Thread.class.getName()).log(Level.SEVERE, null, ex);
                     try {
@@ -124,9 +124,12 @@ public class TCPClient_Thread implements Runnable {
         int nTimes = 0;
         while(fIn.available() != 0){
             bufStr = fIn.readNBytes(SIZE);
-            Chunk ck = new Chunk(fileName, destination, serverId, nTimes, bufStr);
-            mcC.spreadInfo(ck);
+            Chunk ck = new Chunk(fileName, destination, serverId, nTimes, bufStr, false);
+            synchronized (mcC) {
+                mcC.spreadInfo(ck);
+            }
             nTimes++;
+            System.out.println(nTimes + " - Aqui(TCPCLIENT_THREAD)");
         }
         fIn.close();
     }
@@ -277,12 +280,10 @@ public class TCPClient_Thread implements Runnable {
 
 
                             case 201: {
-
                                 String fileName = tokenizer.nextToken();
                                 String destination = tokenizer.nextToken();
-
                                 receiveFile(fileName, destination);
-
+                                break;
                             }
                             case 202: {
                                 try {

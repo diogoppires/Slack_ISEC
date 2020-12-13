@@ -67,6 +67,7 @@ public class MulticastCommunication {
 
         out.writeUnshared(info);
         out.flush();
+
         DatagramPacket dP = new DatagramPacket(bOut.toByteArray(), bOut.size(), mGroup, multicastPort);
         mSocket.send(dP);
     }
