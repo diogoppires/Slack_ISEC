@@ -163,7 +163,7 @@ public class TCPClient_Thread implements Runnable {
                                 System.out.println(password);
                                 if (dbC.userRegister(name, username, password, photopath)) {
                                     sendTCP("101+REGISTERED");
-                                    Register r = new Register(name, username, password, photopath);
+                                    Register r = new Register(name, username, password, photopath, iS.getServerId());
                                     synchronized (iS) {
                                         mcC.spreadInfo(r);
                                     }
@@ -199,7 +199,7 @@ public class TCPClient_Thread implements Runnable {
 
                                 if (dbC.newChannel(name, description, password, username)) {
                                     sendTCP("101+CREATED");
-                                    Channels c = new Channels(name, description, password, username, 1);
+                                    Channels c = new Channels(name, description, password, username, 1, iS.getServerId());
                                     synchronized (iS) {
                                         mcC.spreadInfo(c);
                                     }
@@ -244,7 +244,7 @@ public class TCPClient_Thread implements Runnable {
                                 System.out.println("Msg: " + msg);           //[DEBUG]
                                 if (dbC.conversation(sender, receiver, msg)) {
                                     sendTCP("101+Message sent.");
-                                    Conversation conv = new Conversation(sender, msg, receiver);
+                                    Conversation conv = new Conversation(sender, msg, receiver, iS.getServerId());
                                     synchronized (iS) {
                                         mcC.spreadInfo(conv);
                                     }
