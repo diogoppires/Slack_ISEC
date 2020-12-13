@@ -159,8 +159,8 @@ public class TCPClient_Thread implements Runnable {
                                 username = tokenizer.nextToken();
                                 String password = tokenizer.nextToken();
                                 String photopath = tokenizer.nextToken();
-                                System.out.println(username);
-                                System.out.println(password);
+                                //System.out.println(username);
+                                //System.out.println(password);
                                 if (dbC.userRegister(name, username, password, photopath)) {
                                     sendTCP("101+REGISTERED");
                                     Register r = new Register(name, username, password, photopath, iS.getServerId());
@@ -193,9 +193,8 @@ public class TCPClient_Thread implements Runnable {
                                 String name = tokenizer.nextToken();
                                 String description = tokenizer.nextToken();
                                 String password = tokenizer.nextToken();
-                                String username = tokenizer.nextToken();
-                                System.out.println(username);
-                                System.out.println(password);
+                                //System.out.println(username);
+                                //System.out.println(password);
 
                                 if (dbC.newChannel(name, description, password, username)) {
                                     sendTCP("101+CREATED");
@@ -214,8 +213,8 @@ public class TCPClient_Thread implements Runnable {
                                 String newName = tokenizer.nextToken();
                                 String description = tokenizer.nextToken();
                                 String password = tokenizer.nextToken();
-                                System.out.println(username);
-                                System.out.println(password);
+                                //System.out.println(username);
+                                //System.out.println(password);
 
                                 if (dbC.editChannel(name, newName, description, password, username)) {
                                     sendTCP("101+EDITED");
