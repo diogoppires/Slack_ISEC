@@ -20,24 +20,27 @@ import java.util.ArrayList;
  * multicast group.
  */
 public class ServerListener_Thread extends Thread {
-
+    private static int MAX_DATA = 10000;
     private MulticastSocket mSocket;
     private ServerInfo infoServer;
     private DBCommuncation dbC;
     private ArrayList<ClientData> clientsConnections;
+    private ArrayList<ReceiveFiles> rFiles;
 
     public ServerListener_Thread(MulticastSocket mSocket, ServerInfo infoServer, DBCommuncation dbC, ArrayList<ClientData> clientsConnections) {
         this.mSocket = mSocket;
         this.infoServer = infoServer;
         this.dbC = dbC;
         this.clientsConnections = clientsConnections;
+        rFiles = new ArrayList<>();
     }
 
+int i = 0;
     @Override
     public void run() {
         try {
             while (true) {
-                DatagramPacket dP = new DatagramPacket(new byte[512], 512);
+                DatagramPacket dP = new DatagramPacket(new byte[MAX_DATA], MAX_DATA);
                 mSocket.receive(dP);
                 ObjectInputStream oIN = new ObjectInputStream(new ByteArrayInputStream(dP.getData()));
                 Object receivedObj = oIN.readObject();
@@ -93,18 +96,36 @@ public class ServerListener_Thread extends Thread {
                         }
                     }
 
-                } else if (receivedObj.getClass() == InfoFiles.class) {
+                } else if (receivedObj.getClass() == Chunk.class) {
+                    Chunk ck = (Chunk) receivedObj;
+                    for(ReceiveFiles rF: rFiles){
+                        if(rF.getServerId() == ck.getServerId() &&
+                        rF.getFileName().equals(ck.getFileName())){
+                            System.out.println(i + " - aqui - " + ck.getPos());
+                            ++i;
+                            rF.addChunk(ck);
+                        }
+                    }
 
+                    if(ck.getPos() == 0){
+                        ReceiveFiles rf = new ReceiveFiles(ck.getFileName(),
+                                ck.getServerId(),
+                                infoServer.getServerId(),
+                                ck.getDestination());
+                        rf.buildFile();
+                        rf.addChunk(ck);
+                        rFiles.add(rf);
+                    }
                 }
                 else if (receivedObj.getClass() == DataRequest.class) {
                     DataRequest datarequest = (DataRequest)receivedObj;
                     dbC.getDatatoUpdate(datarequest.getTime(), datarequest.dbName());
-
                 }
 
             }
         } catch (IOException | ClassNotFoundException ex) {
-            System.out.println("[LISTENER THREAD]: Closed.");
+            ex.printStackTrace();
+//            System.out.println("[LISTENER THREAD]: Closed.");
         }
     }
 }
