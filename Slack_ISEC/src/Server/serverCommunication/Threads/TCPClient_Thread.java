@@ -124,7 +124,7 @@ public class TCPClient_Thread implements Runnable {
         int nTimes = 0;
         while(fIn.available() != 0){
             bufStr = fIn.readNBytes(SIZE);
-            Chunk ck = new Chunk(fileName, destination, serverId, nTimes, bufStr, false);
+            Chunk ck = new Chunk(fileName, username, destination, fileId,serverId, nTimes, bufStr, false);
             mcC.spreadInfo(ck);
             try {
                 Thread.sleep(1000);
@@ -134,6 +134,8 @@ public class TCPClient_Thread implements Runnable {
             nTimes++;
             System.out.println(nTimes + " - Aqui(TCPCLIENT_THREAD)");
         }
+        Chunk ck = new Chunk(fileName, username, destination, fileId, serverId, nTimes, new byte[0], true);
+        mcC.spreadInfo(ck);
         fIn.close();
     }
 

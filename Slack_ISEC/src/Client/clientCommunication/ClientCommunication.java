@@ -16,8 +16,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ClientCommunication {
-
-    private final static String EXIT_SUCCESSFULLY = "exitByClient";
     private static final String TCP_CONNECTION = "TCP_CONNECTION?";
     private static final String ANS_FAIL = "FAIL";
     private static final int MAX_DATA = 5000;
@@ -198,16 +196,7 @@ public class ClientCommunication {
             } catch (IOException ex) {
                 System.err.println("Erro: " + ex);
                 return;
-            } finally {
-                try {
-                    tcpC.closeTCP();
-                    tcpC.receiveTCP();
-
-                } catch (IOException e) {
-                    System.exit(1);
-                }
-            } //end of try
-
+            }
         }; // end of runnable
 
         Thread t = new Thread(runnable);

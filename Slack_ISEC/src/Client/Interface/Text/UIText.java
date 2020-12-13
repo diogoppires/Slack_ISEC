@@ -126,9 +126,10 @@ public class UIText {
         System.out.println("Please Insert Password: ");
         sb.append(sc.next()).append("+");
         System.out.println("Please Insert PhotoPath: ");
-        sb.append("\\img.png"); //sc.next();
+        String fileName = sc.next();
+        sb.append("\\").append(fileName); //sc.next();
 
-        cC.sendRegister(sb.toString(), "C:\\Temp" , "img.jpg");
+        cC.sendRegister(sb.toString(), "C:\\Temp" , fileName);
        /* if (!cC.sendMessage(s)) {
         sb.append(sc.next());
             System.out.println("Não existem Servidores Disponiveis");
@@ -240,11 +241,11 @@ public class UIText {
         switch (sc.nextInt()){
             case 1: {
                 System.out.println("Indique a Diretoria.");
-                String localDirectory = "C:\\Temp"; //= sc.next();
+                String localDirectory = "C:\\" + sc.next();
                 System.out.println("Indique o Caminho do ficheiro.");
-                String fileName = "img.jpg"; //sc.next
+                String fileName = sc.next();
                 System.out.println("Indique o destino.");
-                String destination = "Destino"; // sc.next();
+                String destination = sc.next();
                 cC.sendFile(localDirectory, fileName, destination);
                 break;
             }

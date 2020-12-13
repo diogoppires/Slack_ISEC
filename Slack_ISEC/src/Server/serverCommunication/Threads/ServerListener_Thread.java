@@ -98,23 +98,35 @@ int i = 0;
 
                 } else if (receivedObj.getClass() == Chunk.class) {
                     Chunk ck = (Chunk) receivedObj;
-                    for(ReceiveFiles rF: rFiles){
-                        if(rF.getServerId() == ck.getServerId() &&
-                        rF.getFileName().equals(ck.getFileName())){
-                            System.out.println(i + " - aqui - " + ck.getPos());
-                            ++i;
-                            rF.addChunk(ck);
+                    if (infoServer.getServerId() != ck.getServerId()) {
+                        for (ReceiveFiles rF : rFiles) {
+                            if (rF.getServerId() == ck.getServerId() &&
+                                    rF.getFileName().equals(ck.getFileName())) {
+                                rF.addChunk(ck, dbC);
+                                if (ck.isEnd()) {
+                                    for (ClientData clientsConnection : clientsConnections) {
+                                        OutputStream out = clientsConnection.getSocket().getOutputStream();
+                                        if (ck.getDestination().equals(clientsConnection.getUsername())) {
+                                            StringBuilder sb = new StringBuilder();
+                                            sb.append("0+NEW FILE AVAILABLE - [").append(ck.getSender()).append("] - CODE ");
+                                            sb.append(ck.getFileId());
+                                            out.write(sb.toString().getBytes());
+                                            out.flush();
+                                        }
+                                    }
+                                }
+                            }
                         }
-                    }
 
-                    if(ck.getPos() == 0){
-                        ReceiveFiles rf = new ReceiveFiles(ck.getFileName(),
-                                ck.getServerId(),
-                                infoServer.getServerId(),
-                                ck.getDestination());
-                        rf.buildFile();
-                        rf.addChunk(ck);
-                        rFiles.add(rf);
+                        if (ck.getPos() == 0) {
+                            ReceiveFiles rf = new ReceiveFiles(ck.getFileName(),
+                                    ck.getServerId(),
+                                    infoServer.getServerId(),
+                                    ck.getDestination());
+                            rf.buildFile();
+                            rf.addChunk(ck, dbC);
+                            rFiles.add(rf);
+                        }
                     }
                 }
                 else if (receivedObj.getClass() == DataRequest.class) {

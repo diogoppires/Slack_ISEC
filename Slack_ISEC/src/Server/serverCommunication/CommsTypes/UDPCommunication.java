@@ -10,7 +10,7 @@ import java.net.SocketException;
 /**
  *
  * This class will be responsible by the whole UDP process.
- * This class was made with the purpose of make the UDP communication much more easier to use.  
+ * This class was made with the purpose of make the UDP communication much more easier to use.
  */
 public class UDPCommunication {
     private final static int SIZE = 256;
