@@ -22,7 +22,7 @@ public class TCPClient_Thread implements Runnable {
 
     private static final int SIZE = 5000;
     private ClientData cD;
-    private ServerInfo iS;
+    private final ServerInfo iS;
     private MulticastCommunication mcC;
     private DBCommuncation dbC;
     private InputStream inS;
@@ -125,8 +125,11 @@ public class TCPClient_Thread implements Runnable {
         while(fIn.available() != 0){
             bufStr = fIn.readNBytes(SIZE);
             Chunk ck = new Chunk(fileName, destination, serverId, nTimes, bufStr, false);
-            synchronized (mcC) {
-                mcC.spreadInfo(ck);
+            mcC.spreadInfo(ck);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
             nTimes++;
             System.out.println(nTimes + " - Aqui(TCPCLIENT_THREAD)");
@@ -160,7 +163,7 @@ public class TCPClient_Thread implements Runnable {
                                     sendTCP("101+REGISTERED");
                                     Register r = new Register(name, username, password, photopath);
                                     synchronized (iS) {
-                                        //mcC.spreadInfo(r);
+                                        mcC.spreadInfo(r);
                                     }
                                 } else {
                                     sendTCP("101+UNREGISTERED");
