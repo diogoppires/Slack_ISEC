@@ -14,7 +14,9 @@ public class ClientLog {
     StringBuilder msg;
     
     public ClientLog(){
+
         msgLog = new StringBuilder();
+        msg = new StringBuilder();
     }
     
     public void addMsg(String msg){
