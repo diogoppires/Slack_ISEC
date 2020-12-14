@@ -57,8 +57,9 @@ public class Observable {
 
     }
 
-    public void sendFile(String path, String name, String destination) {
+    public void sendFile(String path, String name, String qdestination) {
         System.out.println("PATH "  + path+" NAME " + name + " DEST " + destination);
+        cC.sendFile(path,name,destination);
     }
 
     public void sendConversation(String s) {

@@ -74,11 +74,11 @@ int i = 0;
                         OutputStream out = clientsConnection.getSocket().getOutputStream();
 
                         if (cReceived.getChName().equals(clientsConnection.getUsername())) {
-                            String str = "300+O user " + cReceived.getChUserAdmin() + " enviou uma mensagem";
+                           /*String str = "300+O user " + cReceived.getChUserAdmin() + " enviou uma mensagem";
                             out.write(str.getBytes());
                             out.flush();
                             System.out.println(clientsConnection.getSocket().getPort());
-
+                            */
                         }
                     }
                 } else if (receivedObj.getClass() == Conversation.class) {

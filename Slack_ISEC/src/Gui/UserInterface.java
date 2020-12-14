@@ -4,6 +4,7 @@ package Gui;
 import Gui.ChannelsPane.CreateChannel;
 import Gui.ChannelsPane.DeleteChannel;
 import Gui.ChannelsPane.EditChannel;
+import Gui.ChannelsPane.JoinChannel;
 import Gui.Integration.PropsID;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -79,11 +80,12 @@ public class UserInterface extends BorderPane {
         MenuItem itemExit = new MenuItem("_Exit");
         Menu menuChannel = new Menu("Channel");
         MenuItem createChannel = new MenuItem("Create");
+        MenuItem joinChannel = new MenuItem("Join");
         MenuItem editChannel = new MenuItem("Edit");
         MenuItem deleteChannel = new MenuItem("Delete");
 
         menuFile.getItems().addAll(openFile, new SeparatorMenuItem(),saveFile, loadFile, new SeparatorMenuItem(),itemExit);
-        menuChannel.getItems().addAll(createChannel,editChannel,deleteChannel);
+        menuChannel.getItems().addAll(createChannel,joinChannel,editChannel,deleteChannel);
         menuBar.getMenus().addAll(menuFile, menuChannel);
 
         itemExit.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN));
@@ -95,6 +97,12 @@ public class UserInterface extends BorderPane {
         createChannel.setOnAction(e -> {
             if(validation == true){
                 setCenter(new CreateChannel(Obs, this));
+            }
+
+        });
+        joinChannel.setOnAction(e -> {
+            if(validation == true){
+                setCenter(new JoinChannel(Obs, this));
             }
 
         });

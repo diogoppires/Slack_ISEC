@@ -35,8 +35,10 @@ public class JoinChannel extends BorderPane {
         textName = new Text("Channel Name:");
         textPassword = new Text("Channel Password");
         getName = new TextField();
-        btnSendDelete = new Button("Delete");
+        btnSendDelete = new Button("Join");
         btnCancel = new Button("Cancel");
+        getName = new TextField();
+        getPassword = new PasswordField();
 
         HBox btnBox = new HBox();
         btnBox.setSpacing(10);

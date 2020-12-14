@@ -335,7 +335,11 @@ public class TCPClient_Thread implements Runnable {
                                 tokenizer.nextToken();
                                 String response = dbC.getChannelInfo();
                                 //System.err.println(response);
-                                sendTCP("0+" + response);
+                                if( response != null) {
+                                    sendTCP("0+" + response);
+                                } else
+                                    sendTCP("101+No data to show");
+
                                 break;
                             }
                             case 12:{
