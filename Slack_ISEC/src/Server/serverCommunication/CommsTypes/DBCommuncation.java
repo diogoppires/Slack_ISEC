@@ -21,9 +21,9 @@ public class DBCommuncation {
         dataBase = new DataBase();
         // Create DB Connection and DB if not exists
         dataBase.connectDB(ip, udpPort);
-        
-        
-        
+
+
+
     }
     
     public boolean initializeDBComms(){
@@ -76,6 +76,10 @@ public class DBCommuncation {
 
     public int insertFile(String destination, String username, String localFilePath) {
         return dataBase.insertFile(destination, username, localFilePath);
+    }
+
+    public int insertFile(String destination, String username, String localFilePath, int fileId) {
+        return dataBase.insertFile(destination, username, localFilePath, fileId);
     }
 
     public String getFilePath(String fileCode) {

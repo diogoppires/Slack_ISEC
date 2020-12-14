@@ -43,8 +43,8 @@ public class UDP_Thread extends Thread {
     public void run() {
         try {
             while (exit) {
-
                 String msg = udpC.receiveUDP();
+                System.out.println("AQUI" + msg);
                 if (msg.equals(TCP_CONNECTION)) {
                     synchronized (iS) {
                         if (verifyCap(udpC)) {

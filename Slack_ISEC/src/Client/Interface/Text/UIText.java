@@ -126,9 +126,10 @@ public class UIText {
         System.out.println("Please Insert Password: ");
         sb.append(sc.next()).append("+");
         System.out.println("Please Insert PhotoPath: ");
-        sb.append("\\r.png"); //sc.next();
-        
-        cC.sendRegister(sb.toString(), "C:\\Temp" , "r.png");
+        String fileName = sc.next();
+        sb.append("\\").append(fileName); //sc.next();
+
+        cC.sendRegister(sb.toString(), "C:\\Temp" , fileName);
        /* if (!cC.sendMessage(s)) {
         sb.append(sc.next());
             System.out.println("Não existem Servidores Disponiveis");
@@ -160,8 +161,7 @@ public class UIText {
             System.out.println("Please Insert Description: ");
             sb.append(sc.nextLine()).append("+");
             System.out.println("Please Insert Channel Password: ");
-            sb.append(sc.next()).append("+");
-            sb.append(username);
+            sb.append(sc.next());
 
             cC.sendCreateChannel(sb.toString());
         } else {
@@ -219,7 +219,6 @@ public class UIText {
         if (validation) {
             Scanner sc = new Scanner(System.in);
             StringBuilder sb = new StringBuilder();
-            sb.append(username).append("+");
             System.out.println("Insert the username: ");
             sb.append(sc.nextLine()).append("+");
             System.out.println("Write your message: ");
@@ -240,13 +239,12 @@ public class UIText {
         switch (sc.nextInt()){
             case 1: {
                 System.out.println("Indique a Diretoria.");
-                String localDirectory = "C:\\Temp"; //= sc.next(); 
+                String localDirectory = "C:\\" + sc.next();
                 System.out.println("Indique o Caminho do ficheiro.");
-                String fileName = "img.png"; //sc.next
+                String fileName = sc.next();
                 System.out.println("Indique o destino.");
-                String destination = "Destino"; // sc.next();
+                String destination = sc.next();
                 cC.sendFile(localDirectory, fileName, destination);
-
                 break;
             }
             case 2: {

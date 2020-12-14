@@ -28,6 +28,7 @@ public class DataBase {
             String dbTable = "ServerData";
             // Connect to Server
             String dbURL = "jdbc:mysql://" + dbAddress + "/?useTimezone=true&serverTimezone=UTC";
+
             conn = DriverManager.getConnection(dbURL, dbUser, dbPass);
             stmt = conn.createStatement();
             System.out.println(dbName);
@@ -257,7 +258,6 @@ public class DataBase {
             StringBuilder s = new StringBuilder();
             s.append(serverID).append(rs.getInt("total"));
             int id = Integer.parseInt(s.toString());
-            System.out.println("ID : " + id + "USERSENDER " + sender  + " RECEIVER  " + receiver + "MSG: "+ msg );
             query = "INSERT INTO messages (id, senduser, originuser, message)"
                     + "VALUES ('" + id + "', '" + sender + "', '" + receiver + "', '" + msg + "')";
             stmt.executeUpdate(query);
@@ -347,7 +347,6 @@ public class DataBase {
     }
 
     public int insertFile(String destination, String username, String localFilePath) {
-
         try {
             String query = "select count(id) as total from files";
             rs = stmt.executeQuery(query);
@@ -361,6 +360,29 @@ public class DataBase {
             localFilePath = localFilePath.replace("\\", "\\\\");
             query = "INSERT INTO files (id, destination, originUser, pathDirectory)"
                     + "VALUES ('" + id + "', '" + destination + "', '" + username + "', '" + localFilePath + "')";
+            stmt.executeUpdate(query);
+            query = "select * from files where pathDirectory = '" + localFilePath + "'";
+            rs = stmt.executeQuery(query);
+            if (rs != null) {
+                rs.next();
+                System.err.println("[DATABASE] -> Enviado Id de Ficheiro: " + rs.getInt("id"));
+            } else {
+                return 0;
+            }
+
+            return rs.getInt("id");
+        } catch (SQLException ex) {
+            System.err.println("[DB InsertFile] Erro: " + ex);
+            return 0;
+        }
+    }
+
+    public int insertFile(String destination, String username, String localFilePath, int fileId) {
+        try {
+            String query;
+            localFilePath = localFilePath.replace("\\", "\\\\");
+            query = "INSERT INTO files (id, destination, originUser, pathDirectory)"
+                    + "VALUES ('" + fileId + "', '" + destination + "', '" + username + "', '" + localFilePath + "')";
             stmt.executeUpdate(query);
             query = "select * from files where pathDirectory = '" + localFilePath + "'";
             rs = stmt.executeQuery(query);

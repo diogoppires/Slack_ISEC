@@ -1,20 +1,15 @@
 package Server.serverCommunication.Threads;
 
-import Server.Utils.Channels;
-import Server.Utils.Conversation;
-import Server.Utils.Register;
+import Server.Utils.*;
 import Server.serverCommunication.CommsTypes.DBCommuncation;
 import Server.serverCommunication.CommsTypes.MulticastCommunication;
 import Server.serverCommunication.CommsTypes.TCPCommunication;
 import Server.serverCommunication.Data.ClientData;
 import Server.serverCommunication.Data.ServerInfo;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+
+import java.lang.instrument.Instrumentation;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -28,7 +23,7 @@ public class TCPClient_Thread implements Runnable {
 
     private static final int SIZE = 5000;
     private ClientData cD;
-    private ServerInfo iS;
+    private final ServerInfo iS;
     private MulticastCommunication mcC;
     private DBCommuncation dbC;
     private InputStream inS;
@@ -99,6 +94,12 @@ public class TCPClient_Thread implements Runnable {
                         dbC.setUserPhotoID(username, fileID);
                     }
 
+                    System.err.println("[ThreadDownloadFromClient] -> Finish");
+
+
+                    //NEW --> Spreading file
+                    System.out.println("[Spreading]Beginning spreading...");
+                    spreadFile(localFilePath, fileName, destination, iS.getServerId(), fileID);
                 } catch (IOException ex) {
                     Logger.getLogger(TCPClient_Thread.class.getName()).log(Level.SEVERE, null, ex);
                     try {
@@ -108,8 +109,6 @@ public class TCPClient_Thread implements Runnable {
                         Logger.getLogger(TCPClient_Thread.class.getName()).log(Level.SEVERE, null, ex1);
                     }
                 }
-                System.err.println("[ThreadDownloadFromClient] -> Finish");
-
             };
             Thread t1 = new Thread(runnable);
             t1.start();
@@ -118,6 +117,27 @@ public class TCPClient_Thread implements Runnable {
         }
         
         return 0;
+    }
+
+    private void spreadFile(File localFilePath, String fileName, String destination, int serverId, int fileId) throws IOException {
+        FileInputStream fIn = new FileInputStream(localFilePath);
+        byte[] bufStr;
+        int nTimes = 0;
+        while(fIn.available() != 0){
+            bufStr = fIn.readNBytes(SIZE);
+            Chunk ck = new Chunk(fileName, username, destination, fileId,serverId, nTimes, bufStr, false);
+            mcC.spreadInfo(ck);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            nTimes++;
+            System.out.println(nTimes + " - Aqui(TCPCLIENT_THREAD)");
+        }
+        Chunk ck = new Chunk(fileName, username, destination, fileId, serverId, nTimes, new byte[0], true);
+        mcC.spreadInfo(ck);
+        fIn.close();
     }
 
     @Override
@@ -140,13 +160,13 @@ public class TCPClient_Thread implements Runnable {
                                 username = tokenizer.nextToken();
                                 String password = tokenizer.nextToken();
                                 String photopath = tokenizer.nextToken();
-                                System.out.println(username);
-                                System.out.println(password);
+                                //System.out.println(username);
+                                //System.out.println(password);
                                 if (dbC.userRegister(name, username, password, photopath)) {
                                     sendTCP("101+REGISTERED");
-                                    Register r = new Register(name, username, password, photopath);
+                                    Register r = new Register(name, username, password, photopath, iS.getServerId());
                                     synchronized (iS) {
-                                        //mcC.spreadInfo(r);
+                                        mcC.spreadInfo(r);
                                     }
                                 } else {
                                     sendTCP("101+UNREGISTERED");
@@ -174,13 +194,12 @@ public class TCPClient_Thread implements Runnable {
                                 String name = tokenizer.nextToken();
                                 String description = tokenizer.nextToken();
                                 String password = tokenizer.nextToken();
-                                //String username = tokenizer.nextToken();
-                                System.out.println(username);
-                                System.out.println(password);
+                                //System.out.println(username);
+                                //System.out.println(password);
 
                                 if (dbC.newChannel(name, description, password, username)) {
                                     sendTCP("101+CREATED");
-                                    Channels c = new Channels(name, description, password, username, 1);
+                                    Channels c = new Channels(name, description, password, username, 1, iS.getServerId());
                                     synchronized (iS) {
                                         mcC.spreadInfo(c);
                                     }
@@ -195,8 +214,8 @@ public class TCPClient_Thread implements Runnable {
                                 String newName = tokenizer.nextToken();
                                 String description = tokenizer.nextToken();
                                 String password = tokenizer.nextToken();
-                                System.out.println(username);
-                                System.out.println(password);
+                                //System.out.println(username);
+                                //System.out.println(password);
 
                                 if (dbC.editChannel(name, newName, description, password, username)) {
                                     sendTCP("101+EDITED");
@@ -217,7 +236,6 @@ public class TCPClient_Thread implements Runnable {
                             }
                             case 6: {
                                 System.out.println("Recebi uma nova conversação.");
-                                //String sender = tokenizer.nextToken();
                                 String receiver = tokenizer.nextToken();
                                 String msg = tokenizer.nextToken();
                                 System.out.println("Emissor: " + username);    //[DEBUG]
@@ -225,7 +243,7 @@ public class TCPClient_Thread implements Runnable {
                                 System.out.println("Msg: " + msg);           //[DEBUG]
                                 if (dbC.conversation(username, receiver, msg)) {
                                     sendTCP("101+Message sent.");
-                                    Conversation conv = new Conversation(username, msg, receiver);
+                                    Conversation conv = new Conversation(username, msg, receiver, iS.getServerId());
                                     synchronized (iS) {
                                         mcC.spreadInfo(conv);
                                     }
@@ -269,10 +287,10 @@ public class TCPClient_Thread implements Runnable {
                                 break;
                             }
 
+
                             case 201: {
                                 String fileName = tokenizer.nextToken();
                                 String destination = tokenizer.nextToken();
-
                                 receiveFile(fileName, destination);
                                 break;
                             }

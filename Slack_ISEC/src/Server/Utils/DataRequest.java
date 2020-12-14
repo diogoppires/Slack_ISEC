@@ -13,8 +13,8 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 public class DataRequest implements Serializable {
-    Timestamp time;
-    String dbName;
+    private Timestamp time;
+    private String dbName;
 
     public DataRequest(Timestamp time, String dbName) {
         this.time = time;
@@ -28,7 +28,4 @@ public class DataRequest implements Serializable {
     public String dbName() {
         return dbName;
     }
-    
-    
- 
 }
