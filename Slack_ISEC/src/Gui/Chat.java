@@ -52,6 +52,7 @@ public class Chat extends BorderPane {
     BorderPane chatPane;
     BorderPane textPane;
     ScrollPane textScroll;
+    VBox text;
 
 
 
@@ -110,7 +111,7 @@ public class Chat extends BorderPane {
 
         // chat VIEW
         textPane = new BorderPane();
-        textPane.setMinSize(Constantes.WIN_WIDTH*0.8, Constantes.WIN_HEIGHT * 0.6);
+        textPane.setMinSize(Constantes.WIN_WIDTH*0.8, Constantes.WIN_HEIGHT * 10);
         textPane.setPadding(new Insets(20,20,20,20));
         textPane.getChildren().add(msgView);
 
@@ -121,7 +122,8 @@ public class Chat extends BorderPane {
 
         getText = new TextField();
         getText.setMaxSize(Constantes.WIN_WIDTH*0.8, Constantes.WIN_HEIGHT * 0.6);
-        VBox text = new VBox();
+
+        text = new VBox();
         text.getChildren().addAll(textScroll,getText);
         text.setAlignment(Pos.CENTER);
         text.setSpacing(10);
@@ -205,15 +207,9 @@ public class Chat extends BorderPane {
                 sb.append(obs.getLogM());
                 sb.append("\n");
                 //String s = "\n\n\n" + obs.getLogM();
-               System.out.println("MSGVIEW: " + sb.toString());
-                textPane.getChildren().clear();;
-                textPane.getChildren().add(msgView);
-                textScroll.setContent(textPane);
+                System.out.println("MSGVIEW: " + sb.toString());
+
                 msgView.setText(sb.toString());
-
-
-
-
 
                 System.out.println("FIRE NO TEXTAREA");
 
