@@ -219,7 +219,6 @@ public class UIText {
         if (validation) {
             Scanner sc = new Scanner(System.in);
             StringBuilder sb = new StringBuilder();
-            sb.append(username).append("+");
             System.out.println("Insert the username: ");
             sb.append(sc.nextLine()).append("+");
             System.out.println("Write your message: ");
