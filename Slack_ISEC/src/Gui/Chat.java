@@ -64,7 +64,7 @@ public class Chat extends BorderPane {
 
         btnSendMessage = new Button("Send Message");
         btnSendFile = new Button("Send File");
-        msgView = new Text("\n\nLorem Ipsum is simply dummy text \n");
+        msgView = new Text("\n\n");
         //msgView.setEditable(false);
 
         chatPane = new BorderPane();
