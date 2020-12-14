@@ -6,6 +6,7 @@ import Gui.Integration.PropsID;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.StringTokenizer;
 
 public class Observable {
 
@@ -148,7 +149,8 @@ public class Observable {
     }
 
     public void setDestination(String destination) {
-       this.destination = destination;
+        StringTokenizer tok = new StringTokenizer(destination, "\n");
+        this.destination = tok.nextToken();
     }
 
 }

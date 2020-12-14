@@ -115,7 +115,7 @@ public class Chat extends BorderPane {
         textPane.getChildren().add(msgView);
 
         textScroll = new ScrollPane();
-        textScroll.setMaxSize(Constantes.WIN_WIDTH*0.8, Constantes.WIN_HEIGHT * 0.6);
+        textScroll.setMaxWidth(Constantes.WIN_WIDTH*0.8);
         textScroll.setMinSize(Constantes.WIN_WIDTH*0.8, Constantes.WIN_HEIGHT * 0.6);
         textScroll.setContent(textPane);
 
@@ -206,6 +206,9 @@ public class Chat extends BorderPane {
                 sb.append("\n");
                 //String s = "\n\n\n" + obs.getLogM();
                System.out.println("MSGVIEW: " + sb.toString());
+                textPane.getChildren().clear();;
+                textPane.getChildren().add(msgView);
+                textScroll.setContent(textPane);
                 msgView.setText(sb.toString());
 
 
