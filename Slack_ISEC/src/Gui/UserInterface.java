@@ -142,7 +142,7 @@ public class UserInterface extends BorderPane {
                 ui.set(chatPane);
             }
         });
-        Obs.registaPropertyChangeListener(PropsID.PROP_NOTIFICATION, new PropertyChangeListenerJFX() {
+        Obs.registaPropertyChangeListener(PropsID.PROP_TEXTINFO, new PropertyChangeListenerJFX() {
             @Override
             protected void onChange(PropertyChangeEvent evt) {
                 if (info.getOwner() == null) {

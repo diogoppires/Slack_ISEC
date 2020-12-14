@@ -212,12 +212,21 @@ public class ClientCommunication {
                             break;
                         }
 
-                        case 0:
+                        case 101: {
                             s = tokenizer.nextToken();
                             System.out.println(s);
                             log.addMsg(s);
                             Fire(PropsID.PROP_NOTIFICATION);
                             break;
+                        }
+                        case 0: {
+                            s = tokenizer.nextToken();
+                            System.out.println(s);
+                            log.addMsg(s);
+                            Fire(PropsID.PROP_TEXTINFO);
+                            break;
+                        }
+
                         default:
                             s = tokenizer.nextToken();
                             System.out.println(s);
@@ -456,7 +465,7 @@ public class ClientCommunication {
     }
     void Fire(PropsID prop) {
         props.firePropertyChange(prop.toString(), null, null);
-        System.out.println("Fire no CC");
+        //System.out.println("Fire no CC");
     }
     public String getLog(){
         return log.getLog();

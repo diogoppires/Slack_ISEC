@@ -114,6 +114,12 @@ public class Observable {
                 fire(PropsID.PROP_NOTIFICATION);
             }
         });
+        cC.registaPropertyChangeListener(PropsID.PROP_TEXTINFO , new PropertyChangeListenerJFX() {
+            @Override
+            protected void onChange(PropertyChangeEvent evt) {
+                fire(PropsID.PROP_TEXTINFO);
+            }
+        });
         cC.registaPropertyChangeListener(PropsID.PROP_CHANNELANDUSERS , new PropertyChangeListenerJFX() {
             @Override
             protected void onChange(PropertyChangeEvent evt) {

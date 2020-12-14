@@ -200,15 +200,15 @@ public class Chat extends BorderPane {
         obs.registaPropertyChangeListener(PropsID.PROP_MSG , new PropertyChangeListenerJFX() {
             @Override
             protected void onChange(PropertyChangeEvent evt) {
-                String s =obs.getLogM();
-                System.out.println(s);
-                msgView.setText(s);
 
-                /*
-                textPane.getChildren().clear();;
-                textPane.getChildren().add(msgView);
-                textScroll.setContent(textPane);
-                setRight(chatPane);*/
+                StringBuilder sb = new StringBuilder(msgView.getText());
+                sb.append(obs.getLogM());
+                sb.append("\n");
+                //String s = "\n\n\n" + obs.getLogM();
+               System.out.println("MSGVIEW: " + sb.toString());
+                msgView.setText(sb.toString());
+
+
 
 
 
