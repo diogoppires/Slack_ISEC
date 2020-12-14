@@ -1,0 +1,9 @@
+.bg-pane-channels{
+    -fx-background-color: blue;
+}
+.bg-pane-chat{
+    -fx-background-color: black;
+}
+.bg-pane-bottom{
+    -fx-background-color: yellow;
+}

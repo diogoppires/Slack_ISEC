@@ -11,6 +11,7 @@ package Client.clientCommunication;
  */
 public class ClientLog {
     StringBuilder msgLog;
+    StringBuilder msg;
     
     public ClientLog(){
         msgLog = new StringBuilder();
@@ -20,10 +21,20 @@ public class ClientLog {
         msgLog.append(msg);
         msgLog.append("\n");
     }
+    public void addMsgM(String msgs){
+        msg.append(msgs);
+        msg.append("\n");
+    }
     
     public String getLog(){
         String strLog = msgLog.toString();
         msgLog.replace(0, msgLog.length(), "");
         return strLog;
     }
+    public String getLogM(){
+        String str = msg.toString();
+        msg.replace(0, msg.length(), "");
+        return str;
+    }
+
 }

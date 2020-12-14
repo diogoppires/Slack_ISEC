@@ -70,7 +70,7 @@ public class ServerListener_Thread extends Thread {
                         OutputStream out = clientsConnection.getSocket().getOutputStream();
 
                         if (cReceived.getChName().equals(clientsConnection.getUsername())) {
-                            String str = "O user " + cReceived.getChUserAdmin() + " enviou uma mensagem";
+                            String str = "300+O user " + cReceived.getChUserAdmin() + " enviou uma mensagem";
                             out.write(str.getBytes());
                             out.flush();
                             System.out.println(clientsConnection.getSocket().getPort());
@@ -86,7 +86,7 @@ public class ServerListener_Thread extends Thread {
                         OutputStream out = clientsConnection.getSocket().getOutputStream();
                         if(convReceived.getUserReceiver().equals(clientsConnection.getUsername())){
                             StringBuilder sb = new StringBuilder();
-                            sb.append("0+NEW - [").append(convReceived.getUserSender()).append("]:");
+                            sb.append("301+NEW - [").append(convReceived.getUserSender()).append("]:");
                             sb.append(convReceived.getMessage());
                             out.write(sb.toString().getBytes());
                             out.flush();

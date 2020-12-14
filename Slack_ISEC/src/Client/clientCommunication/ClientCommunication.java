@@ -3,7 +3,11 @@ package Client.clientCommunication;
 import Client.Interface.Text.UIText;
 import Client.clientCommunication.CommsType.TCP_Communication;
 import Client.clientCommunication.CommsType.UDP_Communication;
+import Gui.Integration.PropsID;
 import Server.serverCommunication.Data.ServerDetails;
+
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,12 +30,23 @@ public class ClientCommunication {
     private String serverIp;
     private int serverUdpPort;
     private int serverTcpPort;
-    FileInputStream fileIS;
+    private FileInputStream fileIS;
+    private ClientLog log;
+    //GUI
+    private PropertyChangeSupport props = null;
 
     public ClientCommunication(int serverUdpPort, String serverIp) {
         this.serverIp = serverIp;
         this.serverUdpPort = serverUdpPort;
         this.udpC = new UDP_Communication();
+        log = new ClientLog();
+
+        //MAC
+        System.setProperty("java.net.preferIPv4Stack", "true");
+
+        //Gui
+        this.props = new PropertyChangeSupport(this);
+
     }
 
     private ArrayList getServersList(String serversListBuffer) {
@@ -131,7 +146,9 @@ public class ClientCommunication {
                     receiveTCP = tcpC.receiveTCP();
                     //System.out.println(receiveTCP); /*DEBUG*/
                     StringTokenizer tokenizer = new StringTokenizer(receiveTCP, "+");
+                    String s = "";
                     switch (Integer.parseInt(tokenizer.nextToken())) {
+
                         case 201: {
                             int port = Integer.parseInt(tokenizer.nextToken());
                             sendFileThread(port);
@@ -180,12 +197,34 @@ public class ClientCommunication {
                             // O Ficheiro Solicitado não existe.
                             System.out.println(tokenizer.nextToken());
                             break;
+                        } case 13: {
+                            s = tokenizer.nextToken();
+                            System.out.println(s);
+                            log.addMsg(s);
+                            Fire(PropsID.PROP_CHANNELANDUSERS);
+                            break;
                         }
+                        case 301 : {
+                            s = tokenizer.nextToken();
+                            System.out.println(s);
+                            log.addMsgM(s);
+                            Fire(PropsID.PROP_MSG);
+                            while(tokenizer.hasMoreTokens())
+                                tokenizer.nextToken();
+                            break;
+                        }
+
                         case 0:
-                            System.out.println(tokenizer.nextToken());
+                            s = tokenizer.nextToken();
+                            System.out.println(s);
+                            log.addMsg(s);
+                            Fire(PropsID.PROP_NOTIFICATION);
                             break;
                         default:
-                            System.out.println(receiveTCP);
+                            s = tokenizer.nextToken();
+                            System.out.println(s);
+                            log.addMsg(s);
+                            Fire(PropsID.PROP_NOTIFICATION);
                             break;
 
                     }
@@ -204,6 +243,7 @@ public class ClientCommunication {
                     tcpC.receiveTCP();
 
                 } catch (IOException e) {
+                    System.out.println(e);
                     System.exit(1);
                 }
             } //end of try
@@ -253,6 +293,7 @@ public class ClientCommunication {
 
             } else if (receiveTCP.contains("Logged")) {
                 UIText.setValidation(true);
+                Fire(PropsID.PROP_LOGIN);
                 createThreadTCP();
                 break;
             } else if (receiveTCP.contains("REGISTERED") && !receiveTCP.contains("UNREGISTERED")) {
@@ -310,6 +351,8 @@ public class ClientCommunication {
         sb.append(s);
         sendMessage(sb.toString());
         if (awaitResponse().equals("REGISTERED")) {
+            // GUI
+            if(localDirectory == null) return;
            if(sendFile(localDirectory, fileName, "profile"))
                awaitResponse();
         }
@@ -417,5 +460,24 @@ public class ClientCommunication {
         };
         Thread t2 = new Thread(sendFileRun);
         t2.start();
+    }
+
+    //GUI
+    public void registaPropertyChangeListener(PropsID prop, PropertyChangeListener listener){
+        props.addPropertyChangeListener(prop.toString(),listener);
+    }
+    void Fire(PropsID prop) {
+        props.firePropertyChange(prop.toString(), null, null);
+        System.out.println("Fire no CC");
+    }
+    public String getLog(){
+        return log.getLog();
+    }
+    public String getLogM(){
+        return log.getLogM();
+    }
+
+    public void getUserAndChannels() {
+        sendMessage("13+text");
     }
 }

@@ -19,6 +19,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.nio.file.Files;
+import java.sql.SQLOutput;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -173,7 +174,7 @@ public class TCPClient_Thread implements Runnable {
                                 String name = tokenizer.nextToken();
                                 String description = tokenizer.nextToken();
                                 String password = tokenizer.nextToken();
-                                String username = tokenizer.nextToken();
+                                //String username = tokenizer.nextToken();
                                 System.out.println(username);
                                 System.out.println(password);
 
@@ -216,15 +217,15 @@ public class TCPClient_Thread implements Runnable {
                             }
                             case 6: {
                                 System.out.println("Recebi uma nova conversação.");
-                                String sender = tokenizer.nextToken();
+                                //String sender = tokenizer.nextToken();
                                 String receiver = tokenizer.nextToken();
                                 String msg = tokenizer.nextToken();
-                                System.out.println("Emissor: " + sender);    //[DEBUG]
+                                System.out.println("Emissor: " + username);    //[DEBUG]
                                 System.out.println("Recetor: " + receiver);  //[DEBUG]
                                 System.out.println("Msg: " + msg);           //[DEBUG]
-                                if (dbC.conversation(sender, receiver, msg)) {
+                                if (dbC.conversation(username, receiver, msg)) {
                                     sendTCP("101+Message sent.");
-                                    Conversation conv = new Conversation(sender, msg, receiver);
+                                    Conversation conv = new Conversation(username, msg, receiver);
                                     synchronized (iS) {
                                         mcC.spreadInfo(conv);
                                     }
@@ -259,6 +260,12 @@ public class TCPClient_Thread implements Runnable {
                                 System.out.println(response);
                                 /*DEBUG*/
                                 sendTCP("0+" + response);
+                                break;
+                            }
+                            case 13 :{
+                                System.out.println("Recebi uma Consulta de Users + Lista -> USER");
+                                String response = dbC.getAllUsersAndChannels();
+                                sendTCP("13+" + response);
                                 break;
                             }
 

@@ -93,5 +93,9 @@ public class DBCommuncation {
     public String getChannelInfo() {
         return dataBase.getChannelInfo();
     }
+
+    public String getAllUsersAndChannels() {
+        return dataBase.getAllUsersAndChannels();
+    }
 }
 

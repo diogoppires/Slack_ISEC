@@ -9,6 +9,8 @@ public class mainServer {
         Scanner sc = new Scanner(System.in);
         String getVal = "";
         ServerCommunication sC;
+        //MAC
+        System.setProperty("java.net.preferIPv4Stack", "true");
         if(args.length == 0)
             sC = new ServerCommunication(9999, 9000, "localhost");
         else{

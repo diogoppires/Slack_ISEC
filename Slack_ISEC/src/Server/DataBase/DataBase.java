@@ -74,7 +74,7 @@ public class DataBase {
                     + "id INT NOT NULL PRIMARY KEY,"
                     + "destination VARCHAR (20),"
                     + "originUser VARCHAR (20),"
-                    + "pathDirectory VARCHAR (50),"
+                    + "pathDirectory VARCHAR (500),"
                     + "created DATETIME NOT NULL DEFAULT NOW())"
                    /* + "FOREIGN KEY(originuser) REFERENCES users(username))"*/);
 
@@ -257,7 +257,7 @@ public class DataBase {
             StringBuilder s = new StringBuilder();
             s.append(serverID).append(rs.getInt("total"));
             int id = Integer.parseInt(s.toString());
-
+            System.out.println("ID : " + id + "USERSENDER " + sender  + " RECEIVER  " + receiver + "MSG: "+ msg );
             query = "INSERT INTO messages (id, senduser, originuser, message)"
                     + "VALUES ('" + id + "', '" + sender + "', '" + receiver + "', '" + msg + "')";
             stmt.executeUpdate(query);
@@ -506,4 +506,28 @@ public class DataBase {
         }
 
     }
+
+    public String getAllUsersAndChannels() {
+        StringBuilder output = new StringBuilder();
+        try {
+            String query = "select * from users";
+            rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                output.append(rs.getString("name"))
+                        .append("-");
+
+            }
+            query = "select * from channels";
+            rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                output.append(rs.getString("name"))
+                        .append("-");
+            }
+            output.deleteCharAt(output.length()-1);
+        } catch (SQLException ex) {
+            return "Erro Pesquisa 2: " + ex;
+        }
+        return output.toString();
+    }
+
 }
