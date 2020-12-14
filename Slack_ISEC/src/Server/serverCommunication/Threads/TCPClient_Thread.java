@@ -235,15 +235,14 @@ public class TCPClient_Thread implements Runnable {
                             }
                             case 6: {
                                 System.out.println("Recebi uma nova conversação.");
-                                String sender = tokenizer.nextToken();
                                 String receiver = tokenizer.nextToken();
                                 String msg = tokenizer.nextToken();
-                                System.out.println("Emissor: " + sender);    //[DEBUG]
+                                System.out.println("Emissor: " + username);    //[DEBUG]
                                 System.out.println("Recetor: " + receiver);  //[DEBUG]
                                 System.out.println("Msg: " + msg);           //[DEBUG]
-                                if (dbC.conversation(sender, receiver, msg)) {
+                                if (dbC.conversation(username, receiver, msg)) {
                                     sendTCP("101+Message sent.");
-                                    Conversation conv = new Conversation(sender, msg, receiver, iS.getServerId());
+                                    Conversation conv = new Conversation(username, msg, receiver, iS.getServerId());
                                     synchronized (iS) {
                                         mcC.spreadInfo(conv);
                                     }
