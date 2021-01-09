@@ -1,18 +1,17 @@
 package ClientRMI;
 
 import ObserverRMI.ObserverRemoteInterface;
+import ServerRMI.ServerRemoteInterface;
+
 import java.io.IOException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 public class ClientRemote extends UnicastRemoteObject implements ServerRemoteInterface {
 
-    protected ClientRemote() throws RemoteException {
+    public ClientRemote() throws RemoteException {
     }
 
     @Override
@@ -26,16 +25,26 @@ public class ClientRemote extends UnicastRemoteObject implements ServerRemoteInt
     }
 
     @Override
-    public void addObserver(ObserverRemoteInterface observer) throws RemoteException {
+    public void addObserverUsers(ObserverRemoteInterface observer) throws RemoteException {
 
     }
 
     @Override
-    public void removeObserver(ObserverRemoteInterface observer) throws RemoteException {
+    public void addObserversMessages(ObserverRemoteInterface observer) throws RemoteException {
 
     }
 
-    public static void main(String[] args) {
+    @Override
+    public void removeObserverUsers(ObserverRemoteInterface observer) throws RemoteException {
+
+    }
+
+    @Override
+    public void removeObserverMessages(ObserverRemoteInterface observer) throws RemoteException {
+
+    }
+
+    public void run() {
         String objectUrl;
         ClientRemote clientRemote;
         ServerRemoteInterface remObj;
