@@ -74,7 +74,8 @@ public class Observable {
 
         System.out.println("Start Communication");
         System.out.println("IP " + ip +" PORT " + port);
-        cC = new ClientCommunication(9999, "localhost");
+       // cC = new ClientCommunication(9999, "localhost");
+        cC = new ClientCommunication(port, ip);
         if (!cC.askForConnection()) {
             System.out.println("O Servidor indicado não está Disponivel.");
         }
