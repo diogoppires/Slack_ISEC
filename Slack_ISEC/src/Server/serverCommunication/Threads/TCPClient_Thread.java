@@ -6,6 +6,7 @@ import Server.serverCommunication.CommsTypes.MulticastCommunication;
 import Server.serverCommunication.CommsTypes.TCPCommunication;
 import Server.serverCommunication.Data.ClientData;
 import Server.serverCommunication.Data.ServerInfo;
+import ServerRMI.ServerRemote;
 
 import java.io.*;
 
@@ -242,6 +243,7 @@ public class TCPClient_Thread implements Runnable {
                                 System.out.println("Recetor: " + receiver);  //[DEBUG]
                                 System.out.println("Msg: " + msg);           //[DEBUG]
                                 if (dbC.conversation(username, receiver, msg)) {
+                                    ServerRemote.notifyObservers("Enviei coisas", 1);
                                     sendTCP("101+Message sent.");
                                     Conversation conv = new Conversation(username, msg, receiver, iS.getServerId());
                                     synchronized (iS) {

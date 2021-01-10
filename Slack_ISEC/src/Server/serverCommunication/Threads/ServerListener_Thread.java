@@ -5,6 +5,7 @@ import Server.serverCommunication.CommsTypes.DBCommuncation;
 import Server.serverCommunication.Data.ClientData;
 import Server.serverCommunication.Data.ServerInfo;
 import Server.serverCommunication.Data.ServerData;
+import ServerRMI.ServerRemote;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -88,6 +89,7 @@ int i = 0;
                         if(convReceived.getUserReceiver().equals(clientsConnection.getUsername())){
                             StringBuilder sb = new StringBuilder();
                             sb.append("301+NEW - [").append(convReceived.getUserSender()).append("]:");
+                            ServerRemote.notifyObservers("Recebi coisas", 1);
                             sb.append(convReceived.getMessage());
                             out.write(sb.toString().getBytes());
                             out.flush();

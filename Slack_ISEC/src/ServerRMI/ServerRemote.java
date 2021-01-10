@@ -1,8 +1,9 @@
 package ServerRMI;
 
-import ObserverRMI.ObserverRemoteInterface;
+import ClientRMI.ClientRemoteInterface;
 import Server.serverCommunication.CommsTypes.DBCommuncation;
 import java.rmi.AlreadyBoundException;
+import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -11,12 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ServerRemote extends UnicastRemoteObject implements ServerRemoteInterface {
-    public static final String SERVICE_NAME = "ServerRemote";
+    private static final String SERVICE_NAME = "ServerRemote";
     private DBCommuncation dbCommuncation;
-    List<ObserverRemoteInterface> observersMessages, observersUsers;
+    private static List<ClientRemoteInterface> observersMessages, observersUsers;
 
-    protected ServerRemote(/*DBCommuncation dbCommuncation*/) throws RemoteException {
-        //this.dbCommuncation = dbCommuncation;
+    public ServerRemote(DBCommuncation dbCommuncation) throws RemoteException {
+        this.dbCommuncation = dbCommuncation;
         observersMessages = new ArrayList<>();
         observersUsers = new ArrayList<>();
     }
@@ -25,17 +26,15 @@ public class ServerRemote extends UnicastRemoteObject implements ServerRemoteInt
     public void makeRegister(String name, String username, String password, String photo_path) throws RemoteException {
         //dbCommuncation.userRegister(name, username, password, photo_path);
         System.out.println("TBD - Make Register");
-        notifyObservers("New User", observersUsers);
     }
 
     @Override
     public void sendMsgAll(String msg) throws RemoteException {
         System.out.println("TBD - Send all a message");
-        notifyObservers("New Message", observersMessages);
     }
 
     @Override
-    public void addObserverUsers(ObserverRemoteInterface observer) throws RemoteException {
+    public void addObserverUsers(ClientRemoteInterface observer) throws RemoteException {
         if(!observersUsers.contains(observer)){
             observersUsers.add(observer);
             System.out.println("+ an user observer.");
@@ -43,7 +42,7 @@ public class ServerRemote extends UnicastRemoteObject implements ServerRemoteInt
     }
 
     @Override
-    public void addObserversMessages(ObserverRemoteInterface observer) throws RemoteException {
+    public void addObserversMessages(ClientRemoteInterface observer) throws RemoteException {
         if(!observersMessages.contains(observer)){
             observersMessages.add(observer);
             System.out.println("+ a message observer.");
@@ -51,32 +50,47 @@ public class ServerRemote extends UnicastRemoteObject implements ServerRemoteInt
     }
 
     @Override
-    public void removeObserverUsers(ObserverRemoteInterface observer) throws RemoteException {
+    public void removeObserverUsers(ClientRemoteInterface observer) throws RemoteException {
         if(observersUsers.remove(observer))
             System.out.println("- an user observer.");
     }
 
     @Override
-    public void removeObserverMessages(ObserverRemoteInterface observer) throws RemoteException {
+    public void removeObserverMessages(ClientRemoteInterface observer) throws RemoteException {
         if(observersMessages.remove(observer))
             System.out.println("- an message observer.");
     }
 
-    public synchronized void notifyObservers(String msg, List<ObserverRemoteInterface> observers)
+    public static synchronized void notifyObservers(String msg, int type)
     {
         int i;
-
-        for(i=0; i < observers.size(); i++){
-            try{
-                observers.get(i).notifyNewOperationConcluded(msg);
-            }catch(RemoteException e){
-                observers.remove(i--);
-                System.out.println("- an observer (an inaccessible observer)");
+        List<ClientRemoteInterface> observers = null;
+        switch(type){
+            case 1 -> observers = observersMessages;
+            case 2 -> observers = observersUsers;
+        }
+        if(observers != null){
+            for(i=0; i < observers.size(); i++){
+                try{
+                    observers.get(i).notifyNewOperationConcluded(msg);
+                }catch(RemoteException e){
+                    observers.remove(i--);
+                    System.out.println("- an observer (an inaccessible observer)");
+                }
             }
         }
     }
 
-    public static void main(String args[]) {
+    @Override
+    public void shutdown(){
+        try {
+            UnicastRemoteObject.unexportObject(this, true);
+        } catch (NoSuchObjectException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void run() {
         /*
          * Lanca o rmiregistry localmente no porto TCP por omissao (1099) ou, caso este ja' se encontre
          * a correr, obtem uma referencia.
@@ -93,17 +107,16 @@ public class ServerRemote extends UnicastRemoteObject implements ServerRemoteInt
                 System.out.println("Registry probably in execution!");
                 r = LocateRegistry.getRegistry();
             }
-            ServerRemote service = new ServerRemote();
             /*
              * Cria o servico
              */
-            System.out.println("Service GetRemoteFile created and in execution ("+service.getRef().remoteToString()+"...");
+            System.out.println("Service GetRemoteFile created and in execution ("+this.getRef().remoteToString()+"...");
 
             /*
              * Regista o servico no rmiregistry local para que os clientes possam localiza'-lo, ou seja,
              * obter a sua referencia remota (endereco IP, porto de escuta, etc.).
              */
-            r.bind(SERVICE_NAME, service);
+            r.bind(SERVICE_NAME, this);
             System.out.println("Service " + SERVICE_NAME + " registered on registry...");
 
         }catch(RemoteException e){

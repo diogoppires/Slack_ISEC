@@ -1,6 +1,5 @@
 package ClientRMI;
 
-import ObserverRMI.ObserverRemoteInterface;
 import ServerRMI.ServerRemoteInterface;
 
 import java.io.IOException;
@@ -10,39 +9,8 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 
-public class ClientRemote extends UnicastRemoteObject implements ServerRemoteInterface, ObserverRemoteInterface {
-
-    public ClientRemote() throws RemoteException {
-    }
-
-    @Override
-    public void makeRegister(String name, String username, String password, String photo_path) throws RemoteException {
-
-    }
-
-    @Override
-    public void sendMsgAll(String msg) throws RemoteException {
-
-    }
-
-    @Override
-    public void addObserverUsers(ObserverRemoteInterface observer) throws RemoteException {
-
-    }
-
-    @Override
-    public void addObserversMessages(ObserverRemoteInterface observer) throws RemoteException {
-
-    }
-
-    @Override
-    public void removeObserverUsers(ObserverRemoteInterface observer) throws RemoteException {
-
-    }
-
-    @Override
-    public void removeObserverMessages(ObserverRemoteInterface observer) throws RemoteException {
-
+public class ClientRemote extends UnicastRemoteObject implements ClientRemoteInterface {
+    protected ClientRemote() throws RemoteException {
     }
 
     @Override
@@ -72,19 +40,17 @@ public class ClientRemote extends UnicastRemoteObject implements ServerRemoteInt
                 System.out.println("Indique uma opção:");
                 System.out.println("1 - Registar User   2 - Enviar Mensagem");
                 System.out.println("3 - Notificar Users 4 - Notificar Mensagens");
+                System.out.println("5 - Sair");
                 switch(sc.nextInt()){
                     case 1 -> remObj.makeRegister("Ola", "xau", "tau", "pau");
                     case 2 -> remObj.sendMsgAll("ola");
                     case 3 -> remObj.addObserverUsers(clientRemote);
                     case 4 ->  remObj.addObserversMessages(clientRemote);
-                    case 6 -> over = true;
+                    case 5 ->  over = true;
                 }
             }
 
-
-
-
-
+            UnicastRemoteObject.unexportObject(clientRemote, true);
         } catch (RemoteException e) {
             System.out.println("Remote Error - " + e);
         } catch (NotBoundException e) {

@@ -3,10 +3,13 @@ package Server.serverCommunication;
 import Server.serverCommunication.Threads.*;
 import Server.serverCommunication.CommsTypes.*;
 import Server.serverCommunication.Data.*;
+import ServerRMI.ServerRemote;
+
 import java.io.IOException;
 import java.net.BindException;
 import java.net.Socket;
 import java.net.SocketException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
@@ -37,7 +40,9 @@ public class ServerCommunication {
     private VerifyPing_Thread pingVerify;
     private Ping_Thread sendPing;
     private AtomicBoolean end;
-    
+
+    //Remote Server
+    private ServerRemote sR;
 
     public ServerCommunication(int udpPort, int tcpPort, String ip) {
         clientsConnections = new ArrayList<>();
@@ -52,7 +57,6 @@ public class ServerCommunication {
         dbC =  new DBCommuncation(ip, udpC.getServerPort(), mcC);
         infoSv = new ServerInfo(udpC.getServerPort());
         end = new AtomicBoolean();
-        
     }
     
     public void startThreads(){
@@ -85,6 +89,7 @@ public class ServerCommunication {
             Logger.getLogger(ServerCommunication.class.getName()).log(Level.SEVERE, null, ex);
         }
         udpC.closeUDP();
+        sR.shutdown();
     }
     
     /**
@@ -96,6 +101,12 @@ public class ServerCommunication {
             mcC.initializeMulticast();
             tcpC.initializeTCP();
             dbC.initializeDBComms();
+            try {
+                sR = new ServerRemote(dbC);
+                sR.run();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         } catch (IOException ex) {
             Logger.getLogger(ServerCommunication.class.getName()).log(Level.SEVERE, null, ex);
         }
