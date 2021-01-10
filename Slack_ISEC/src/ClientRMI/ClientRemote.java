@@ -9,7 +9,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-public class ClientRemote extends UnicastRemoteObject implements ServerRemoteInterface {
+public class ClientRemote extends UnicastRemoteObject implements ServerRemoteInterface, ObserverRemoteInterface {
 
     public ClientRemote() throws RemoteException {
     }
@@ -44,13 +44,18 @@ public class ClientRemote extends UnicastRemoteObject implements ServerRemoteInt
 
     }
 
-    public void run() {
+    @Override
+    public void notifyNewOperationConcluded(String description) throws RemoteException {
+        System.out.println(description);
+    }
+
+    public static void main(String args[]) {
         String objectUrl;
         ClientRemote clientRemote;
         ServerRemoteInterface remObj;
         try{
 
-            objectUrl = "rmi://localhost/ServerRemote";
+            objectUrl = "rmi://127.0.0.1/ServerRemote";
             /*
              * Obtem a referencia remota para o servico com nome "GetRemoteFile"
              */
@@ -59,6 +64,9 @@ public class ClientRemote extends UnicastRemoteObject implements ServerRemoteInt
              * Lanca o servico local para acesso remoto por parte do servidor.
              */
             clientRemote = new ClientRemote();
+
+            remObj.addObserversMessages(clientRemote);
+            remObj.addObserverUsers(clientRemote);
             remObj.makeRegister("Ola", "xau", "tau", "pau");
             remObj.sendMsgAll("ola");
 
