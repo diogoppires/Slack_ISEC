@@ -8,6 +8,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Scanner;
 
 public class ClientRemote extends UnicastRemoteObject implements ServerRemoteInterface, ObserverRemoteInterface {
 
@@ -65,10 +66,24 @@ public class ClientRemote extends UnicastRemoteObject implements ServerRemoteInt
              */
             clientRemote = new ClientRemote();
 
-            remObj.addObserversMessages(clientRemote);
-            remObj.addObserverUsers(clientRemote);
-            remObj.makeRegister("Ola", "xau", "tau", "pau");
-            remObj.sendMsgAll("ola");
+            boolean over = false;
+            Scanner sc = new Scanner(System.in);
+            while (!over){
+                System.out.println("Indique uma opção:");
+                System.out.println("1 - Registar User   2 - Enviar Mensagem");
+                System.out.println("3 - Notificar Users 4 - Notificar Mensagens");
+                switch(sc.nextInt()){
+                    case 1 -> remObj.makeRegister("Ola", "xau", "tau", "pau");
+                    case 2 -> remObj.sendMsgAll("ola");
+                    case 3 -> remObj.addObserverUsers(clientRemote);
+                    case 4 ->  remObj.addObserversMessages(clientRemote);
+                    case 6 -> over = true;
+                }
+            }
+
+
+
+
 
         } catch (RemoteException e) {
             System.out.println("Remote Error - " + e);
