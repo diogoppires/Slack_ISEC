@@ -133,7 +133,6 @@ int i = 0;
                     DataRequest datarequest = (DataRequest)receivedObj;
                     dbC.getDatatoUpdate(datarequest.getTime(), datarequest.dbName());
                 }
-
             }
         } catch (IOException | ClassNotFoundException ex) {
             System.out.println("[LISTENER THREAD]: Closed.");

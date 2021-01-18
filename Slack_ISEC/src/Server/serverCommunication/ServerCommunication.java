@@ -57,6 +57,7 @@ public class ServerCommunication {
         dbC =  new DBCommuncation(ip, udpC.getServerPort(), mcC);
         infoSv = new ServerInfo(udpC.getServerPort());
         end = new AtomicBoolean();
+
     }
     
     public void startThreads(){
@@ -102,7 +103,7 @@ public class ServerCommunication {
             tcpC.initializeTCP();
             dbC.initializeDBComms();
             try {
-                sR = new ServerRemote(dbC);
+                sR = new ServerRemote(dbC, clientsConnections, udpC.getServerPort());
                 sR.run();
             } catch (RemoteException e) {
                 e.printStackTrace();

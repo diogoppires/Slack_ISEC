@@ -2,6 +2,11 @@ package ServerRMI;
 
 import ClientRMI.ClientRemoteInterface;
 import Server.serverCommunication.CommsTypes.DBCommuncation;
+import Server.serverCommunication.CommsTypes.MulticastCommunication;
+import Server.serverCommunication.Data.ClientData;
+
+import java.io.IOException;
+import java.net.SocketException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
@@ -13,24 +18,26 @@ import java.util.List;
 
 public class ServerRemote extends UnicastRemoteObject implements ServerRemoteInterface {
     private static final String SERVICE_NAME = "ServerRemote";
+    private final int serverId;
     private DBCommuncation dbCommuncation;
     private static List<ClientRemoteInterface> observersMessages, observersUsers;
 
-    public ServerRemote(DBCommuncation dbCommuncation) throws RemoteException {
+    public ServerRemote(DBCommuncation dbCommuncation, int serverId) throws RemoteException {
         this.dbCommuncation = dbCommuncation;
+        this.serverId = serverId;
         observersMessages = new ArrayList<>();
         observersUsers = new ArrayList<>();
     }
 
     @Override
     public void makeRegister(String name, String username, String password, String photo_path) throws RemoteException {
-        //dbCommuncation.userRegister(name, username, password, photo_path);
+        //dbCommunication.userRegister(name, username, password, photo_path);
         System.out.println("TBD - Make Register");
     }
 
     @Override
     public void sendMsgAll(String msg) throws RemoteException {
-        System.out.println("TBD - Send all a message");
+
     }
 
     @Override
@@ -116,7 +123,11 @@ public class ServerRemote extends UnicastRemoteObject implements ServerRemoteInt
              * Regista o servico no rmiregistry local para que os clientes possam localiza'-lo, ou seja,
              * obter a sua referencia remota (endereco IP, porto de escuta, etc.).
              */
-            r.bind(SERVICE_NAME, this);
+
+            StringBuilder sb = new StringBuilder();
+            String uniqueName = sb.append(SERVICE_NAME).append("_").append(serverId).toString();
+            System.out.println(uniqueName);
+            r.bind(uniqueName, this);
             System.out.println("Service " + SERVICE_NAME + " registered on registry...");
 
         }catch(RemoteException e){

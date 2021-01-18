@@ -239,9 +239,9 @@ public class TCPClient_Thread implements Runnable {
                                 System.out.println("Recebi uma nova conversação.");
                                 String receiver = tokenizer.nextToken();
                                 String msg = tokenizer.nextToken();
-                                System.out.println("Emissor: " + username);    //[DEBUG]
-                                System.out.println("Recetor: " + receiver);  //[DEBUG]
-                                System.out.println("Msg: " + msg);           //[DEBUG]
+                                System.out.println("Emissor: " + username);     //[DEBUG]
+                                System.out.println("Recetor: " + receiver);     //[DEBUG]
+                                System.out.println("Msg: " + msg);              //[DEBUG]
                                 if (dbC.conversation(username, receiver, msg)) {
                                     ServerRemote.notifyObservers("Enviei coisas", 1);
                                     sendTCP("101+Message sent.");

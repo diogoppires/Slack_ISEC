@@ -70,12 +70,4 @@ public class ClientData {
     public void setServerBackup(ServerData backupServer){
         sDataClient = backupServer;
     }
-    
-    
-    
-    
-    
-    
-    
-    
 }
