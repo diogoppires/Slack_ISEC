@@ -14,5 +14,6 @@ public class mainClient {
         
         UIText ui = new UIText(cC);
         ui.run();
+        cC.closeThread();
     }
 }
