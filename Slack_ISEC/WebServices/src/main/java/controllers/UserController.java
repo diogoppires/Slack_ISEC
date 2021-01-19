@@ -17,11 +17,6 @@ public class UserController
 
     @PostMapping("user/login")
     public User login(@RequestBody User user) {
-        // TODO: Login with database (check username and password)?
-        String token = Token.getNewToken(user.getUsername());
-        user.setToken(token);
-        return user;
-        /*
 
         if (DataBase.loginUser(user.getUsername(), user.getPassword()))
         {
@@ -33,7 +28,7 @@ public class UserController
             return null;
         }
 
-         */
+
     }
 
 

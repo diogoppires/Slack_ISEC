@@ -13,13 +13,6 @@ public class Token
 {
     private static final HashMap<String, String> allTokens = new HashMap<>();
 
-    /*public static String getNewToken(String username)
-    {
-        String token = username+"-"+username;
-        allTokens.put(username, token);
-        return token;
-    }*/
-
     public static String getNewToken(String username)
     {
         SimpleDateFormat sDF = new SimpleDateFormat("dd-MM-yyyy##HH:mm:ss:SSS");

@@ -45,9 +45,9 @@ public class WebApplication {
 					.antMatchers(HttpMethod.POST, "/user/login").permitAll()
 					.anyRequest().authenticated().and()
 					.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-				//http
-				//	.exceptionHandling()
-				//	.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+				http
+					.exceptionHandling()
+					.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
 		}
 	}
 
