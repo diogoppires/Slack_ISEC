@@ -29,7 +29,7 @@ public class ClientRemote extends UnicastRemoteObject implements ClientRemoteInt
     //Interfaces
     ServerRemoteInterface remoteInterface;
 
-    protected ClientRemote() throws RemoteException {
+    public ClientRemote() throws RemoteException {
     }
 
     @Override
@@ -111,6 +111,7 @@ public class ClientRemote extends UnicastRemoteObject implements ClientRemoteInt
         try{
             Registry r = LocateRegistry.getRegistry(1099);
             allServices = r.list();     //Get list of all services
+
 
             //Format the list of services
             sb.append("List of Services:\n");

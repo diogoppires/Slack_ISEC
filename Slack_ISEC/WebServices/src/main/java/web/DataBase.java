@@ -79,7 +79,7 @@ public class DataBase {
         StringBuilder output = new StringBuilder();
         try {
             int valor = n;
-            String query = "select * from messages; ";// order by created DESC limit " + valor;
+            String query = "select * from messages order by created DESC limit " + valor;
             rs = stmt.executeQuery(query);
             while (rs.next()) {
                 output

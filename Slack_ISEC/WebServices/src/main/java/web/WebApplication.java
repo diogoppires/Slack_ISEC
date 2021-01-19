@@ -29,6 +29,7 @@ public class WebApplication {
 	public static void main(String[] args) {
 
 		DataBase.connectDB("localhost", 9999);
+		RMIService.RMIServiceInit(9999);
 		SpringApplication.run(WebApplication.class, args);
 
 	}
