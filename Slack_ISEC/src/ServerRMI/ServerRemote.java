@@ -1,6 +1,7 @@
 package ServerRMI;
 
 import ClientRMI.ClientRemoteInterface;
+import Server.Utils.Register;
 import Server.serverCommunication.CommsTypes.DBCommuncation;
 import Server.serverCommunication.CommsTypes.MulticastCommunication;
 import Server.serverCommunication.Data.ClientData;
@@ -20,11 +21,9 @@ import java.util.List;
 public class ServerRemote extends UnicastRemoteObject implements ServerRemoteInterface {
     private static final String SERVICE_NAME = "ServerRemote";
     private final int serverId;
-    private DBCommuncation dbCommuncation;
     private static List<ClientRemoteInterface> observersMessages, observersUsers;
 
     public ServerRemote(DBCommuncation dbCommuncation, int serverId) throws RemoteException {
-        this.dbCommuncation = dbCommuncation;
         this.serverId = serverId;
         observersMessages = new ArrayList<>();
         observersUsers = new ArrayList<>();
@@ -32,8 +31,13 @@ public class ServerRemote extends UnicastRemoteObject implements ServerRemoteInt
 
     @Override
     public void makeRegister(String name, String username, String password, String photo_path) throws RemoteException {
-        //dbCommunication.userRegister(name, username, password, photo_path);
-        System.out.println("TBD - Make Register");
+        ServerCommunication.getDbC().userRegister(name, username, password, photo_path);
+        Register remote = new Register(name, username, password, photo_path, serverId);
+        try {
+            ServerCommunication.getMulticast().spreadInfo(remote);
+        } catch (IOException e) {
+            System.out.println("\n\n[RMI ERROR]: Error while spreading a register.\n\n");
+        }
     }
 
     @Override

@@ -30,9 +30,9 @@ public class ServerCommunication {
 
     private UDPCommunication udpC;
     private TCPCommunication tcpC;
-    private MulticastCommunication mcC;
+    private static MulticastCommunication mcC;
     private ServerInfo infoSv; 
-    private DBCommuncation dbC;
+    private static DBCommuncation dbC;
     private static ArrayList<ClientData> clientsConnections;
     
     //Threads
@@ -117,5 +117,13 @@ public class ServerCommunication {
 
     public static ArrayList<ClientData> getClientsConnection(){
         return clientsConnections;
+    }
+
+    public static MulticastCommunication getMulticast(){
+        return mcC;
+    }
+
+    public static DBCommuncation getDbC(){
+        return dbC;
     }
 }

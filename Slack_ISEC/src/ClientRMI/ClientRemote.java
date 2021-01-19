@@ -45,7 +45,8 @@ public class ClientRemote extends UnicastRemoteObject implements ClientRemoteInt
         sb.append("3 - Notify Users                 4 - Notify Message\n");
         sb.append("5 - Next Service(Automatic)      6 - Previous Service(Automatic)\n");
         sb.append("7 - Change Service(manually)     8 - Check list of all services\n");
-        sb.append("9 - Exit");
+        sb.append("9 - Update list of services\n");
+        sb.append("10 - Exit");
         return sb.toString();
     }
 
@@ -84,6 +85,27 @@ public class ClientRemote extends UnicastRemoteObject implements ClientRemoteInt
         remoteInterface = (ServerRemoteInterface) Naming.lookup(currentService);
     }
 
+    public void registerUser() throws RemoteException {
+        Scanner sc = new Scanner(System.in);
+        String name, username, password, photo_path;
+        System.out.print("---------------------------------\n");
+        System.out.print("Name: "); name = sc.nextLine();
+        System.out.print("Username: "); username = sc.nextLine();
+        System.out.print("Password: "); password = sc.nextLine();
+        System.out.print("Photo_Path: "); photo_path = sc.nextLine();
+        System.out.print("---------------------------------\n\n");
+        remoteInterface.makeRegister(name, username, password, photo_path);
+    }
+
+    public void sendMsgAll() throws RemoteException{
+        Scanner sc = new Scanner(System.in);
+        String message;
+        System.out.print("---------------------------------\n");
+        System.out.print("Message: "); message = sc.nextLine();
+        System.out.print("---------------------------------\n\n");
+        remoteInterface.sendMsgAll(message);
+    }
+
 
     public void run(){
         try{
@@ -108,15 +130,16 @@ public class ClientRemote extends UnicastRemoteObject implements ClientRemoteInt
             while (!over){
                 System.out.println(printCommands());
                 switch(sc.nextInt()){
-                    case 1 -> remoteInterface.makeRegister("Ola", "xau", "tau", "pau");
-                    case 2 -> remoteInterface.sendMsgAll("[REMOTE CLIENT] TEST");
+                    case 1 -> registerUser();
+                    case 2 -> sendMsgAll();
                     case 3 -> remoteInterface.addObserverUsers(this);
                     case 4 -> remoteInterface.addObserversMessages(this);
                     case 5 -> nextService();
                     case 6 -> previousService();
                     case 7 -> changeServiceManually();
                     case 8 -> System.out.println(formattedList);
-                    case 9 -> over = true;
+                    case 9 -> updateList();
+                    case 10 -> over = true;
                 }
             }
 
@@ -126,6 +149,21 @@ public class ClientRemote extends UnicastRemoteObject implements ClientRemoteInt
         } catch (NotBoundException | MalformedURLException e) {
             e.printStackTrace();
         }
+    }
+
+    private void updateList() throws RemoteException {
+        Registry r = LocateRegistry.getRegistry(1099);
+        allServices = r.list();     //Get list of all services
+
+        //Format the list of services
+        sb.append("List of Services:\n");
+        for(int i = 0; i < allServices.length; i++){
+            sb.append(i).append(" ~~>").append(allServices[i]).append("\n");
+        }
+        formattedList = "";
+        formattedList = sb.toString();
+        System.out.println(">>>>>>> UPDATED LIST OF SERVICES <<<<<<<");
+        System.out.println(formattedList);
     }
 
     public static void main(String[] args) {

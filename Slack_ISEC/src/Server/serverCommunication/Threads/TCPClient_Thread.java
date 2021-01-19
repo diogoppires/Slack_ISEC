@@ -184,6 +184,9 @@ public class TCPClient_Thread implements Runnable {
                                 if (dbC.userLogin(username, password)) {
                                     cD.setUsername(username);
                                     sendTCP("Logged");
+                                    //------------------ NOTIFY REMOTE -----------------------------
+                                    ServerRemote.notifyObservers("["+iS.getServerId()+" - Login]User " + username + " authenticated.", 2);
+                                    //------------------ NOTIFY REMOTE -----------------------------
                                 } else {
                                     sendTCP("101+UNLOGGED");
                                 }
@@ -243,7 +246,7 @@ public class TCPClient_Thread implements Runnable {
                                 System.out.println("Recetor: " + receiver);     //[DEBUG]
                                 System.out.println("Msg: " + msg);              //[DEBUG]
                                 if (dbC.conversation(username, receiver, msg)) {
-                                    ServerRemote.notifyObservers("Enviei coisas", 1);
+                                    ServerRemote.notifyObservers("[MESSAGE SENT]Sender: " + username + "\nDestiny:" + receiver + "\nMessage: " + msg, 1);
                                     sendTCP("101+Message sent.");
                                     Conversation conv = new Conversation(username, msg, receiver, iS.getServerId());
                                     synchronized (iS) {

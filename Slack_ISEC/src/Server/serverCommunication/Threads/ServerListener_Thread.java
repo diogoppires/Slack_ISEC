@@ -89,7 +89,9 @@ int i = 0;
                         if(convReceived.getUserReceiver().equals(clientsConnection.getUsername())){
                             StringBuilder sb = new StringBuilder();
                             sb.append("301+NEW - [").append(convReceived.getUserSender()).append("]:");
-                            ServerRemote.notifyObservers("Recebi coisas", 1);
+                            //------------------ NOTIFY REMOTE -----------------------------
+                            ServerRemote.notifyObservers("[MESSAGE RECEIVED] Sender: " + convReceived.getUserSender() + "\nDestiny:" + convReceived.getUserReceiver() + "\nMessage: " + convReceived.getMessage(), 1);
+                            //------------------ NOTIFY REMOTE -----------------------------
                             sb.append(convReceived.getMessage());
                             out.write(sb.toString().getBytes());
                             out.flush();
