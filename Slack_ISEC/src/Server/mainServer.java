@@ -18,6 +18,7 @@ public class mainServer {
         }
         sC.initializeComms();
         sC.startThreads();
+
         while(!getVal.equals("exit")){
             getVal = sc.next();
         }
