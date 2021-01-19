@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class HelloWordController {
 
     @GetMapping("/hello-world")
-    public String helloWorld (@RequestParam(value="name", required = false /*,defaultValue = World"*/) String name,
-    @RequestParam(value = "idade") Integer idade){
+    public String helloWorld(@RequestParam(value = "name", required = false /*,defaultValue = World"*/) String name,
+                             @RequestParam(value = "idade") Integer idade) {
 
-        return "Hello " + (name == null ? "World" : name) + idade +"!" ;
+        return "Hello " + (name == null ? "World" : name) + idade + "!";
     }
 
 }

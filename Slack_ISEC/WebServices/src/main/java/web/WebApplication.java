@@ -18,6 +18,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import security.AuthorizationFilter;
+
 import java.sql.*;
 
 import java.sql.DriverManager;
@@ -26,31 +27,30 @@ import java.sql.DriverManager;
 @SpringBootApplication
 public class WebApplication {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-		DataBase.connectDB("localhost", 9999);
-		SpringApplication.run(WebApplication.class, args);
+        DataBase.connectDB("localhost", 9999);
+        SpringApplication.run(WebApplication.class, args);
 
-	}
+    }
 
-	@EnableWebSecurity
-	@Configuration
-	class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
+    @EnableWebSecurity
+    @Configuration
+    class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
 
-			http.csrf().disable()
-					.addFilterAfter(new AuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
-					.authorizeRequests()
-					.antMatchers(HttpMethod.POST, "/user/login").permitAll()
-					.anyRequest().authenticated().and()
-					.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-				http
-					.exceptionHandling()
-					.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
-		}
-	}
-
+            http.csrf().disable()
+                    .addFilterAfter(new AuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
+                    .authorizeRequests()
+                    .antMatchers(HttpMethod.POST, "/user/login").permitAll()
+                    .anyRequest().authenticated().and()
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            http
+                    .exceptionHandling()
+                    .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+        }
+    }
 
 
 }

@@ -14,16 +14,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AuthorizationFilter extends OncePerRequestFilter
-{
+public class AuthorizationFilter extends OncePerRequestFilter {
     private final String HEADER = "Authorization";
 
     @Override
-    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException
-    {
+    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         String authorizationHeaderValue = httpServletRequest.getHeader(HEADER);
-        if (authorizationHeaderValue != null && Token.validateToken(authorizationHeaderValue))
-        {
+        if (authorizationHeaderValue != null && Token.validateToken(authorizationHeaderValue)) {
             List<GrantedAuthority> authorities = new ArrayList<>();
             authorities.add(new SimpleGrantedAuthority("USER"));
 

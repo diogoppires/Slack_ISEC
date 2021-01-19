@@ -28,13 +28,13 @@ public class DataBase {
             stmt.executeUpdate("USE " + dbName);
 
 
-
         } catch (ClassNotFoundException | SQLException sqlEx) {
             System.out.println("DB: " + sqlEx);
             closeConnections();
         }
         return true;
     }
+
     private static void closeConnections() {
 
         try {
@@ -52,6 +52,7 @@ public class DataBase {
         }//end finally try
 
     }
+
     public static boolean loginUser(String username, String password) {
         DataBase.connectDB("localhost", 9999);
 
@@ -75,6 +76,7 @@ public class DataBase {
 
         return confirm;
     }
+
     public static String searchMessages(int n) {
         StringBuilder output = new StringBuilder();
         try {
