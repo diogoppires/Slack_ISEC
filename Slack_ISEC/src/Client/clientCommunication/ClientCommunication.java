@@ -139,7 +139,6 @@ public class ClientCommunication {
         Runnable runnable = () -> {
             String receiveTCP = "";
             try {
-
                 while (true) {
                     receiveTCP = tcpC.receiveTCP();
                     //System.out.println(receiveTCP); /*DEBUG*/
@@ -233,11 +232,10 @@ public class ClientCommunication {
                             log.addMsg(s);
                             Fire(PropsID.PROP_NOTIFICATION);
                             break;
-
                     }
                 } // end of while
             } catch (SocketException ex) {
-                System.err.println("O Servidor terminou inesperadamente");
+                //System.err.println("O Servidor terminou inesperadamente");
                 if (!askForConnection()) {
                     return;
                 }
@@ -300,6 +298,13 @@ public class ClientCommunication {
             }
         }
         return receiveTCP;
+    }
+    public void closeThread(){
+        try {
+            tcpC.closeTCP();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean sendFile(String localDirectory, String fileName, String destination) {
