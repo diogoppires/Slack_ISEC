@@ -4,6 +4,7 @@ import ClientRMI.ClientRemoteInterface;
 import Server.serverCommunication.CommsTypes.DBCommuncation;
 import Server.serverCommunication.CommsTypes.MulticastCommunication;
 import Server.serverCommunication.Data.ClientData;
+import Server.serverCommunication.ServerCommunication;
 
 import java.io.IOException;
 import java.net.SocketException;
@@ -37,7 +38,10 @@ public class ServerRemote extends UnicastRemoteObject implements ServerRemoteInt
 
     @Override
     public void sendMsgAll(String msg) throws RemoteException {
-
+        ArrayList<ClientData> clientsConnections = ServerCommunication.getClientsConnection();
+        for(ClientData cD : clientsConnections){
+            cD.sentTcpText("101+" + msg);
+        }
     }
 
     @Override

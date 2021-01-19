@@ -21,6 +21,8 @@ import java.util.logging.Logger;
  * The class that will have the control of all server communication.
  */
 
+
+
 public class ServerCommunication {
     private final static int MULTICAST_PORT = 5432;
     private final static String MULTICAST_IP = "239.3.2.1";
@@ -31,7 +33,7 @@ public class ServerCommunication {
     private MulticastCommunication mcC;
     private ServerInfo infoSv; 
     private DBCommuncation dbC;
-    private ArrayList<ClientData> clientsConnections;
+    private static ArrayList<ClientData> clientsConnections;
     
     //Threads
     private ServerListener_Thread svL;
@@ -103,7 +105,7 @@ public class ServerCommunication {
             tcpC.initializeTCP();
             dbC.initializeDBComms();
             try {
-                sR = new ServerRemote(dbC, clientsConnections, udpC.getServerPort());
+                sR = new ServerRemote(dbC, udpC.getServerPort());
                 sR.run();
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -111,5 +113,9 @@ public class ServerCommunication {
         } catch (IOException ex) {
             Logger.getLogger(ServerCommunication.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public static ArrayList<ClientData> getClientsConnection(){
+        return clientsConnections;
     }
 }
